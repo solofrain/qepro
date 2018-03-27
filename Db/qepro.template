@@ -1,0 +1,471 @@
+####################################################################################################################
+## File:
+##      devUSBSpectrometers.cpp
+## Description:
+##      This file contains the EPICS data base for QEPro Raman spectrometer.
+##      It is based on the original file written by David Beauregard from Canadian Light Source.
+##      However, the original file did not fully support the OceanView QEPro spectrometer.
+##      This file is specially written for support it and has few changes compare to the original David's file.
+## Date:
+##      16 Aug 2017
+## Author:
+##      Tomasz Brys 
+##      tomasz.brys@esss.se
+## Copyright:
+##      European Spallation Source ERIC
+####################################################################################################################
+
+
+#########################################################################################
+# Input records, analog, stringin
+#########################################################################################
+record(ai, "$(PREFIX):NrSpec_rbv"){
+        field(DTYP, "asynInt32")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumSpecs")
+##	field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(PREFIX):Name_rbv"){
+        field(DTYP, "asynOctetRead")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Name")
+##	field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(PREFIX):FirmwareVersion_rbv"){
+        field(DTYP, "asynOctetRead")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FirmwareVersion")
+##	field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(PREFIX):FirmwareModel_rbv"){
+        field(DTYP, "asynOctetRead")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FirmwareModel")
+##	field(SCAN, "I/O Intr")
+}
+
+record(stringin, "$(PREFIX):SerialNumber_rbv"){
+        field(DTYP, "asynOctetRead")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))SerialNumber")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):NumberOfPixels_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfPixels")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):NumberOfDarkPixels_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfDarkPixels")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):IntegrationTime_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(LINR, "NO CONVERSION")
+        field(EGU,  "ms")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))IntegrationTime")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):MinIntegrationTime_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MinIntegrationTime")
+##	field(SCAN, "I/O Intr")
+}                     
+
+record(ai, "$(PREFIX):MaxIntegrationTime_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntegrationTime")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):Averages_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):MaxIntensity_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntensity")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):BoxcarWidth_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):ElectricDark_rbv"){
+        field(DTYP, "asynInt32")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ElectricDark")
+##	field(SCAN, "I/O Intr")
+}
+
+
+record(ai, "$(PREFIX):DetectorTemperature_rbv"){
+        field(DTYP, "asynInt32")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DetectorTemperature")
+##	field(SCAN, "I/O Intr")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(EGU, "C")
+}
+
+record(ai, "$(PREFIX):BoardTemperature_rbv"){
+        field(DTYP, "asynInt32")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoardTemperature")
+##	field(SCAN, "I/O Intr")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(EGU, "C")
+}
+
+record(ai,  "$(PREFIX):TriggerMode_rbv"){
+        field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TriggerMode")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):NonLinearity_rbv"){
+ 	field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NonLinearity")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):Decouple_rbv"){
+	field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Decouple")
+##	field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(PREFIX):LEDIndicator_rbv"){
+ 	field(DTYP, "asynInt32")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+        field(PINI, "1")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LEDIndicator")
+##	field(SCAN, "I/O Intr")
+}
+
+record(waveform, "$(PREFIX):XaxisNm_rbv"){
+ 	field(DTYP, "asynFloat64ArrayIn")
+        field(EGU,  "nm")
+	field(NELM, "$(SIZE)")
+        field(FTVL, "DOUBLE")
+        field(PINI, "1")
+##	field(SCAN, "I/O Intr")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisNm")
+}
+
+record(waveform, "$(PREFIX):XaxisRs_rbv"){
+ 	field(DTYP, "asynFloat64ArrayIn")
+        field(EGU,  "nm")
+	field(NELM, "$(SIZE)")
+        field(FTVL, "DOUBLE")
+        field(PINI, "1")
+##	field(SCAN, "I/O Intr")
+        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisRs")
+}
+
+
+
+#########################################################################################
+# output records, analog
+#########################################################################################
+
+#record(ao, "$(PREFIX):TemperatureSetPoint_rbv"){
+#        field(DTYP, "asynInt32")
+#        field(PINI, "1")
+#        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TemperatureSetPoint")
+#	field(SCAN, "I/O Intr")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
+#        field(EGU, "C")
+#}
+
+
+record(ao, "$(PREFIX):ElectricDark"){
+        field(DTYP, "asynInt32")
+	field(VAL, "0")
+        field(PINI, "1")
+#	field(ZNAM, "OFF")
+#	field(ONAM, "ON")
+        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ElectricDark")
+        field(FLNK, "$(PREFIX):ElectricDark_rbv")
+}
+
+record(ao, "$(PREFIX):Averages"){
+        field(DTYP, "asynInt32")
+        field(PINI, "1")
+	field(VAL, "1")
+        field(DRVL, "1")
+        field(LOPR, "1")
+        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
+        field(FLNK, "$(PREFIX):Averages_rbv")
+}
+
+record(ao, "$(PREFIX):BoxcarWidth"){
+        field(DTYP, "asynInt32")
+	field(VAL, "0")
+        field(PINI, "1")
+        field(DRVL, "0")
+        field(DRVH, "20")
+        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
+        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
+}
+
+record(ao, "$(PREFIX):NonLinearity"){
+        field(DTYP, "asynInt32")
+	field(VAL, "0")
+        field(PINI, "1")
+        field(DRVL, "0")
+        field(DRVH, "20")
+        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NonLinearity")
+        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
+}
+
+record(ao, "$(PREFIX):Decouple"){
+        field(DTYP, "asynInt32")
+	field(VAL, "0")
+        field(PINI, "1")
+        field(DRVL, "0")
+        field(DRVH, "20")
+        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Decouple")
+        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
+}
+
+record(ao, "$(PREFIX):LEDIndicator"){
+        field(DTYP, "asynInt32")
+	field(VAL, "0")
+        field(DRVL, "0")
+        field(PINI, "1")
+        field(DRVH, "20")
+        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LEDIndicator")
+        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
+}
+
+
+record(ao, "$(PREFIX):IntegrationTime"){
+        field(DTYP, "asynInt32")
+	field(SCAN, "Passive")
+	field(DOL,  "$(PREFIX):IntegrationTime:Calout PP")
+        field(OMSL, "closed_loop")
+        field(LINR, "NO CONVERSION")
+        field(DRVL, "8000")
+        field(DRVH, "2147483647")
+        field(LOPR, "8000")
+        field(HOPR, "2147483647")
+        field(PINI, "1")
+        field(PHAS, "5")
+        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))IntegrationTime")
+        field(FLNK, "$(PREFIX):IntegrationTime_rbv")
+}
+
+record(bo, "$(PREFIX):IntegrationTime:Unit"){
+	field(DTYP, "Raw Soft Channel")
+	field(SCAN, "Passive")
+        field(ZNAM, " ms")
+        field(ONAM, "sec")
+        field(PINI, "1")
+        field(PHAS, "4")
+	field(VAL,  "1")
+}
+
+record(ao, "$(PREFIX):IntegrationTime:Value"){
+        field(DTYP, "Raw Soft Channel")
+	field(SCAN, "Passive")
+	field(DRVL, "0")
+	field(DRVH, "2147483647")
+        field(PINI, "1")
+        field(PHAS, "4")
+	field(VAL,  "5")
+}
+
+record(ao, "$(PREFIX):Laser"){
+        field(DTYP, "Raw Soft Channel")
+	field(SCAN, "Passive")
+        field(PINI, "1")
+	field(VAL,  "$(LASER)")
+}
+
+record(calcout, "$(PREFIX):IntegrationTime:Calout"){
+#        field(DTYP, "Raw Soft Channel")
+	field(SCAN, "Passive")
+	field(MDEL, "-1")
+	field(INPA, "$(PREFIX):IntegrationTime:Unit.VAL")
+	field(INPB, "$(PREFIX):IntegrationTime:Value.VAL")
+        field(CALC, "A? B*1000000:B")
+#	field(VAL,  "IntegrationTime.VAL")
+}
+
+##record(mbbo,  "$(PREFIX):Trigger"){
+#	field(DTYP, "Raw Soft Channel")
+#	field(ZRVL, "0")    	field(ZRST,"Continous")
+#	field(TWVL, "2")	field(TWST,"Ext Level")
+#	field(FRVL, "4")	field(FRST,"Ext Edge ")
+#	field(VAL,  "0")
+#	field(FLNK, "$(PREFIX):TriggerMode")
+#}
+#
+#record(ao,  "$(PREFIX):TriggerMode"){
+#	field(DTYP, "USBSpectrometers")
+#	field(DOL,  "$(PREFIX):TriggerMode.RVAL")
+#	field(OMSL, "closed_loop")
+#	field(VAL,  "0")
+#	field(OUT,  "@setTriggerMode")
+#	field(FLNK, "$(PREFIX):TriggerMode_rbv")
+#}
+#
+####################################################################################################################
+## records for controling device
+#
+#record(bi, "$(PREFIX):Connection_rbv"){
+#        field(DTYP, "USBSpectrometers")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "0")
+#	field(ZNAM, "NOT CONNECTED")
+#	field(ONAM, "CONNECTED")
+##	field(ZSV,  "MAJOR")
+#        field(PHAS, "0")
+#        field(PINI, "1")
+#        field(INP,  "@initDevice 1")
+#}
+#
+#
+#record(ao, "$(PREFIX):Action")
+#{
+#        field(DTYP, "Raw Soft Channel")
+#	field(SCAN, "Passive")
+#	field(DRVL, "0")
+#	field(DRVH, "2")
+#        field(PINI, "1")
+#        field(PHAS, "7")
+#	field(VAL,  "0")
+#}
+#
+#
+#record(aai, "$(PREFIX):Spectrum_rbv")
+#{
+#        field(DTYP, "USBSpectrometers")
+#        field(INP,  "@getSpectrum")
+#        field(EGU,  "Counts")
+#	field(NELM, "2048")
+#	field(FTVL, "DOUBLE")
+#        field(PINI, "1")
+#        field(PHAS, "8")
+#	field(SDIS, "$(PREFIX):Action")
+#	field(DISV, "0")
+#	field(SCAN, "I/O Intr")
+#	field(FLNK, "$(PREFIX):IsSingleShot.PROC")
+#}
+#
+#record(calcout, "$(PREFIX):IsSingleShot")
+#{
+#	field(SCAN, "Passive")
+#	field(INPA, "$(PREFIX):Action")
+#	field(CALC, "A=2?0:1")
+#	field(MDEL, "-1")
+#	field(OUT,  "$(PREFIX):Action.VAL")
+#	field(FLNK, "$(PREFIX):ZeroProgressBar.PROC")
+#}
+#
+#
+#record(ao, "$(PREFIX):ZeroProgressBar")
+#{
+#	field(SCAN, "Passive")
+#	field(VAL,  "0")
+#	field(MDEL, "-1")
+#	field(OUT,  "$(PREFIX):ProgressBar.VAL")
+#}
+#
+#record(calcout, "$(PREFIX):ProgressBar")
+#{
+#	field(SCAN, ".2 second")
+##	field(SDIS, "$(PREFIX):Action")
+##	field(DISV, "0")
+#	field(MDEL, "-1")
+#	field(INPA, "$(PREFIX):Action.VAL")
+#	field(INPB, "$(PREFIX):IntegrationTime.VAL")
+#	field(INPC, "$(PREFIX):Averages_rbv.VAL")
+#	field(CALC, "A? 20000000./B/C+VAL:0")
+#}
+#
+#record(ao, "$(PREFIX):IndexID"){
+#        field(DTYP, "USBSpectrometers")
+#	field(VAL, "0")
+#        field(OUT, "@setIndex")
+#}
+#
+#record(ao, "$(PREFIX):Channel"){
+#        field(DTYP, "USBSpectrometers")
+#	field(VAL, "0")
+#        field(OUT, "@setChannel")
+#}
+#
+
+
+#record(aai, "$(PREFIX):Xaxis_rbv"){
+#        field(DTYP, "USBSpectrometers")
+#        field(INP,  "@getAxis")
+#        field(EGU,  "nm")
+#	field(NELM, "2048")
+#        field(PHAS, "5")
+#        field(FTVL, "DOUBLE")
+#        field(PINI, "1")
+#}
+#
+#
+

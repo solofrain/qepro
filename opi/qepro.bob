@@ -1,0 +1,1210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <macros>
+    <PREFIX>P</PREFIX>
+  </macros>
+  <width>1300</width>
+  <height>900</height>
+  <background_color>
+    <color red="173" green="173" blue="173">
+    </color>
+  </background_color>
+  <actions>
+  </actions>
+  <grid_visible>false</grid_visible>
+  <grid_color>
+    <color name="BLACK" red="0" green="0" blue="0">
+    </color>
+  </grid_color>
+  <widget type="rectangle" version="2.0.0">
+    <name>Rectangle_1</name>
+    <x>10</x>
+    <y>140</y>
+    <width>330</width>
+    <height>110</height>
+    <line_width>0</line_width>
+    <background_color>
+      <color red="232" green="232" blue="232">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>Rectangle</name>
+    <x>10</x>
+    <y>10</y>
+    <width>1270</width>
+    <height>120</height>
+    <line_width>0</line_width>
+    <background_color>
+      <color red="33" green="150" blue="243">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="xyplot" version="2.0.0">
+    <name>XY Graph</name>
+    <x>360</x>
+    <y>140</y>
+    <width>920</width>
+    <height>750</height>
+    <background_color>
+      <color red="232" green="232" blue="232">
+      </color>
+    </background_color>
+    <title_font>
+      <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+      </font>
+    </title_font>
+    <show_toolbar>true</show_toolbar>
+    <actions>
+    </actions>
+    <x_axis>
+      <title>wavelength [nm]</title>
+      <autoscale>true</autoscale>
+      <minimum>0.0</minimum>
+      <maximum>10.0</maximum>
+      <show_grid>true</show_grid>
+      <title_font>
+        <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+        </font>
+      </title_font>
+      <scale_font>
+        <font name="Default" family="Source Sans Pro" style="REGULAR" size="16.0">
+        </font>
+      </scale_font>
+    </x_axis>
+    <y_axes>
+      <y_axis>
+        <title>Intensity [Counts]</title>
+        <autoscale>true</autoscale>
+        <log_scale>false</log_scale>
+        <minimum>0.0</minimum>
+        <maximum>2000.0</maximum>
+        <show_grid>true</show_grid>
+        <title_font>
+          <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+          </font>
+        </title_font>
+        <scale_font>
+          <font name="Default" family="Source Sans Pro" style="REGULAR" size="16.0">
+          </font>
+        </scale_font>
+        <visible>true</visible>
+      </y_axis>
+    </y_axes>
+    <traces>
+      <trace>
+        <name></name>
+        <x_pv>$(PREFIX):Xaxis_rbv</x_pv>
+        <y_pv>$(PREFIX):Spectrum_rbv</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="21" green="21" blue="196">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <point_type>0</point_type>
+        <point_size>4</point_size>
+      </trace>
+    </traces>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_1</name>
+    <text>Raman Spectrometer</text>
+    <x>360</x>
+    <y>10</y>
+    <width>600</width>
+    <height>50</height>
+    <font>
+      <font family="Source Sans Pro" style="BOLD" size="46.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color name="WHITE" red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="picture" version="2.0.0">
+    <name>Picture_2</name>
+    <file>ESS_logo.png</file>
+    <x>1050</x>
+    <y>10</y>
+    <width>190</width>
+    <height>128</height>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_9</name>
+    <text>Para/Ortho ratio measurement</text>
+    <x>510</x>
+    <y>70</y>
+    <width>353</width>
+    <height>27</height>
+    <font>
+      <font name="LARGE-MONO-BOLD-ITALIC" family="Source Code Pro" style="BOLD_ITALIC" size="21.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color name="WHITE" red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="tabs" version="2.0.0">
+    <name>Tabs</name>
+    <tabs>
+      <tab>
+        <name>Settings</name>
+        <children>
+          <widget type="label" version="2.0.0">
+            <name>Label</name>
+            <text>Integration Time:</text>
+            <x>8</x>
+            <y>10</y>
+            <width>124</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="spinner" version="2.0.0">
+            <name>Spinner</name>
+            <pv_name>$(PREFIX):IntegrationTime:Value</pv_name>
+            <x>8</x>
+            <y>40</y>
+            <width>120</width>
+            <height>25</height>
+            <format>0</format>
+            <precision>0</precision>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <actions>
+            </actions>
+            <minimum>-1.7976931348623157E308</minimum>
+            <maximum>1.7976931348623157E308</maximum>
+          </widget>
+          <widget type="combo" version="2.0.0">
+            <name>Combo</name>
+            <pv_name>$(PREFIX):IntegrationTime:Unit</pv_name>
+            <x>138</x>
+            <y>40</y>
+            <width>65</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <actions>
+            </actions>
+            <items>
+              <item>sec</item>
+              <item>milisec</item>
+            </items>
+          </widget>
+          <widget type="action_button" version="3.0.0">
+            <name>Action Button_4</name>
+            <actions>
+              <action type="write_pv">
+                <pv_name>$(PREFIX):IntegrationTime.PROC</pv_name>
+                <value>1</value>
+                <description>Set</description>
+              </action>
+            </actions>
+            <text>Set</text>
+            <x>218</x>
+            <y>40</y>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="240" green="240" blue="240">
+              </color>
+            </background_color>
+            <tooltip>$(actions)</tooltip>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_2</name>
+            <text>Average:</text>
+            <x>8</x>
+            <y>100</y>
+            <width>63</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="spinner" version="2.0.0">
+            <name>Spinner_1</name>
+            <pv_name>$(PREFIX):Averages</pv_name>
+            <x>8</x>
+            <y>130</y>
+            <width>131</width>
+            <height>25</height>
+            <format>0</format>
+            <precision>0</precision>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <actions>
+            </actions>
+            <minimum>-1.7976931348623157E308</minimum>
+            <maximum>1.7976931348623157E308</maximum>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_3</name>
+            <pv_name>$(PREFIX):Averages_rbv</pv_name>
+            <x>188</x>
+            <y>100</y>
+            <width>131</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <format>1</format>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_3</name>
+            <text>Boxcar width:</text>
+            <x>8</x>
+            <y>190</y>
+            <width>99</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="spinner" version="2.0.0">
+            <name>Spinner_2</name>
+            <pv_name>$(PREFIX):BoxcarWidth</pv_name>
+            <x>8</x>
+            <y>220</y>
+            <width>131</width>
+            <height>25</height>
+            <format>0</format>
+            <precision>0</precision>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <actions>
+            </actions>
+            <maximum>1044.0</maximum>
+            <limits_from_pv>false</limits_from_pv>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_4</name>
+            <pv_name>$(PREFIX):BoxcarWidth_rbv</pv_name>
+            <x>178</x>
+            <y>190</y>
+            <width>140</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <format>1</format>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_4</name>
+            <text>Electric Dark:</text>
+            <x>8</x>
+            <y>270</y>
+            <width>96</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="checkbox" version="2.0.0">
+            <name>Check Box_1</name>
+            <pv_name>$(PREFIX):ElectricDark</pv_name>
+            <label></label>
+            <x>118</x>
+            <y>280</y>
+            <width>17</width>
+            <height>25</height>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_5</name>
+            <pv_name>$(PREFIX):ElectricDark_rbv</pv_name>
+            <x>178</x>
+            <y>270</y>
+            <width>140</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_6</name>
+            <text>Trigger Mode:</text>
+            <x>8</x>
+            <y>330</y>
+            <width>98</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_6</name>
+            <pv_name>$(PREFIX):TriggerMode_rbv</pv_name>
+            <x>178</x>
+            <y>330</y>
+            <width>140</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="combo" version="2.0.0">
+            <name>Combo_1</name>
+            <pv_name>$(PREFIX):Trigger</pv_name>
+            <x>8</x>
+            <y>360</y>
+            <width>131</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <actions>
+            </actions>
+            <items>
+              <item>Continous</item>
+              <item>Edge</item>
+              <item>Level</item>
+            </items>
+            <items_from_pv>false</items_from_pv>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_7</name>
+            <text>X-Asis:</text>
+            <x>8</x>
+            <y>410</y>
+            <width>47</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="combo" version="2.0.0">
+            <name>Combo_2</name>
+            <x>178</x>
+            <y>410</y>
+            <width>131</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <actions>
+            </actions>
+            <items_from_pv>false</items_from_pv>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_11</name>
+            <text>Save data:</text>
+            <x>8</x>
+            <y>460</y>
+            <width>75</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="checkbox" version="2.0.0">
+            <name>Check Box_4</name>
+            <pv_name>$(PREFIX):ElectricDark</pv_name>
+            <label></label>
+            <x>168</x>
+            <y>460</y>
+            <width>17</width>
+            <height>25</height>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="fileselector" version="2.0.0">
+            <name>File Selector</name>
+            <filespace>1</filespace>
+            <component>3</component>
+            <x>108</x>
+            <y>450</y>
+            <width>30</width>
+            <height>30</height>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_12</name>
+            <text>Path:</text>
+            <x>8</x>
+            <y>500</y>
+            <width>39</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_13</name>
+            <text>Last file:</text>
+            <x>8</x>
+            <y>530</y>
+            <width>61</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_14</name>
+            <pv_name>$(PREFIX):TriggerMode_rbv</pv_name>
+            <x>118</x>
+            <y>500</y>
+            <width>205</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_16</name>
+            <pv_name>$(PREFIX):TriggerMode_rbv</pv_name>
+            <x>118</x>
+            <y>540</y>
+            <width>205</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_17</name>
+            <pv_name>$(PREFIX):TriggerMode_rbv</pv_name>
+            <x>198</x>
+            <y>460</y>
+            <width>120</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_10</name>
+            <pv_name>$(PREFIX):IntegrationTime_rbv</pv_name>
+            <x>188</x>
+            <y>7</y>
+            <width>131</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <format>1</format>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+        </children>
+      </tab>
+      <tab>
+        <name>Advance</name>
+        <children>
+          <widget type="label" version="2.0.0">
+            <name>Label_5</name>
+            <text>Nonlinearity Correction:</text>
+            <x>16</x>
+            <y>152</y>
+            <width>173</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="checkbox" version="2.0.0">
+            <name>Check Box_2</name>
+            <label></label>
+            <x>266</x>
+            <y>152</y>
+            <width>17</width>
+            <height>25</height>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_8</name>
+            <text>Strobe/Lamp Enable:</text>
+            <x>16</x>
+            <y>182</y>
+            <width>150</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="checkbox" version="2.0.0">
+            <name>Check Box_3</name>
+            <label></label>
+            <x>266</x>
+            <y>182</y>
+            <width>17</width>
+            <height>25</height>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="action_button" version="3.0.0">
+            <name>Action Button</name>
+            <text>GPIO</text>
+            <x>93</x>
+            <y>280</y>
+            <width>179</width>
+            <tooltip>$(actions)</tooltip>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Text Update_11</name>
+            <text>Serial Number</text>
+            <x>16</x>
+            <y>12</y>
+            <width>168</width>
+            <height>25</height>
+            <font>
+              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="232" green="232" blue="232">
+              </color>
+            </background_color>
+            <transparent>false</transparent>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+            <tooltip>cls:SerialNumber_rbv
+VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_7</name>
+            <pv_name>$(PREFIX):SerialNumber_rbv</pv_name>
+            <x>196</x>
+            <y>12</y>
+            <width>117</width>
+            <height>25</height>
+            <font>
+              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>1</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Text Update_12</name>
+            <text>Pixels / Dark</text>
+            <x>16</x>
+            <y>52</y>
+            <width>149</width>
+            <height>25</height>
+            <font>
+              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="232" green="232" blue="232">
+              </color>
+            </background_color>
+            <transparent>false</transparent>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+            <tooltip>cls:NumberOfPixels_rbv
+VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_8</name>
+            <pv_name>$(PREFIX):NumberOfPixels_rbv</pv_name>
+            <x>176</x>
+            <y>52</y>
+            <width>53</width>
+            <height>25</height>
+            <font>
+              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>1</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Text Update_15</name>
+            <text>/</text>
+            <x>236</x>
+            <y>52</y>
+            <width>29</width>
+            <height>25</height>
+            <font>
+              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="PRIMARY" red="0" green="148" blue="201">
+              </color>
+            </background_color>
+            <transparent>false</transparent>
+            <horizontal_alignment>1</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+            <tooltip>cls:NumberOfPixels_rbv
+VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_9</name>
+            <pv_name>$(PREFIX):NumberOfDarkPixels_rbv</pv_name>
+            <x>276</x>
+            <y>52</y>
+            <width>35</width>
+            <height>25</height>
+            <font>
+              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>1</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+        </children>
+      </tab>
+    </tabs>
+    <x>10</x>
+    <y>270</y>
+    <width>332</width>
+    <height>630</height>
+    <background_color>
+      <color red="232" green="232" blue="232">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>Text Update</name>
+    <pv_name>$(PREFIX):Name_rbv</pv_name>
+    <x>30</x>
+    <y>40</y>
+    <width>180</width>
+    <height>70</height>
+    <font>
+      <font family="Source Sans Pro" style="BOLD" size="52.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color name="WHITE" red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="33" green="150" blue="243">
+      </color>
+    </background_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <actions>
+    </actions>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Text Update_1</name>
+    <text>ready to start</text>
+    <x>130</x>
+    <y>148</y>
+    <width>200</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+      </color>
+    </background_color>
+    <transparent>false</transparent>
+    <horizontal_alignment>1</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <wrap_words>false</wrap_words>
+    <actions>
+    </actions>
+    <scripts>
+      <script file="EmbeddedPy">
+        <text><![CDATA[# Embedded python script
+from org.csstudio.display.builder.runtime.script import PVUtil
+# widget.setPropertyValue("text", PVUtil.getString(pvs[0]))
+
+val = PVUtil.getDouble(pvs[0])
+
+if val == 0:
+   widget.setPropertyValue("text", "Stop")
+elif val == 1:
+   widget.setPropertyValue("text", "Acquiring")
+elif val == 2:
+   widget.setPropertyValue("text", "Single Shot")
+elif val == 3:
+   widget.setPropertyValue("text", "Not Connected")
+else:
+   widget.setPropertyValue("text", "Undefined Error")
+]]></text>
+        <pv_name>$(PREFIX):Action</pv_name>
+      </script>
+    </scripts>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>Action Button_2</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(PREFIX):Action</pv_name>
+        <value>0</value>
+        <description>Stop</description>
+      </action>
+    </actions>
+    <text>Stop</text>
+    <x>270</x>
+    <y>190</y>
+    <width>60</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <tooltip>$(actions)</tooltip>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>Action Button_3</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(PREFIX):Action</pv_name>
+        <value>2</value>
+        <description>Single</description>
+      </action>
+    </actions>
+    <text>Single</text>
+    <x>130</x>
+    <y>190</y>
+    <width>60</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <tooltip>$(actions)</tooltip>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>Action Button_1</name>
+    <actions execute_as_one="true">
+      <action type="write_pv">
+        <pv_name>$(PREFIX):Action</pv_name>
+        <value>1</value>
+        <description>Start</description>
+      </action>
+    </actions>
+    <text>Start</text>
+    <x>200</x>
+    <y>190</y>
+    <width>60</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <tooltip>$(actions)</tooltip>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>Progress Bar</name>
+    <pv_name>$(PREFIX):ProgressBar</pv_name>
+    <x>20</x>
+    <y>221</y>
+    <width>310</width>
+    <height>13</height>
+    <fill_color>
+      <color red="33" green="150" blue="243">
+      </color>
+    </fill_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_14</name>
+    <text>Status:</text>
+    <x>20</x>
+    <y>148</y>
+    <width>51</width>
+    <height>21</height>
+    <font>
+      <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>true</auto_size>
+    <wrap_words>false</wrap_words>
+    <actions>
+    </actions>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>Label_16</name>
+    <text>Acquisition:</text>
+    <x>20</x>
+    <y>190</y>
+    <width>85</width>
+    <height>21</height>
+    <font>
+      <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <vertical_alignment>1</vertical_alignment>
+    <auto_size>true</auto_size>
+    <wrap_words>false</wrap_words>
+    <actions>
+    </actions>
+  </widget>
+  <widget type="table" version="2.0.0">
+    <name>Table</name>
+    <x>320</x>
+    <y>910</y>
+    <width>1</width>
+    <height>1</height>
+    <columns>
+      <column>
+        <name>Column 1</name>
+        <width>100</width>
+        <editable>true</editable>
+      </column>
+    </columns>
+  </widget>
+</display>

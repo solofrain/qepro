@@ -1,0 +1,5 @@
+builddir/
+*.swp
+*.swo
+*.log
+require.lock-*
