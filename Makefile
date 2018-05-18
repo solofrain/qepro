@@ -23,19 +23,21 @@ USR_DEPENDENCIES += asyn,4.3+
 
 
 #USR_CPPFLAGS += -I$(abspath ../../include) -DLINUX
-USR_CPPFLAGS += -I/vagrant/omniDrv/include -DLINUX
+#USR_CPPFLAGS += -I/vagrant/omniDrv/include -DLINUX
 #USR_CPPFLAGS += -I$(abspath ../../java/include)
-USR_CPPFLAGS += -I/usr/java/latest/include -I/usr/java/latest/include
+#USR_CPPFLAGS += -I/usr/java/latest/include -I/usr/java/latest/include
 #USR_CPPFLAGS += -I$(abspath ../../java/include/linux)
-USR_CPPFLAGS += -I/usr/java/latest/include -I/usr/java/latest/include/linux
+#USR_CPPFLAGS += -I/usr/java/latest/include -I/usr/java/latest/include/linux
+USR_CPPFLAGS += -I/vagrant/SeaBreeze/include -DLINUX
 
 #PROD_SYS_LIBS += libcommon.so
 #PROD_SYS_LIBS += libOmniDriver.so
 #PROD_SYS_LIBS += libjvm.so
 
-USR_LDFLAGS += -L/vagrant/omniDrv/OOI_HOME -lcommon -lOmniDriver
-USR_LDFLAGS += -L/usr/java/latest/jre/lib/amd64/server -ljvm
-USR_LDFLAGS += -lcommon -lOmniDriver -ljvm
+#USR_LDFLAGS += -L/vagrant/omniDrv/OOI_HOME -lcommon -lOmniDriver
+#USR_LDFLAGS += -L/usr/java/latest/jre/lib/amd64/server -ljvm
+#USR_LDFLAGS += -lcommon -lOmniDriver -ljvm
+USR_LDFLAGS += -L/vagrant/SeaBreeze/lib -lseabreeze
 USR_LDFLAGS += -lusb
 
 #OMNIDRV_DIR = $(abspath ../../OOI_HOME)
