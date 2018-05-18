@@ -3,7 +3,9 @@
 #include <asynPortDriver.h>
 #include <libusb-1.0/libusb.h>
 
-#include "Wrapper.h"
+#include "api/seabreezeapi/SeaBreezeAPI.h"
+
+//#include "Wrapper.h"
 
 
 #define QEProNumSpecs		"NumSpecs"		/* asynInt32        ro  0 */
@@ -80,7 +82,7 @@ protected:
     #define LAST_QEPRO_PARAM P_laser
 
 private:
-    Wrapper wrapper;
+    //Wrapper wrapper;
     epicsEventId eventId;
     static int zeroIndex;
     int index;
@@ -88,6 +90,8 @@ private:
     static bool connected;
     libusb_hotplug_callback_handle hp[2];
     static const int OOI_VENDOR_ID = 0x2457;
+
+    long *device_ids;
 
     asynStatus connectSpec();
     asynStatus disconnectSpec();
