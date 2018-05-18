@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <display version="2.0.0">
   <macros>
-    <PREFIX>P</PREFIX>
+    <PREFIX>Sp1</PREFIX>
   </macros>
   <width>1300</width>
   <height>900</height>
@@ -140,7 +140,7 @@
     <x>510</x>
     <y>70</y>
     <width>353</width>
-    <height>27</height>
+    <height>28</height>
     <font>
       <font name="LARGE-MONO-BOLD-ITALIC" family="Source Code Pro" style="BOLD_ITALIC" size="21.0">
       </font>
@@ -940,7 +940,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
               </color>
             </foreground_color>
             <background_color>
-              <color name="PRIMARY" red="0" green="148" blue="201">
+              <color name="PRIMARY" red="0" green="148" blue="202">
               </color>
             </background_color>
             <transparent>false</transparent>
