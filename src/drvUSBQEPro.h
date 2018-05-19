@@ -92,6 +92,16 @@ private:
     static const int OOI_VENDOR_ID = 0x2457;
 
     long *device_ids;
+    long device_id;
+    long serial_number_feature_id;
+    long spectrometer_feature_id;
+    long nonlinearity_feature_id;
+
+    static bool connected;
+    static void test_connection();
+
+    long integration_time;
+    int trigger_mode;
 
     asynStatus connectSpec();
     asynStatus disconnectSpec();

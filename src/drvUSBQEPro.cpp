@@ -50,7 +50,7 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints)
    createParam( QEProIntegrationTime,     asynParamInt32,        &P_integrationTime); 	  //  8
    createParam( QEProMaxIntegrationTime,  asynParamInt32,        &P_maxIntegrationTime);  //  9
    createParam( QEProMinIntegrationTime,  asynParamInt32,        &P_minIntegrationTime);  // 10
-   createParam( QEProMaxIntensity,  	  asynParamInt32,        &P_maxIntensity);        // 11
+   createParam( QEProMaxIntensity,  	  asynParamFloat64,      &P_maxIntensity);        // 11
    createParam( QEProBoxcarWidth,  	  asynParamInt32,        &P_boxcarWidth);         // 12
    createParam( QEProElectricDark,  	  asynParamInt32,        &P_electricDark);        // 13
    createParam( QEProDetectorTemperature, asynParamInt32,        &P_detectorTemperature); // 14
@@ -69,18 +69,20 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints)
 
    status = connectSpec();
    if (status) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:  camera connection failed (%d)\n", driverName, functionName, status);
-        // Call report() to get a list of available cameras
+        asynPrint(
+                pasynUserSelf, 
+                ASYN_TRACE_ERROR, 
+                "%s:%s:  spectrometer connection failed (%d)\n", 
+                driverName, 
+                functionName, 
+                status);
         report(stdout, 1);
         return;
    }
-    
-    
 }
 //-----------------------------------------------------------------------------------------------------------------
 
 asynStatus drvUSBQEPro::connectSpec(){
-
     char name_buffer[80];
     int number_of_devices;
     int number_of_device_ids;
@@ -95,65 +97,8 @@ asynStatus drvUSBQEPro::connectSpec(){
     // Set up the seabreeze driver
     sbapi_initialize();
 
-    sbapi_probe_devices();
+    drvUSBQEPro::test_connection();
 
-    number_of_devices = sbapi_get_number_of_device_ids();
-
-    printf("number of spectrometers found = %d\n", number_of_devices);
-
-    if (number_of_devices == -1){ 
-         drvUSBQEPro::connected = false;
-         return asynError;
-    }
-
-    if (number_of_devices == 0) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: no spectrometers found\n", driverName, functionName);
-        drvUSBQEPro::connected = false;
-    }
-    else {
-        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: there are %d spectrometers\n", driverName, functionName, number_of_devices);
-        drvUSBQEPro::connected = true;
-
-        // Read device IDs
-        device_ids = (long *)calloc(number_of_devices, sizeof(long));
-        number_of_device_ids = sbapi_get_device_ids(device_ids, number_of_devices);
-        printf("got %d device id(s)\n", number_of_device_ids);
-
-        //index = zeroIndex++;
-        for(int i = 0; i < number_of_device_ids; i++) {
-            flag = sbapi_get_device_type(device_ids[i], &error, name_buffer, 79);
-            printf("result = (%d) [%s]\n", flag, sbapi_get_error_string(error));
-            if (flag > 0)
-                printf("Device type = %s\n", name_buffer);
-        } 
-
-        flag = sbapi_open_device(device_ids[0], &error);
-        printf("result = (%d) [%s]\n", flag, sbapi_get_error_string(error));
-
-        int num_serial_number_features = sbapi_get_number_of_serial_number_features(device_ids[0], &error);
-        printf("number of serial number features = %d\n", num_serial_number_features);
-
-        long * serial_number_feature_ids = (long *)calloc(num_serial_number_features, sizeof(long));
-        int num_serial_number_feature_ids = sbapi_get_serial_number_features(
-                device_ids[0],
-                &error,
-                serial_number_feature_ids, 
-                num_serial_number_features);
-
-        for (int i = 0; i < num_serial_number_feature_ids; i++) {
-            flag = sbapi_get_serial_number(
-                    device_ids[0],
-                    serial_number_feature_ids[i],
-                    &error,
-                    name_buffer,
-                    79);
-            printf("result = (%d) [%s]\n", flag, sbapi_get_error_string(error));
-            if (flag > 0)
-                printf("Feature ID %ld serial number type = %s\n", 
-                        serial_number_feature_ids[i], 
-                        name_buffer);
-        }
-    } 
     return status;
 }
 
@@ -203,8 +148,6 @@ asynStatus drvUSBQEPro::registerUSBCallbacks() {
     else {
         printf("Registered USB detach callback\n");
     }
-
-
     return asynSuccess;
 }
 
@@ -223,70 +166,53 @@ asynStatus drvUSBQEPro::readStatus(){
 //--------------------------------------------------------------------------------------------
 asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason){
  
-   int addr=0;
-   int function = pasynUser->reason;
-   asynStatus status = asynSuccess;
-//   int index ;
-//   const char *paramName;
-//   getParamName(function, &paramName);
-//   static const char *functionName = "readOctet";
+    int addr=0;
+    int function = pasynUser->reason;
+    asynStatus status = asynSuccess;
 
     this->getAddress(pasynUser, &addr);
 
-//    getIntegerParam(addr, nrBoard, &index);
     char buffer[80];
     int error;
 
+// TODO: Add connection check.
+// TODO: Set invalid if disconnected.
+    if (drvUSBQEPro::connected) {
     if (function == P_name) {
-        sbapi_get_device_type(device_ids[index], &error, buffer, 79);
+        sbapi_get_device_type(device_id, &error, buffer, 79);
         strcpy(value, buffer);
         *nActual = strlen(buffer);
         *eomReason = 0;
     } 
     else if (function == P_firmwareVersion) {
-        strcpy(buffer, "not implemented");
+        strcpy(buffer, "Not available");
         strcpy(value, buffer);
         *nActual = strlen(buffer);
         *eomReason = 0;
     } 
     else if (function == P_firmwareModel) {
-        strcpy(buffer, "not implemented");
+        strcpy(buffer, "Not available");
         strcpy(value, buffer);
         *nActual = strlen(buffer);
         *eomReason = 0;
     } 
     else if (function == P_serialNumber) {
-        int num_serial_number_features = 
-            sbapi_get_number_of_serial_number_features(device_ids[0], &error);
-
-        if (num_serial_number_features > 0) {
-
-            long * serial_number_feature_ids = 
-                (long *)calloc(num_serial_number_features, sizeof(long));
-
-            int num_serial_number_feature_ids = 
-                sbapi_get_serial_number_features(
-                    device_ids[0],
-                    &error,
-                    serial_number_feature_ids, 
-                    num_serial_number_features);
-
-            sbapi_get_serial_number(
-                    device_ids[0],
-                    serial_number_feature_ids[0],
-                    &error,
-                    buffer,
-                    79);
-        }
-        else {
-            strcpy(buffer, "None");
-        }
+        sbapi_get_serial_number(
+                device_id,
+                serial_number_feature_id,
+                &error,
+                buffer,
+                79);
         strcpy(value, buffer);
         *nActual = strlen(buffer);
         *eomReason = 0;
     } else {
         // All other parameters just get set in parameter list, no need to
         //  act on them here 
+    }
+    }
+    else {
+        // TODO: Set PV invalid here
     }
 
     callParamCallbacks(addr);
@@ -312,128 +238,95 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     }
 
     else if (function == P_numberOfPixels) {
-        int num_spectrometer_features = 
-            sbapi_get_number_of_spectrometer_features(device_ids[0], &error);
-
-        if (num_spectrometer_features > 0) {
-
-            long * spectrometer_feature_ids = 
-                (long *)calloc(num_spectrometer_features, sizeof(long));
-
-            int num_spectrometer_feature_ids = 
-                sbapi_get_spectrometer_features(
-                    device_ids[0],
-                    &error,
-                    spectrometer_feature_ids, 
-                    num_spectrometer_features);
-
-            rval = sbapi_spectrometer_get_formatted_spectrum_length(
-                    device_ids[0],
-                    spectrometer_feature_ids[0],
-                    &error);
-        }
+        rval = sbapi_spectrometer_get_formatted_spectrum_length(
+                device_id,
+                spectrometer_feature_id,
+                &error);
         *value = rval;
         setIntegerParam(addr, P_numberOfPixels, *value);
     }
 
-    else if (function == P_maxIntensity) {
-        //rval = wrapper.getMaximumIntensity(index);
-        *value = rval;
-        setIntegerParam(addr, P_maxIntensity, *value);
-    }
-
     else if (function == P_numberOfDarkPixels) {
-        //rval = wrapper.getNumberOfDarkPixels(index);
+        rval = sbapi_spectrometer_get_electric_dark_pixel_count(
+                device_id,
+                spectrometer_feature_id,
+                &error);
         *value = rval;
         setIntegerParam(addr, P_numberOfDarkPixels, *value);
     }
 
     else if (function == P_integrationTime) {
-        //rval = wrapper.getIntegrationTime(index);
-        //int b =  wrapper.getMinimumIntegrationTime(index);
-
-        /*
-           if(rval < b){
-           wrapper.setIntegrationTime(index, b);
-           rval = wrapper.getIntegrationTime(index);
-           }
-
-           rval /= 1000; // function return in microseconds, we want to have in miliseconds
-         *value = rval;
-         setIntegerParam(addr, P_integrationTime, *value);
-         */
+        rval = integration_time;
+        // function return in microseconds, we want to have in miliseconds
+        rval /= 1000; 
+        *value = rval;
+        setIntegerParam(addr, P_integrationTime, *value);
     }
     else if (function == P_maxIntegrationTime) {
-        //rval = wrapper.getMaximumIntegrationTime(index);
-        *value = rval;
-        setIntegerParam(addr, P_maxIntegrationTime, *value);
+        // no function to return max integration time
     }
     else if (function == P_minIntegrationTime) {
-        //rval = wrapper.getMinimumIntegrationTime(index);
+        rval = sbapi_spectrometer_get_minimum_integration_time_micros(
+                device_id,
+                spectrometer_feature_id,
+                &error);
+        // function return in microseconds, we want to have in miliseconds
+        rval /= 1000; 
         *value = rval;
         setIntegerParam(addr, P_minIntegrationTime, *value);
     }
 
     else if (function == P_boxcarWidth) {
-        //rval = wrapper.getBoxcarWidth(index);
-        *value = rval;
-        setIntegerParam(addr, P_boxcarWidth, *value);
+        // Feature not implemented in QEPro
+        *value = 0;
+        setIntegerParam(addr, P_triggerMode, *value);
     }
     // this is only 0/1 value, should be in readInt32Digital???
+    // TODO: WOrk out what this should be. It is possible 
+    // to read an array of dark pixel IDs.
     else if (function == P_electricDark) {
         //rval = wrapper.getCorrectForElectricalDark(index);
-        *value = rval;
-        setIntegerParam(addr, P_boxcarWidth, *value);
+        //*value = rval;
+        //setIntegerParam(addr, P_electricDark, *value);
     }
 
     else if (function == P_detectorTemperature) {
-        /*
-           if(wrapper.isFeatureSupportedThermoElectric(index)){
-           ThermoElectricWrapper thermoElectric;
-           thermoElectric = wrapper.getFeatureControllerThermoElectric(index);
-           rval = thermoElectric.getDetectorTemperatureCelsius();
-         *value = rval;
-         setIntegerParam(addr, P_detectorTemperature, *value);
-         } 
-         */
+        // Feature not implemented in QEPro
+        *value = 0;
+        setIntegerParam(addr, P_triggerMode, *value);
     }
 
-
     else if (function == P_boardTemperature) {
-        /*
-           if (wrapper.isFeatureSupportedBoardTemperature(index)) {
-           BoardTemperature boardTemp;
-           boardTemp = wrapper.getFeatureControllerBoardTemperature(index);
-           rval = boardTemp.getBoardTemperatureCelsius();
-         *value = rval;
-         setIntegerParam(addr, P_boardTemperature, *value);
-         } 
-         */
+        // Feature not implemented in QEPro
+        *value = 0;
+        setIntegerParam(addr, P_triggerMode, *value);
     }
 
     else if (function == P_triggerMode) {
-        //rval = wrapper.getExternalTriggerMode(index);
+        rval = trigger_mode;
         *value = rval;
         setIntegerParam(addr, P_triggerMode, *value);
     }
 
     else if (function == P_averages) {
-        //rval = wrapper.getScansToAverage(index);
-        *value = rval;
-        setIntegerParam(addr, P_averages, *value);
+        // Feature not implemented in QEPro
+        *value = 0;
+        setIntegerParam(addr, P_triggerMode, *value);
     }
     else if (function == P_decouple) {
-        //rval = wrapper.getScansToAverage(index);
-        *value = rval;
-        setIntegerParam(addr, P_decouple, *value);
+        // Feature not implemented in QEPro
+        *value = 0;
+        setIntegerParam(addr, P_triggerMode, *value);
     }
     else if (function == P_ledIndicator) {
-        //rval = wrapper.getScansToAverage(index);
-        *value = rval;
+        *value = 0;
         setIntegerParam(addr, P_ledIndicator, *value);
     }
     else if (function == P_nonLinearity) {
-        //rval = wrapper.getScansToAverage(index);
+        rval = sbapi_nonlinearity_coeffs_get(
+                device_id,
+                nonlinearity_feature_id,
+                &error);
         *value = rval;
         setIntegerParam(addr, P_nonLinearity, *value);
     }
@@ -441,6 +334,9 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     else {
         status = asynPortDriver::readInt32(pasynUser, value); 
     }
+
+    // TODO: Add connection test and set of PV status
+    // to invalid if disconnected
 
     callParamCallbacks(addr);
 
@@ -450,12 +346,35 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     else
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d\n",
                 driverName, functionName, this->portName, *value, addr);
-    return status;
 
     return status;
 }
 
 //--------------------------------------------------------------------------------------------
+
+asynStatus drvUSBQEPro::readFloat64(asynUser *pasynUser, epicsFloat64 *value){
+    int addr;
+    int function;
+    asynStatus status = asynSuccess;
+    double rval; 
+    const char* functionName = "readFloat64";
+    int error;
+
+    function = pasynUser->reason;
+    this->getAddress(pasynUser, &addr);
+
+    // TODO: Add connection test
+    //
+    if (function == P_maxIntensity) {
+        rval = sbapi_spectrometer_get_maximum_intensity(
+                device_id,
+                spectrometer_feature_id,
+                &error);
+        *value = rval;
+        setDoubleParam(addr, P_maxIntensity, *value);
+    }
+
+}
 
 asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn ){
 
@@ -500,6 +419,7 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
 
     }
 
+    // TODO: Add spectrum readout here
 
     return status;
 }
@@ -590,6 +510,92 @@ asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d\n",
         driverName, functionName, this->portName, value, addr);
 return status;
 
+}
+
+// Test whether spectrometer is connected. If it is was previously
+// disconnected, read the various id values and store to avoid needing to 
+// read each time.
+bool test_connection() {
+    int error;
+
+    sbapi_probe_devices();
+    int number_of_devices = sbapi_get_number_of_device_ids();
+    if (number_of_devices == 0) 
+        drvUSBQEPro::connected = false;
+    else {
+        // Check if we were disconnected previously 
+        if (!drvUSBQEPro::connected) {
+            // Read device IDs
+            long * device_ids = (long *)calloc(number_of_devices, sizeof(long));
+            int number_of_device_ids = sbapi_get_device_ids(device_ids, number_of_devices);
+            // Assume only one device
+            drvUSBQEPro::device_id = device_ids[0];
+
+            // Read spectrometer feature ID
+            int num_spectrometer_features = 
+                sbapi_get_number_of_spectrometer_features(device_id, &error);
+
+            if (num_spectrometer_features > 0) {
+                long * spectrometer_feature_ids = 
+                    (long *)calloc(num_spectrometer_features, sizeof(long));
+
+                sbapi_get_spectrometer_features(
+                    device_ids[0],
+                    &error,
+                    spectrometer_feature_ids, 
+                    num_spectrometer_features);
+
+                drvUSBQEPro::spectrometer_feature_id = spectrometer_feature_ids[0];
+            }
+
+            // Read serial number feature ID
+            int num_serial_number_features = 
+                sbapi_get_number_of_serial_number_features(
+                        device_id, 
+                        &error);
+
+            if (num_serial_number_features > 0) {
+                long * serial_number_feature_ids = 
+                    (long *)calloc(
+                            num_serial_number_features, 
+                            sizeof(long));
+
+                int num_serial_number_feature_ids = 
+                    sbapi_get_serial_number_features(
+                            device_id,
+                            &error,
+                            serial_number_feature_ids, 
+                            num_serial_number_features);
+                
+                drvUSBQEPro::serial_number_feature_id = 
+                    serial_number_feature_ids[0];
+            }
+
+            // Read non-linearity coefficients feature ID
+            int num_nonlinearity_features = 
+                sbapi_get_number_of_nonlinearity_coeffs_features(
+                        device_id, 
+                        &error);
+
+            if (num_nonlinearity_features > 0) {
+                long * nonlinearity_feature_ids = 
+                    (long *)calloc(
+                            num_nonlinearity_features, 
+                            sizeof(long));
+
+                int num_nonlinearity_feature_ids = 
+                    sbapi_get_nonlinearity_coeffs_features(
+                            device_id,
+                            &error,
+                            nonlinearity_feature_ids, 
+                            num_nonlinearity_features);
+                
+                drvUSBQEPro::nonlinearity_feature_id = 
+                    nonlinearity_feature_ids[0];
+            }
+
+            drvUSBQEPro::connected = true;
+        }
 }
 
 int LIBUSB_CALL drvUSBQEPro::hotplug_callback(
