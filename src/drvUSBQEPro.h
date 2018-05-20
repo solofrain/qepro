@@ -45,6 +45,7 @@ public:
     /* These are the methods that we override from asynPortDriver */
     virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+    virtual asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
     virtual asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason);
     virtual asynStatus readFloat64Array	(asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn );	
 
@@ -83,11 +84,11 @@ protected:
 
 private:
     //Wrapper wrapper;
+    SeaBreezeAPI *api;
     epicsEventId eventId;
     static int zeroIndex;
     int index;
 
-    static bool connected;
     libusb_hotplug_callback_handle hp[2];
     static const int OOI_VENDOR_ID = 0x2457;
 
@@ -97,8 +98,8 @@ private:
     long spectrometer_feature_id;
     long nonlinearity_feature_id;
 
-    static bool connected;
-    static void test_connection();
+    bool connected;
+    void test_connection();
 
     long integration_time;
     int trigger_mode;
