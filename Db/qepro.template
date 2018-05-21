@@ -324,49 +324,53 @@ record(ao, "$(PREFIX):IntegrationTime"){
 record(bo, "$(PREFIX):IntegrationTime:Unit"){
 	field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
-        field(ZNAM, " ms")
-        field(ONAM, "sec")
-        field(PINI, "1")
-        field(PHAS, "4")
+    field(ZNAM, " ms")
+    field(ONAM, "sec")
+    field(PINI, "1")
+    field(PHAS, "4")
 	field(VAL,  "1")
 }
 
 record(ao, "$(PREFIX):IntegrationTime:Value"){
-        field(DTYP, "Raw Soft Channel")
+    field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
 	field(DRVL, "0")
 	field(DRVH, "2147483647")
-        field(PINI, "1")
-        field(PHAS, "4")
+    field(PINI, "1")
+    field(PHAS, "4")
 	field(VAL,  "5")
 }
 
 record(ao, "$(PREFIX):Laser"){
-        field(DTYP, "Raw Soft Channel")
+    field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
-        field(PINI, "1")
+    field(PINI, "1")
 	field(VAL,  "$(LASER)")
 }
 
 record(calcout, "$(PREFIX):IntegrationTime:Calcout"){
-#        field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
 	field(MDEL, "-1")
 	field(INPA, "$(PREFIX):IntegrationTime:Unit.VAL")
 	field(INPB, "$(PREFIX):IntegrationTime:Value.VAL")
-        field(CALC, "A? B*1000000:B*1000")
-#	field(VAL,  "IntegrationTime.VAL")
+    field(CALC, "A? B*1000000:B*1000")
 }
 
-##record(mbbo,  "$(PREFIX):Trigger"){
-#	field(DTYP, "Raw Soft Channel")
-#	field(ZRVL, "0")    	field(ZRST,"Continous")
-#	field(TWVL, "2")	field(TWST,"Ext Level")
-#	field(FRVL, "4")	field(FRST,"Ext Edge ")
-#	field(VAL,  "0")
-#	field(FLNK, "$(PREFIX):TriggerMode")
-#}
-#
+record(mbbo,  "$(PREFIX):TriggerMode"){
+	field(DTYP, "asynInt32")
+	field(ZRVL, "0")    	
+    field(ZRST,"Free run")
+	field(ONVL, "1")	
+    field(ONST,"Ext. level")
+	field(TWVL, "2")	
+    field(TWST,"Ext. synchronous")
+	field(THVL, "3")	
+    field(THST,"Ext. edge")
+	field(VAL,  "0")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TriggerMode")
+    #field(FLNK, "$(PREFIX):TriggerMode")
+}
+
 #record(ao,  "$(PREFIX):TriggerMode"){
 #	field(DTYP, "USBSpectrometers")
 #	field(DOL,  "$(PREFIX):TriggerMode.RVAL")

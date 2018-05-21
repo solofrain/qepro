@@ -108,20 +108,25 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
       //printf("getSpectrumThread: connected = %d\n", connected);
       if (connected) {
           //printf("getSpectrumThread: set integration time\n");
+          /*
           api->spectrometerSetIntegrationTimeMicros(
                   device_id, 
                   spectrometer_feature_id,
                   &error,
                   100000);
+                  */
           //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
           //printf("getSpectrumThread: set trigger mode\n");
+          /*
           api->spectrometerSetTriggerMode(
                   device_id, 
                   spectrometer_feature_id,
                   &error,
                   0);
+                  */
           //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
           //printf("getSpectrumThread: acquire spectrum\n");
+          // TODO: This function blocks until a new spectrum is available
           api->spectrometerGetFormattedSpectrum(
                   device_id, 
                   spectrometer_feature_id,
@@ -129,7 +134,6 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                   spectrum_buffer, 
                   num_pixels);
           //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
-
           //printf("getSpectrumThread: acquired spectrum\n");
 
       }
