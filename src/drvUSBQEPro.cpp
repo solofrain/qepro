@@ -371,8 +371,8 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     }
     else if (function == P_boxcarWidth) {
         // TODO: Investigate whether device supports boxcar averaging
-        *value = 0;
-        setIntegerParam(addr, P_triggerMode, *value);
+        getIntegerParam(P_boxcarWidth, &rval);
+        *value = rval;
     }
     // this is only 0/1 value, should be in readInt32Digital???
     else if (function == P_electricDark) {
@@ -386,14 +386,14 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
         // TODO: Investigate this more. test program shows no temperatures.
         // Feature not implemented in QEPro
         *value = 0;
-        setIntegerParam(addr, P_triggerMode, *value);
+        setIntegerParam(addr, P_detectorTemperature, *value);
     }
 
     else if (function == P_boardTemperature) {
         // TODO: Investigate this more. test program shows no temperatures.
         // Feature not implemented in QEPro
         *value = 0;
-        setIntegerParam(addr, P_triggerMode, *value);
+        setIntegerParam(addr, P_boardTemperature, *value);
     }
 
     else if (function == P_triggerMode) {
@@ -405,7 +405,7 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     else if (function == P_averages) {
         // Feature not implemented in QEPro
         *value = 0;
-        setIntegerParam(addr, P_triggerMode, *value);
+        setIntegerParam(addr, P_averages, *value);
     }
     else if (function == P_decouple) {
         // Feature not implemented in QEPro
@@ -532,8 +532,19 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
     else if (function == P_spectrum) {
         // TODO: Add locking of intermediate data to ensure consistent 
         // data set
+        int boxcar_width;
+        getIntegerParam(P_boxcarWidth, boxcar_width);
 
-        memcpy(value, spectrum_buffer, num_pixels * sizeof(double));
+        if (boxcar_width > 0) {
+            double *process_buffer;
+            process_buffer = (double *)calloc(num_pixels, sizeof(double));
+            boxcar(spectrum_buffer, process_buffer, boxcar_width);
+            memcpy(value, process_buffer, num_pixels * sizeof(double));
+            free(process_buffer);
+        }
+        else {
+            memcpy(value, spectrum_buffer, num_pixels * sizeof(double));
+        }
         *nIn = num_pixels;
         
     }
@@ -590,21 +601,13 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
         // Check if implmemented in QEPro
     }
     else if (function == P_boxcarWidth) {
-        // Check if implmemented in QEPro
+        // Not implmemented in QEPro. Handle in driver.
     }
     else if (function == P_electricDark) {
         // Check if implmemented in QEPro
-        //getIntegerParam(P_electricDark, &electricDark);
-        //wrapper.setCorrectForElectricalDark(index, electricDark);
     }
     else if (function == P_nonLinearity) {
-        getIntegerParam(P_nonLinearity, &nonLinearity);
-        //bool retval = wrapper.setCorrectForDetectorNonlinearity(index, nonLinearity);
-        //if(retval == 0){
-        //setIntegerParam(P_nonLinearity, value);
-        //return asynError;
-        //}
-
+        // Check if implmemented in QEPro
     }
     else if (function == P_triggerMode) {
         getIntegerParam(P_triggerMode, &triggerMode);
@@ -625,12 +628,10 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
     //        } else return statusError;
     //    }
 else if (function == decouple) {
-    getIntegerParam(P_decouple, &decouple);
-    //wrapper.setBoxcarWidth(index, decouple);
+        // Check if implmemented in QEPro
 }
 else if (function == ledIndicator) {
-    getIntegerParam(P_ledIndicator, &ledIndicator);
-    //wrapper.setBoxcarWidth(index, ledIndicator);
+        // Check if implmemented in QEPro
 }
 
 else {
@@ -656,7 +657,6 @@ return status;
 // read each time.
 void drvUSBQEPro::test_connection() {
     int error;
-
 
     api->probeDevices();
     int number_of_devices = api->getNumberOfDeviceIDs();
@@ -757,6 +757,43 @@ void drvUSBQEPro::test_connection() {
             printf("test_connection: leaving\n");
         }
     }
+}
+
+void drvUSBQEPro::boxcar(
+        const double *spectrum_buffer,
+        double *process_buffer,
+        int boxcar_width,
+        int num_pixels) {
+
+    int max_sum_size = 2 * boxcar_width + 1;
+    double sum;
+    double average;
+
+    // TODO: Fix algorithm to keep running total. Only need one addition and one 
+    // subtraction per calculation.
+    for (int i = 0; i < num_pixels; i++) {
+        sum = 0;
+        if (i < boxcar_width) {
+            for (int j = 0; j < i + boxcar_width; j++) 
+                sum += spectrum_buffer[j];
+            average = sum / (double) i;
+        }
+        else if (i > num_pixels - boxcar_width) {
+            for (int j = i - boxcar_width;
+                    j < num_pixels;
+                    j++)
+                sum += spectrum_buffer[j];
+            average = sum / (double) (num_pixels - i);
+        }
+        else {
+            for (int j = i - boxcar_width;
+                    j < i + boxcar_width;
+                    j++)
+                sum += spectrum_buffer[j];
+            average = sum / (double) boxcar_width;
+        }
+
+        process_buffer[i] = average;
 }
 
 int LIBUSB_CALL drvUSBQEPro::hotplug_callback(

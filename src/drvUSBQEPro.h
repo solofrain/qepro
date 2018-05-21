@@ -102,6 +102,11 @@ private:
     bool connected;
     void test_connection();
     void allocate_spectrum_buffer();
+    void boxcar(
+            const double *spectrum_buffer,
+            double *process_buffer,
+            int boxcar_width,
+            int num_pixels);
 
     unsigned long integration_time;
     int trigger_mode;
