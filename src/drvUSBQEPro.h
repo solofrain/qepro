@@ -103,6 +103,9 @@ private:
 
     long integration_time;
     int trigger_mode;
+    int num_pixels;
+
+    double *spectrum_buffer;
 
     asynStatus connectSpec();
     asynStatus disconnectSpec();

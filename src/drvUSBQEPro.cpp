@@ -246,6 +246,7 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
                 &error);
         *value = rval;
         setIntegerParam(addr, P_numberOfPixels, *value);
+        num_pixels = rval;
     }
 
     else if (function == P_numberOfDarkPixels) {
@@ -406,48 +407,59 @@ asynStatus drvUSBQEPro::readFloat64(asynUser *pasynUser, epicsFloat64 *value){
 
 asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn ){
 
-    //const char* functionName = "readFloat64Array";
+    const char* functionName = "readFloat64Array";
     asynStatus status = asynSuccess;
     int function = pasynUser->reason;
     int addr;
-    //int arraySize; 
-    //double *wavelengths;
-    //double laser;
+    int error;
+    double laser = 400e-9;
 
     this->getAddress(pasynUser, &addr);
 
     if (function == P_xAxisNm) {
-        /*
-           DoubleArray arrayX = wrapper.getWavelengths(index);
-           wavelengths = arrayX.getDoubleValues();
-           arraySize = arrayX.getLength();
+        double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
+        int num_wavelengths = api->spectrometerGetWavelengths(
+                device_id, 
+                spectrometer_feature_id, 
+                &error, 
+                wavelengths, 
+                num_pixels);
 
-           for(int i = 0; i < arraySize; i++) {
-           value[i] = wavelengths[i];
-           }
+           for(int i = 0; i < num_wavelengths; i++)
+               value[i] = wavelengths[i];
 
-        //  value = arrayX.getDoubleValues();
-         *nIn = arraySize;
-         */
+         *nIn = num_wavelengths;
     }
     else if (function == P_xAxisRs) {
-        /*
-           getDoubleParam(addr, P_laser, &laser);
-           DoubleArray arrayX = wrapper.getWavelengths(index);
-           wavelengths = arrayX.getDoubleValues();
-           arraySize = arrayX.getLength();
+        double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
+        int num_wavelengths = api->spectrometerGetWavelengths(
+                device_id, 
+                spectrometer_feature_id, 
+                &error, 
+                wavelengths, 
+                num_pixels);
 
-           for(int i = 0; i < arraySize; i++) {
-           value[i] = (1./laser - 1./wavelengths[i]) *10e7; // Raman shift in cm-1
-           }
+        for(int i = 0; i < num_wavelengths; i++)
+            value[i] = (1./laser - 1./wavelengths[i]) *10e7; // Raman shift in cm-1
 
-        // value = arrayX.getDoubleValues();
-         *nIn = arraySize;
-         */
+        *nIn = num_wavelengths;
+    }
+    else if (function == P_spectrum) {
+        // Ensure we are getting a consistent data set
+        lock();
 
+        memcpy(value, spectrum_buffer, num_pixels * sizeof(double));
+        *nIn = num_pixels;
+        
+        unlock();
     }
 
-    // TODO: Add spectrum readout here
+    if (status)
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
+                driverName, functionName, this->portName, *value, addr, (int)status);
+    else
+        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d\n",
+                driverName, functionName, this->portName, *value, addr);
 
     return status;
 }
@@ -574,7 +586,7 @@ void drvUSBQEPro::test_connection() {
             // Read spectrometer feature ID
             int num_spectrometer_features = 
                 api->getNumberOfSpectrometerFeatures(device_id, &error);
-                //sbapi_get_number_of_spectrometer_features(device_id, &error);
+            //sbapi_get_number_of_spectrometer_features(device_id, &error);
 
             if (num_spectrometer_features > 0) {
                 long * spectrometer_feature_ids = 
