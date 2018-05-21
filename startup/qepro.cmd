@@ -9,9 +9,10 @@ epicsEnvSet("PORT",   "Flame")
 epicsEnvSet("SIZE",   "3648")
 epicsEnvSet("LASER",  "478")
 
-drvUSBQEProConfigure("$(PORT)","$(SIZE)")
+drvUSBQEProConfigure("$(PORT)","$(SIZE)","$(LASER)")
 
 asynSetTraceMask("$(PORT)", -1, 0x9)
+#asynSetTraceMask("$(PORT)", -1, 0xF)
 asynSetTraceIOMask("$(PORT)", -1, 0x2)
 
 dbLoadRecords(qepro.template, "PREFIX=$(PREFIX), PORT=$(PORT), ADDR=0, TIMEOUT=1, SIZE=$(SIZE), LASER=$(LASER)")
