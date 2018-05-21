@@ -21,7 +21,7 @@ static const char *driverName="drvUSBQEPro";
 int drvUSBQEPro::zeroIndex = 0;
 //bool drvUSBQEPro::connected = false;
 
-drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints)
+drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
    : asynPortDriver(portName,
                     1, /* maxAddr */
                     (int)NUM_QEPRO_PARAMS,
@@ -30,7 +30,9 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints)
                     0, /* asynFlags.  This driver does not block and it is not multi-device, so flag is 0 */
                     1, /* Autoconnect */
                     0, /* Default priority */
-                    0) /* Default stack size*/
+                    0), /* Default stack size*/
+    m_laser(laser),
+    m_poll_time(POLL_TIME)
 {
     asynStatus status;
     const char *functionName = "drvUSBQEPro";
@@ -79,8 +81,42 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints)
         report(stdout, 1);
         return;
     }
+
+    epicsThreadCreate("drvUSBQEProThread",
+            epicsThreadPriorityMedium,
+            epicsThreadGetStackSize(epicsThreadStackMedium),
+            (EPICSTHREADFUNC)worker,
+            this);
 }
 //-----------------------------------------------------------------------------------------------------------------
+
+void drvUSBQEPro::getSpectrumThread(void *priv){
+
+    //drvUSBQEPro *ptr = (drvUSBQEPro *)priv;
+    int arrayXElements = 0;
+
+    //static const char *functionName = "getSpectrumThread";
+    //while(m_condition){
+    while(1){
+      lock();
+
+      DoubleArray da = wrapper.getSpectrum(index);
+
+      if( wrapper.isSpectrumValid(index) != FALSE && wrapper.isSaturated(index) != TRUE){
+
+         double *values = da.getDoubleValues();
+         arrayXElements = da.getLength();
+         for(int i = 0; i < arrayXElements; i++) {
+             m_dataSpectrum[i] = values[i];
+         }
+      }
+      unlock();
+
+      doCallbacksFloat64Array(m_dataSpectrum, arrayXElements, P_spectrum, 0);
+
+      epicsThreadSleep(m_poll_time);
+    }
+}
 
 asynStatus drvUSBQEPro::connectSpec(){
     asynStatus status = asynSuccess;
@@ -97,7 +133,18 @@ asynStatus drvUSBQEPro::connectSpec(){
 
     test_connection();
 
+    allocate_spectrum_buffer();
+
     return status;
+}
+
+void drvUSBQEPro::allocate_spectrum_buffer() {
+    if (connected) {
+        num_pixels = api->spectrometerGetFormattedSpectrumLength(
+                device_id,
+                spectrometer_feature_id,
+                &error);
+        spectrum_buffer = (double *)calloc(num_pixels * sizeof(double));
 }
 
 asynStatus drvUSBQEPro::registerUSBCallbacks() {
@@ -649,6 +696,8 @@ void drvUSBQEPro::test_connection() {
                 nonlinearity_feature_id = 
                     nonlinearity_feature_ids[0];
             }
+
+            allocate_spectrum_buffer();
 
             connected = true;
         }
