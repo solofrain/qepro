@@ -220,7 +220,14 @@ record(waveform, "$(PREFIX):XaxisRs_rbv"){
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisRs")
 }
 
-
+record(waveform, "$(PREFIX):Spectrum_rbv") {
+    field(DTYP, "asynFloat64ArrayIn")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Spectrum")
+    field(EGU,  "counts")
+    field(NELM, "$(SIZE)")
+    field(FTVL, "DOUBLE")
+    field(SCAN, "I/O Intr")
+}
 
 #########################################################################################
 # output records, analog
@@ -301,7 +308,7 @@ record(ao, "$(PREFIX):LEDIndicator"){
 record(ao, "$(PREFIX):IntegrationTime"){
         field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
-	field(DOL,  "$(PREFIX):IntegrationTime:Calout PP")
+	field(DOL,  "$(PREFIX):IntegrationTime:Calcout PP")
         field(OMSL, "closed_loop")
         field(LINR, "NO CONVERSION")
         field(DRVL, "8000")
@@ -341,13 +348,13 @@ record(ao, "$(PREFIX):Laser"){
 	field(VAL,  "$(LASER)")
 }
 
-record(calcout, "$(PREFIX):IntegrationTime:Calout"){
+record(calcout, "$(PREFIX):IntegrationTime:Calcout"){
 #        field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
 	field(MDEL, "-1")
 	field(INPA, "$(PREFIX):IntegrationTime:Unit.VAL")
 	field(INPB, "$(PREFIX):IntegrationTime:Value.VAL")
-        field(CALC, "A? B*1000000:B")
+        field(CALC, "A? B*1000000:B*1000")
 #	field(VAL,  "IntegrationTime.VAL")
 }
 
