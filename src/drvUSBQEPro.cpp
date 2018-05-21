@@ -82,37 +82,66 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
         return;
     }
 
+    printf("creating thread\n");
     epicsThreadCreate("drvUSBQEProThread",
             epicsThreadPriorityMedium,
             epicsThreadGetStackSize(epicsThreadStackMedium),
             (EPICSTHREADFUNC)worker,
             this);
+    printf("created thread\n");
 }
 //-----------------------------------------------------------------------------------------------------------------
 
 void drvUSBQEPro::getSpectrumThread(void *priv){
 
-    //drvUSBQEPro *ptr = (drvUSBQEPro *)priv;
-    int arrayXElements = 0;
+    int error;
 
-    //static const char *functionName = "getSpectrumThread";
-    //while(m_condition){
     while(1){
       lock();
 
-      DoubleArray da = wrapper.getSpectrum(index);
+      //printf("getSpectrumThread: device_id = 0x%lx\n", device_id);
+      //printf("getSpectrumThread: spectrometer_feature_id = 0x%lx\n", spectrometer_feature_id);
+      //printf("getSpectrumThread: num_pixels = %d\n", num_pixels);
+      //printf("getSpectrumThread: connected = %d\n", connected);
 
-      if( wrapper.isSpectrumValid(index) != FALSE && wrapper.isSaturated(index) != TRUE){
+      test_connection();
+      //printf("getSpectrumThread: connected = %d\n", connected);
+      if (connected) {
+          //printf("getSpectrumThread: set integration time\n");
+          api->spectrometerSetIntegrationTimeMicros(
+                  device_id, 
+                  spectrometer_feature_id,
+                  &error,
+                  100000);
+          //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
+          //printf("getSpectrumThread: set trigger mode\n");
+          api->spectrometerSetTriggerMode(
+                  device_id, 
+                  spectrometer_feature_id,
+                  &error,
+                  0);
+          //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
+          //printf("getSpectrumThread: acquire spectrum\n");
+          api->spectrometerGetFormattedSpectrum(
+                  device_id, 
+                  spectrometer_feature_id,
+                  &error, 
+                  spectrum_buffer, 
+                  num_pixels);
+          //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
 
-         double *values = da.getDoubleValues();
-         arrayXElements = da.getLength();
-         for(int i = 0; i < arrayXElements; i++) {
-             m_dataSpectrum[i] = values[i];
-         }
+          //printf("getSpectrumThread: acquired spectrum\n");
+
       }
+
+      //printf("getSpectrumThread: read %d values\n", count);
+
       unlock();
 
-      doCallbacksFloat64Array(m_dataSpectrum, arrayXElements, P_spectrum, 0);
+      //doCallbacksFloat64Array(m_dataSpectrum, arrayXElements, P_spectrum, 0);
+      doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
+
+      //printf("getSpectrumThread: sleeping for %f s\n", m_poll_time);
 
       epicsThreadSleep(m_poll_time);
     }
@@ -123,7 +152,7 @@ asynStatus drvUSBQEPro::connectSpec(){
     //static const char *functionName = "ConnectSpectrometer";
 
     // Set up USB hotplug callbacks
-    registerUSBCallbacks();
+    //registerUSBCallbacks();
 
     api = SeaBreezeAPI::getInstance();
 
@@ -139,12 +168,14 @@ asynStatus drvUSBQEPro::connectSpec(){
 }
 
 void drvUSBQEPro::allocate_spectrum_buffer() {
+    int error;
     if (connected) {
         num_pixels = api->spectrometerGetFormattedSpectrumLength(
                 device_id,
                 spectrometer_feature_id,
                 &error);
-        spectrum_buffer = (double *)calloc(num_pixels * sizeof(double));
+        spectrum_buffer = (double *)calloc(num_pixels, sizeof(double));
+    }
 }
 
 asynStatus drvUSBQEPro::registerUSBCallbacks() {
@@ -397,7 +428,7 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     else
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d\n",
                 driverName, functionName, this->portName, *value, addr);
-
+    
     return status;
 }
 
@@ -459,7 +490,6 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
     int function = pasynUser->reason;
     int addr;
     int error;
-    double laser = 400e-9;
 
     this->getAddress(pasynUser, &addr);
 
@@ -476,6 +506,10 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
                value[i] = wavelengths[i];
 
          *nIn = num_wavelengths;
+
+         printf("reading wavelengths\n");
+         printf("num_wavelengths = %d\n", num_wavelengths);
+
     }
     else if (function == P_xAxisRs) {
         double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
@@ -487,18 +521,17 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
                 num_pixels);
 
         for(int i = 0; i < num_wavelengths; i++)
-            value[i] = (1./laser - 1./wavelengths[i]) *10e7; // Raman shift in cm-1
+            value[i] = (1./m_laser - 1./wavelengths[i]) *10e7; // Raman shift in cm-1
 
         *nIn = num_wavelengths;
     }
     else if (function == P_spectrum) {
-        // Ensure we are getting a consistent data set
-        lock();
+        // TODO: Add locking of intermediate data to ensure consistent 
+        // data set
 
         memcpy(value, spectrum_buffer, num_pixels * sizeof(double));
         *nIn = num_pixels;
         
-        unlock();
     }
 
     if (status)
@@ -521,7 +554,8 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
     const char* functionName = "writeInt32";
     int addr;
     int error;
-    int boxcar, averages, electricDark, nonLinearity, triggerMode;
+    //int boxcar, averages, electricDark, nonLinearity, triggerMode;
+    int nonLinearity, triggerMode;
     int decouple, ledIndicator;
 
     /* Set the parameter in the parameter library. */
@@ -536,14 +570,17 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
     if (function == P_integrationTime) {
         int tmp;
         getIntegerParam(P_integrationTime, &tmp);
-        // Assume we are getting the integration time in ms
-        integration_time = tmp * 1000;
+        printf("writeInt32: tmp = %d\n", tmp);
+        // Assume we are getting the integration time in microseconds
+        integration_time = tmp;
+        printf("writeInt32: integration_time = %ld\n", integration_time);
         //sbapi_spectrometer_set_integration_time_micros(
         api->spectrometerSetIntegrationTimeMicros(
                 device_id,
                 spectrometer_feature_id,
                 &error,
                 integration_time);
+        printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
     }
     else if (function == P_averages) {
         // Check if implmemented in QEPro
@@ -616,6 +653,7 @@ return status;
 void drvUSBQEPro::test_connection() {
     int error;
 
+
     api->probeDevices();
     int number_of_devices = api->getNumberOfDeviceIDs();
     if (number_of_devices == 0) 
@@ -630,10 +668,21 @@ void drvUSBQEPro::test_connection() {
             // Assume only one device
             device_id = device_ids[0];
 
+            printf("test_connection: device ID = %ld\n", device_id);
+            printf("test_connection: opening device %ld\n", device_id);
+
+            api->openDevice(device_id, &error);
+
+            printf("test_connection: opened device %ld\n", device_id);
+            printf("test_connection: error code = %d\n", error);
+            printf("test_connection: error = %s\n", sbapi_get_error_string(error));
+
             // Read spectrometer feature ID
             int num_spectrometer_features = 
-                api->getNumberOfSpectrometerFeatures(device_id, &error);
-            //sbapi_get_number_of_spectrometer_features(device_id, &error);
+                //api->getNumberOfSpectrometerFeatures(device_id, &error);
+                sbapi_get_number_of_spectrometer_features(device_id, &error);
+
+            printf("test_connection: number of spectrometer features = %d\n", num_spectrometer_features);
 
             if (num_spectrometer_features > 0) {
                 long * spectrometer_feature_ids = 
@@ -648,6 +697,7 @@ void drvUSBQEPro::test_connection() {
 
                 spectrometer_feature_id = spectrometer_feature_ids[0];
             }
+            printf("test_connection: spectrometer feature id = 0x%lx\n", spectrometer_feature_id);
 
             // Read serial number feature ID
             int num_serial_number_features = 
@@ -700,6 +750,7 @@ void drvUSBQEPro::test_connection() {
             allocate_spectrum_buffer();
 
             connected = true;
+            printf("test_connection: leaving\n");
         }
     }
 }
@@ -747,8 +798,8 @@ extern "C" {
     /** EPICS iocsh callable function to call constructor for the drvUSBQEPro class.
      *   * \param[in] portName The name of the asyn port driver to be created.
      *     * \param[in] maxPoints The maximum  number of points in the volt and time arrays */
-    int drvUSBQEProConfigure(const char *portName, int maxPoints) {
-        new drvUSBQEPro(portName, maxPoints);
+    int drvUSBQEProConfigure(const char *portName, int maxPoints, double laser) {
+        new drvUSBQEPro(portName, maxPoints, laser);
         return(asynSuccess);
     }
 
@@ -757,15 +808,17 @@ extern "C" {
 
     static const iocshArg initArg0 = { "portName", iocshArgString};
     static const iocshArg initArg1 = { "max points",iocshArgInt};
+    static const iocshArg initArg2 = { "laser",iocshArgDouble};
     static const iocshArg * const initArgs[] = { 
         &initArg0,
-        &initArg1 
+        &initArg1,
+        &initArg2
     };
 
-    static const iocshFuncDef initFuncDef = {"drvUSBQEProConfigure",2,initArgs};
+    static const iocshFuncDef initFuncDef = {"drvUSBQEProConfigure",3,initArgs};
 
     static void initCallFunc(const iocshArgBuf *args) { 
-        drvUSBQEProConfigure(args[0].sval, args[1].ival);
+        drvUSBQEProConfigure(args[0].sval, args[1].ival, args[2].dval);
     }
 
     void drvUSBQEProRegister(void) {

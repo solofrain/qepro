@@ -33,14 +33,14 @@
 #define QEProXAxisNm		"XAxisNm"		/* asynFloat64Array ro 22 */
 #define QEProXAxisRs		"XAxisRs"		/* asynFloat64Array ro 23 */
 #define QEProSpectrum		"Spectrum"		/* asynFloat64Array ro 24 */
-#define QEProLaser		"Laser"			/* asynFloat64      ro 25 */
+#define QEProLaser		    "Laser"			/* asynFloat64      ro 25 */
 
-
+#define POLL_TIME 1.0
 
 class drvUSBQEPro : public asynPortDriver {
 
 public:
-    drvUSBQEPro(const char *portName, int maxArraySize);
+    drvUSBQEPro(const char *portName, int maxArraySize, double laser);
 
     /* These are the methods that we override from asynPortDriver */
     virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
@@ -49,6 +49,7 @@ public:
     virtual asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason);
     virtual asynStatus readFloat64Array	(asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn );	
 
+    virtual void getSpectrumThread(void *);
     /* Thread function to read spectra from device */
     void getSpectrumTask(void);
 
@@ -100,12 +101,16 @@ private:
 
     bool connected;
     void test_connection();
+    void allocate_spectrum_buffer();
 
-    long integration_time;
+    unsigned long integration_time;
     int trigger_mode;
     int num_pixels;
 
     double *spectrum_buffer;
+
+    double m_laser;
+    double m_poll_time;
 
     asynStatus connectSpec();
     asynStatus disconnectSpec();
@@ -125,3 +130,7 @@ private:
 
 };
 
+static void worker(void *pPvt) {
+    drvUSBQEPro *ptr = (drvUSBQEPro *)pPvt;
+    ptr->getSpectrumThread(ptr);
+}
