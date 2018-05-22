@@ -68,6 +68,14 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     createParam( QEProSpectrum,            asynParamFloat64Array, &P_spectrum);            // 24 
     createParam( QEProLaser,               asynParamFloat64,      &P_laser);               // 25 
 
+    // Set up initial USB context. Must be done before starting thread,
+    // or attempting comms to device.
+    int rc = 0;
+    context = NULL;
+    printf("drvUSBQEProThread: init usb\n");
+    rc = libusb_init(&context);
+    printf("drvUSBQEProThread: inited usb\n");
+    assert(rc == 0);
 
     status = connectSpec();
     if (status) {
@@ -89,6 +97,7 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
             (EPICSTHREADFUNC)worker,
             this);
     printf("created thread\n");
+    
 }
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -185,12 +194,12 @@ void drvUSBQEPro::deallocate_spectrum_buffer() {
 
 asynStatus drvUSBQEPro::registerUSBCallbacks() {
     int rc;
-    rc = libusb_init(NULL);
-    if (rc < 0) {
-        printf("Failed to initialise libusb: %s\n", 
-                libusb_error_name(rc));
-        return asynError;
-    }
+    //rc = libusb_init(NULL);
+    //if (rc < 0) {
+        //printf("Failed to initialise libusb: %s\n", 
+                //libusb_error_name(rc));
+        //return asynError;
+    //}
 
     rc = libusb_hotplug_register_callback(
             NULL, 
@@ -677,13 +686,14 @@ void drvUSBQEPro::test_connection() {
 
     // Check the USB device list to see if the Ocean Optics spectrometer
     // is on the bus
-    libusb_context *context = NULL;
-    libusb_device **list = NULL;
+    //libusb_context *context = NULL;
+    //context = NULL;
+    libusb_device **list;
     int rc = 0;
     ssize_t count = 0;
 
-    rc = libusb_init(&context);
-    assert(rc == 0);
+    //rc = libusb_init(&context);
+    //assert(rc == 0);
 
     count = libusb_get_device_list(context, &list);
     assert(count > 0);
@@ -701,6 +711,7 @@ void drvUSBQEPro::test_connection() {
             found_ooi_spectrometer = true;
         }
     }
+    libusb_free_device_list(list, 1);
 
     printf("test_connection: found_ooi_spectrometer = %d\n", found_ooi_spectrometer);
 
