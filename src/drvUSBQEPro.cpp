@@ -704,17 +704,18 @@ void drvUSBQEPro::test_connection() {
 
     printf("test_connection: found_ooi_spectrometer = %d\n", found_ooi_spectrometer);
 
-    if (found_ooi_spectrometer) {
+    // Restart the connection to the spectrometer
+    if (found_ooi_spectrometer && !connected) {
         if (api) {
-            printf("test_connection: shutting down api\n");
+            //printf("test_connection: shutting down api\n");
             api->shutdown();
         }
-        printf("test_connection: initialising API\n");
+        //printf("test_connection: initialising API\n");
         api = SeaBreezeAPI::getInstance();
-        printf("test_connection: initialised API\n");
-        printf("test_connection: probing devices API\n");
+        //printf("test_connection: initialised API\n");
+        //printf("test_connection: probing devices API\n");
         api->probeDevices();
-        printf("test_connection: probed devices API\n");
+        //printf("test_connection: probed devices API\n");
     }
 
     if (!found_ooi_spectrometer) {
