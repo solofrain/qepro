@@ -72,9 +72,8 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     // or attempting comms to device.
     int rc = 0;
     context = NULL;
-    printf("drvUSBQEProThread: init usb\n");
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "drvUSBQEPro: init usb\n");
     rc = libusb_init(&context);
-    printf("drvUSBQEProThread: inited usb\n");
     assert(rc == 0);
 
     status = connectSpec();
@@ -90,14 +89,14 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
         return;
     }
 
-    printf("creating thread\n");
+    asynPrint(pasynUserSelf, 
+            ASYN_TRACE_FLOW, 
+            "drvUSBQEPro: create spectrum readout thread\n");
     epicsThreadCreate("drvUSBQEProThread",
             epicsThreadPriorityMedium,
             epicsThreadGetStackSize(epicsThreadStackMedium),
             (EPICSTHREADFUNC)worker,
             this);
-    printf("created thread\n");
-    
 }
 //-----------------------------------------------------------------------------------------------------------------
 
@@ -107,34 +106,25 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
 
     while(1){
 
-      //printf("getSpectrumThread: device_id = 0x%lx\n", device_id);
-      //printf("getSpectrumThread: spectrometer_feature_id = 0x%lx\n", spectrometer_feature_id);
-      //printf("getSpectrumThread: num_pixels = %d\n", num_pixels);
-      //printf("getSpectrumThread: connected = %d\n", connected);
+        asynPrint(pasynUserSelf, 
+                ASYN_TRACE_FLOW, 
+                "getSpectrumThread: device_id = 0x%lx\n",
+                device_id);
+        asynPrint(pasynUserSelf, 
+                ASYN_TRACE_FLOW, 
+                "getSpectrumThread: spectrometer_feature_id = 0x%lx\n",
+                spectrometer_feature_id);
+        asynPrint(pasynUserSelf, 
+                ASYN_TRACE_FLOW, 
+                "getSpectrumThread: num_pixels = %d\n",
+                num_pixels);
 
       test_connection();
-      //printf("getSpectrumThread: connected = %d\n", connected);
       if (connected) {
           lock();
-          //printf("getSpectrumThread: set integration time\n");
-          /*
-          api->spectrometerSetIntegrationTimeMicros(
-                  device_id, 
-                  spectrometer_feature_id,
-                  &error,
-                  100000);
-                  */
-          //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
-          //printf("getSpectrumThread: set trigger mode\n");
-          /*
-          api->spectrometerSetTriggerMode(
-                  device_id, 
-                  spectrometer_feature_id,
-                  &error,
-                  0);
-                  */
-          //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
-          printf("getSpectrumThread: acquire spectrum\n");
+          asynPrint(pasynUserSelf, 
+                  ASYN_TRACE_FLOW, 
+                  "getSpectrumThread: acquiring spectrum\n");
           // TODO: This function blocks until a new spectrum is available
           api->spectrometerGetFormattedSpectrum(
                   device_id, 
@@ -142,19 +132,15 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                   &error, 
                   spectrum_buffer, 
                   num_pixels);
-          //printf("getSpectrumThread: error code %d, [%s]\n", error, sbapi_get_error_string(error));
-          //printf("getSpectrumThread: acquired spectrum\n");
-
-
-          //printf("getSpectrumThread: read %d values\n", count);
+          asynPrint(pasynUserSelf, 
+                  ASYN_TRACE_FLOW, 
+                  "getSpectrumThread: acquired spectrum. Response code = %d [%s]\n",
+                  error,
+                  sbapi_get_error_string(error));
 
           unlock();
 
-          //doCallbacksFloat64Array(m_dataSpectrum, arrayXElements, P_spectrum, 0);
           doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
-
-          //printf("getSpectrumThread: sleeping for %f s\n", m_poll_time);
-
       }
       epicsThreadSleep(m_poll_time);
     }
@@ -165,11 +151,7 @@ asynStatus drvUSBQEPro::connectSpec(){
     // Set up USB hotplug callbacks
     //registerUSBCallbacks();
 
-    //api = SeaBreezeAPI::getInstance();
-
     test_connection();
-
-    //allocate_spectrum_buffer();
 
     return status;
 }
@@ -194,13 +176,6 @@ void drvUSBQEPro::deallocate_spectrum_buffer() {
 
 asynStatus drvUSBQEPro::registerUSBCallbacks() {
     int rc;
-    //rc = libusb_init(NULL);
-    //if (rc < 0) {
-        //printf("Failed to initialise libusb: %s\n", 
-                //libusb_error_name(rc));
-        //return asynError;
-    //}
-
     rc = libusb_hotplug_register_callback(
             NULL, 
             LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED,
@@ -532,9 +507,13 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
 
             *nIn = num_wavelengths;
 
-            printf("reading wavelengths\n");
-            printf("num_wavelengths = %d\n", num_wavelengths);
-
+            asynPrint(pasynUser, 
+                    ASYN_TRACE_FLOW, 
+                    "readFloat64Array: reading wavelengths\n");
+            asynPrint(pasynUser, 
+                    ASYN_TRACE_FLOW, 
+                    "readFloat64Array: num_wavelengths = %d\n",
+                    num_wavelengths);
         }
         else if (function == P_xAxisRs) {
             double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
@@ -705,28 +684,24 @@ void drvUSBQEPro::test_connection() {
         rc = libusb_get_device_descriptor(device, &desc);
         assert(rc == 0);
 
-        printf("Vendor:Device = %04x:%04x\n", desc.idVendor, desc.idProduct);
         if (desc.idVendor == drvUSBQEPro::OOI_VENDOR_ID) {
-            printf("test_connection: found OOI spectrometer\n");
             found_ooi_spectrometer = true;
         }
     }
     libusb_free_device_list(list, 1);
 
-    printf("test_connection: found_ooi_spectrometer = %d\n", found_ooi_spectrometer);
+    asynPrint(pasynUserSelf, 
+            ASYN_TRACE_FLOW, 
+            "test_connection: found_ooi_spectrometer = %d\n",
+            found_ooi_spectrometer);
 
     // Restart the connection to the spectrometer
     if (found_ooi_spectrometer && !connected) {
         if (api) {
-            //printf("test_connection: shutting down api\n");
             api->shutdown();
         }
-        //printf("test_connection: initialising API\n");
         api = SeaBreezeAPI::getInstance();
-        //printf("test_connection: initialised API\n");
-        //printf("test_connection: probing devices API\n");
         api->probeDevices();
-        //printf("test_connection: probed devices API\n");
     }
 
     if (!found_ooi_spectrometer) {
@@ -738,28 +713,40 @@ void drvUSBQEPro::test_connection() {
         if (!connected) {
             // Read device IDs
             int number_of_devices = api->getNumberOfDeviceIDs();
-            printf("test_connection: number of devices = %d\n", number_of_devices);
+            asynPrint(pasynUserSelf, 
+                    ASYN_TRACE_FLOW, 
+                    "test_connection: number of Ocean Optics devices = %d\n",
+                    number_of_devices);
+
             long * device_ids = (long *)calloc(number_of_devices, sizeof(long));
             //sbapi_get_device_ids(device_ids, number_of_devices);
             api->getDeviceIDs(device_ids, number_of_devices);
             // Assume only one device
             device_id = device_ids[0];
 
-            printf("test_connection: device ID = %ld\n", device_id);
-            printf("test_connection: opening device %ld\n", device_id);
+            asynPrint(pasynUserSelf, 
+                    ASYN_TRACE_FLOW, 
+                    "test_connection: device ID = %ld\n",
+                    device_id);
 
             api->openDevice(device_id, &error);
 
-            printf("test_connection: opened device %ld\n", device_id);
-            printf("test_connection: error code = %d\n", error);
-            printf("test_connection: error = %s\n", sbapi_get_error_string(error));
+            asynPrint(pasynUserSelf, 
+                    ASYN_TRACE_FLOW, 
+                    "test_connection: opened device ID = %ld. Code = %d [%s]\n",
+                    device_id,
+                    error,
+                    sbapi_get_error_string(error));
 
             // Read spectrometer feature ID
             int num_spectrometer_features = 
-                //api->getNumberOfSpectrometerFeatures(device_id, &error);
-                sbapi_get_number_of_spectrometer_features(device_id, &error);
+                api->getNumberOfSpectrometerFeatures(device_id, &error);
+                //sbapi_get_number_of_spectrometer_features(device_id, &error);
 
-            printf("test_connection: number of spectrometer features = %d\n", num_spectrometer_features);
+            asynPrint(pasynUserSelf, 
+                    ASYN_TRACE_FLOW, 
+                    "test_connection: number of spectrometer features = %d\n",
+                    num_spectrometer_features);
 
             if (num_spectrometer_features > 0) {
                 long * spectrometer_feature_ids = 
@@ -774,7 +761,10 @@ void drvUSBQEPro::test_connection() {
 
                 spectrometer_feature_id = spectrometer_feature_ids[0];
             }
-            printf("test_connection: spectrometer feature id = 0x%lx\n", spectrometer_feature_id);
+            asynPrint(pasynUserSelf, 
+                    ASYN_TRACE_FLOW, 
+                    "test_connection: spectrometer feature id = 0x%lx\n", 
+                    spectrometer_feature_id);
 
             // Read serial number feature ID
             int num_serial_number_features = 
@@ -825,7 +815,6 @@ void drvUSBQEPro::test_connection() {
             }
             connected = true;
             allocate_spectrum_buffer();
-            printf("test_connection: leaving\n");
         }
     }
 }
@@ -879,9 +868,7 @@ int LIBUSB_CALL drvUSBQEPro::hotplug_callback(
     //(void)user_data;
 
     printf ("Device attached\n");
-    //printf ("Device connected = %d\n", drvUSBQEPro::connected);
     //drvUSBQEPro::connected = true;
-    //printf ("Device connected = %d\n", drvUSBQEPro::connected);
 
     return 0;
 }
@@ -898,9 +885,7 @@ int LIBUSB_CALL drvUSBQEPro::hotplug_callback_detach(
     //(void)user_data;
 
     printf ("Device detached\n");
-    //printf ("Device connected = %d\n", drvUSBQEPro::connected);
     //drvUSBQEPro::connected = false;
-    //printf ("Device connected = %d\n", drvUSBQEPro::connected);
 
     return 0;
 }
