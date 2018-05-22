@@ -19,9 +19,9 @@
   <widget type="rectangle" version="2.0.0">
     <name>Rectangle_1</name>
     <x>10</x>
-    <y>140</y>
+    <y>130</y>
     <width>330</width>
-    <height>110</height>
+    <height>180</height>
     <line_width>0</line_width>
     <background_color>
       <color red="232" green="232" blue="232">
@@ -140,7 +140,7 @@
     <x>510</x>
     <y>70</y>
     <width>353</width>
-    <height>28</height>
+    <height>27</height>
     <font>
       <font name="LARGE-MONO-BOLD-ITALIC" family="Source Code Pro" style="BOLD_ITALIC" size="21.0">
       </font>
@@ -980,7 +980,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
       </tab>
     </tabs>
     <x>10</x>
-    <y>270</y>
+    <y>310</y>
     <width>332</width>
     <height>630</height>
     <background_color>
@@ -1012,64 +1012,18 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
     <actions>
     </actions>
   </widget>
-  <widget type="label" version="2.0.0">
-    <name>Text Update_1</name>
-    <text>ready to start</text>
-    <x>130</x>
-    <y>148</y>
-    <width>200</width>
-    <height>25</height>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
-      </color>
-    </background_color>
-    <transparent>false</transparent>
-    <horizontal_alignment>1</horizontal_alignment>
-    <vertical_alignment>1</vertical_alignment>
-    <wrap_words>false</wrap_words>
-    <actions>
-    </actions>
-    <scripts>
-      <script file="EmbeddedPy">
-        <text><![CDATA[# Embedded python script
-from org.csstudio.display.builder.runtime.script import PVUtil
-# widget.setPropertyValue("text", PVUtil.getString(pvs[0]))
-
-val = PVUtil.getDouble(pvs[0])
-
-if val == 0:
-   widget.setPropertyValue("text", "Stop")
-elif val == 1:
-   widget.setPropertyValue("text", "Acquiring")
-elif val == 2:
-   widget.setPropertyValue("text", "Single Shot")
-elif val == 3:
-   widget.setPropertyValue("text", "Not Connected")
-else:
-   widget.setPropertyValue("text", "Undefined Error")
-]]></text>
-        <pv_name>$(PREFIX):Action</pv_name>
-      </script>
-    </scripts>
-    <tooltip>$(pv_name)
-$(pv_value)</tooltip>
-  </widget>
   <widget type="action_button" version="3.0.0">
     <name>Action Button_2</name>
     <actions>
       <action type="write_pv">
-        <pv_name>$(PREFIX):Action</pv_name>
+        <pv_name>$(PREFIX):AcqCtl</pv_name>
         <value>0</value>
         <description>Stop</description>
       </action>
     </actions>
     <text>Stop</text>
-    <x>270</x>
-    <y>190</y>
+    <x>240</x>
+    <y>220</y>
     <width>60</width>
     <height>25</height>
     <foreground_color>
@@ -1092,8 +1046,8 @@ $(pv_value)</tooltip>
       </action>
     </actions>
     <text>Single</text>
-    <x>130</x>
-    <y>190</y>
+    <x>30</x>
+    <y>245</y>
     <width>60</width>
     <height>25</height>
     <foreground_color>
@@ -1110,14 +1064,14 @@ $(pv_value)</tooltip>
     <name>Action Button_1</name>
     <actions execute_as_one="true">
       <action type="write_pv">
-        <pv_name>$(PREFIX):Action</pv_name>
+        <pv_name>$(PREFIX):AcqCtl</pv_name>
         <value>1</value>
         <description>Start</description>
       </action>
     </actions>
     <text>Start</text>
-    <x>200</x>
-    <y>190</y>
+    <x>240</x>
+    <y>180</y>
     <width>60</width>
     <height>25</height>
     <foreground_color>
@@ -1134,7 +1088,7 @@ $(pv_value)</tooltip>
     <name>Progress Bar</name>
     <pv_name>$(PREFIX):ProgressBar</pv_name>
     <x>20</x>
-    <y>221</y>
+    <y>290</y>
     <width>310</width>
     <height>13</height>
     <fill_color>
@@ -1146,7 +1100,7 @@ $(pv_value)</tooltip>
     <name>Label_14</name>
     <text>Status:</text>
     <x>20</x>
-    <y>148</y>
+    <y>140</y>
     <width>51</width>
     <height>21</height>
     <font>
@@ -1171,7 +1125,7 @@ $(pv_value)</tooltip>
     <name>Label_16</name>
     <text>Acquisition:</text>
     <x>20</x>
-    <y>190</y>
+    <y>180</y>
     <width>85</width>
     <height>21</height>
     <font>
@@ -1205,5 +1159,40 @@ $(pv_value)</tooltip>
         <editable>true</editable>
       </column>
     </columns>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>Text Update_13</name>
+    <pv_name>$(PREFIX):Connection_rbv</pv_name>
+    <x>130</x>
+    <y>142</y>
+    <width>131</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <wrap_words>false</wrap_words>
+    <actions>
+    </actions>
+  </widget>
+  <widget type="radio" version="2.0.0">
+    <name>Radio Button</name>
+    <pv_name>$(PREFIX):AcqMode</pv_name>
+    <x>130</x>
+    <y>180</y>
+    <height>83</height>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+      <item>Item 2</item>
+    </items>
   </widget>
 </display>

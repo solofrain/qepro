@@ -58,26 +58,27 @@ record(stringin, "$(PREFIX):SerialNumber_rbv"){
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
         field(PINI, "1")
+        field(SCAN, "1 second")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))SerialNumber")
 ##	field(SCAN, "I/O Intr")
 }
 
 record(ai, "$(PREFIX):NumberOfPixels_rbv"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfPixels")
-##	field(SCAN, "I/O Intr")
+    field(PINI, "1")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfPixels")
+	field(SCAN, "I/O Intr")
 }
 
 record(ai, "$(PREFIX):NumberOfDarkPixels_rbv"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfDarkPixels")
-##	field(SCAN, "I/O Intr")
+    field(PINI, "1")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfDarkPixels")
+	field(SCAN, "I/O Intr")
 }
 
 record(ai, "$(PREFIX):IntegrationTime_rbv"){
@@ -295,35 +296,35 @@ record(ao, "$(PREFIX):Decouple"){
 }
 
 record(ao, "$(PREFIX):LEDIndicator"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
 	field(VAL, "0")
-        field(DRVL, "0")
-        field(PINI, "1")
-        field(DRVH, "20")
-        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LEDIndicator")
-        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
+    field(DRVL, "0")
+    field(PINI, "1")
+    field(DRVH, "20")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LEDIndicator")
+    field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
 }
 
 
 record(ao, "$(PREFIX):IntegrationTime"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
 	field(DOL,  "$(PREFIX):IntegrationTime:Calcout PP")
-        field(OMSL, "closed_loop")
-        field(LINR, "NO CONVERSION")
-        field(DRVL, "8000")
-        field(DRVH, "2147483647")
-        field(LOPR, "8000")
-        field(HOPR, "2147483647")
-        field(PINI, "1")
-        field(PHAS, "5")
-        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))IntegrationTime")
-        field(FLNK, "$(PREFIX):IntegrationTime_rbv")
+    field(OMSL, "closed_loop")
+    field(LINR, "NO CONVERSION")
+    field(DRVL, "8000")
+    field(DRVH, "2147483647")
+    field(LOPR, "8000")
+    field(HOPR, "2147483647")
+    field(PINI, "1")
+    field(PHAS, "5")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))IntegrationTime")
+    field(FLNK, "$(PREFIX):IntegrationTime_rbv")
 }
 
 record(bo, "$(PREFIX):IntegrationTime:Unit"){
-	field(DTYP, "Raw Soft Channel")
-	field(SCAN, "Passive")
+    field(DTYP, "Raw Soft Channel")
+    field(SCAN, "Passive")
     field(ZNAM, " ms")
     field(ONAM, "sec")
     field(PINI, "1")
@@ -339,6 +340,8 @@ record(ao, "$(PREFIX):IntegrationTime:Value"){
     field(PINI, "1")
     field(PHAS, "4")
 	field(VAL,  "5")
+
+    #info(autosaveFields, "VAL")
 }
 
 record(ao, "$(PREFIX):Laser"){
@@ -368,61 +371,47 @@ record(mbbo,  "$(PREFIX):TriggerMode"){
     field(THST,"Ext. edge")
 	field(VAL,  "0")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TriggerMode")
-    #field(FLNK, "$(PREFIX):TriggerMode")
+    field(FLNK, "$(PREFIX):TriggerMode")
 }
 
-#record(ao,  "$(PREFIX):TriggerMode"){
-#	field(DTYP, "USBSpectrometers")
-#	field(DOL,  "$(PREFIX):TriggerMode.RVAL")
-#	field(OMSL, "closed_loop")
-#	field(VAL,  "0")
-#	field(OUT,  "@setTriggerMode")
-#	field(FLNK, "$(PREFIX):TriggerMode_rbv")
-#}
-#
 ####################################################################################################################
 ## records for controling device
 #
-#record(bi, "$(PREFIX):Connection_rbv"){
-#        field(DTYP, "USBSpectrometers")
+record(bi, "$(PREFIX):Connection_rbv"){
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "0")
-#	field(ZNAM, "NOT CONNECTED")
-#	field(ONAM, "CONNECTED")
-##	field(ZSV,  "MAJOR")
-#        field(PHAS, "0")
-#        field(PINI, "1")
-#        field(INP,  "@initDevice 1")
-#}
-#
-#
-#record(ao, "$(PREFIX):Action")
-#{
-#        field(DTYP, "Raw Soft Channel")
-#	field(SCAN, "Passive")
-#	field(DRVL, "0")
-#	field(DRVH, "2")
-#        field(PINI, "1")
-#        field(PHAS, "7")
-#	field(VAL,  "0")
-#}
-#
-#
-#record(aai, "$(PREFIX):Spectrum_rbv")
-#{
-#        field(DTYP, "USBSpectrometers")
-#        field(INP,  "@getSpectrum")
-#        field(EGU,  "Counts")
-#	field(NELM, "2048")
-#	field(FTVL, "DOUBLE")
-#        field(PINI, "1")
-#        field(PHAS, "8")
-#	field(SDIS, "$(PREFIX):Action")
-#	field(DISV, "0")
-#	field(SCAN, "I/O Intr")
-#	field(FLNK, "$(PREFIX):IsSingleShot.PROC")
-#}
-#
+    field(ZNAM, "Not connected")
+    field(ONAM, "Connected")
+	field(ZSV,  "MAJOR")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Connected")
+}
+
+
+record(mbbo, "$(PREFIX):AcqMode")
+{
+    field(DTYP, "asynInt32")
+	field(SCAN, "Passive")
+    field(ZRVL, "0")
+    field(ZRST, "Off")
+    field(ONVL, "1")
+    field(ONST, "Single")
+    field(TWVL, "2")
+    field(TWST, "Continuous")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqMode")
+}
+
+record(bo, "$(PREFIX):AcqCtl")
+{
+    field(DTYP, "asynInt32")
+	field(SCAN, "Passive")
+    field(ZRST, "Stop")
+    field(ONST, "Start")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqCtl")
+}
+
+
 #record(calcout, "$(PREFIX):IsSingleShot")
 #{
 #	field(SCAN, "Passive")

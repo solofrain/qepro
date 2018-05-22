@@ -41,32 +41,35 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     connected = false;
 
     eventId = epicsEventCreate(epicsEventEmpty);
-    createParam( QEProNumSpecs,            asynParamInt32,        &P_numSpecs);		  //  0 
-    createParam( QEProId,                  asynParamInt32,        &P_nrBoard);		  //  1
-    createParam( QEProName,                asynParamOctet,        &P_name);		  //  2
-    createParam( QEProFirmwareVersion,     asynParamOctet,        &P_firmwareVersion);	  //  3
-    createParam( QEProFirmwareModel,       asynParamOctet,        &P_firmwareModel);       //  4  
-    createParam( QEProSerialNumber,        asynParamOctet,        &P_serialNumber);	  //  5
-    createParam( QEProNumberOfPixels,      asynParamInt32,        &P_numberOfPixels);	  //  6
-    createParam( QEProNumberOfDarkPixels,  asynParamInt32,        &P_numberOfDarkPixels);  //  7
-    createParam( QEProIntegrationTime,     asynParamInt32,        &P_integrationTime); 	  //  8
-    createParam( QEProMaxIntegrationTime,  asynParamInt32,        &P_maxIntegrationTime);  //  9
-    createParam( QEProMinIntegrationTime,  asynParamInt32,        &P_minIntegrationTime);  // 10
-    createParam( QEProMaxIntensity,  	  asynParamFloat64,      &P_maxIntensity);        // 11
-    createParam( QEProBoxcarWidth,  	  asynParamInt32,        &P_boxcarWidth);         // 12
-    createParam( QEProElectricDark,  	  asynParamInt32,        &P_electricDark);        // 13
-    createParam( QEProDetectorTemperature, asynParamInt32,        &P_detectorTemperature); // 14
-    createParam( QEProBoardTemperature,    asynParamInt32,        &P_boardTemperature);    // 15
-    createParam( QEProTempSetPoint,        asynParamInt32,        &P_tempSetPoint);        // 16
-    createParam( QEProTriggerMode,         asynParamInt32,        &P_triggerMode);         // 17
-    createParam( QEProNonLinearity,	  asynParamInt32,        &P_nonLinearity);        // 18
-    createParam( QEProDecouple,            asynParamInt32,        &P_decouple);            // 19
-    createParam( QEProLEDIndicator,        asynParamInt32,        &P_ledIndicator);        // 20
-    createParam( QEProAverages,            asynParamInt32,        &P_averages);            // 21  
-    createParam( QEProXAxisNm,             asynParamFloat64Array, &P_xAxisNm);             // 22
-    createParam( QEProXAxisRs,             asynParamFloat64Array, &P_xAxisRs);             // 23
-    createParam( QEProSpectrum,            asynParamFloat64Array, &P_spectrum);            // 24 
-    createParam( QEProLaser,               asynParamFloat64,      &P_laser);               // 25 
+    createParam( QEProNumSpecs,             asynParamInt32,         &P_numSpecs);		    //  0 
+    createParam( QEProId,                   asynParamInt32,         &P_nrBoard);		    //  1
+    createParam( QEProName,                 asynParamOctet,         &P_name);		        //  2
+    createParam( QEProFirmwareVersion,      asynParamOctet,         &P_firmwareVersion);    //  3
+    createParam( QEProFirmwareModel,        asynParamOctet,         &P_firmwareModel);      //  4  
+    createParam( QEProSerialNumber,         asynParamOctet,         &P_serialNumber);	    //  5
+    createParam( QEProNumberOfPixels,       asynParamInt32,         &P_numberOfPixels);	    //  6
+    createParam( QEProNumberOfDarkPixels,   asynParamInt32,         &P_numberOfDarkPixels); //  7
+    createParam( QEProIntegrationTime,      asynParamInt32,         &P_integrationTime);    //  8
+    createParam( QEProMaxIntegrationTime,   asynParamInt32,         &P_maxIntegrationTime); //  9
+    createParam( QEProMinIntegrationTime,   asynParamInt32,         &P_minIntegrationTime); // 10
+    createParam( QEProMaxIntensity,  	    asynParamFloat64,       &P_maxIntensity);       // 11
+    createParam( QEProBoxcarWidth,  	    asynParamInt32,         &P_boxcarWidth);        // 12
+    createParam( QEProElectricDark,  	    asynParamInt32,         &P_electricDark);       // 13
+    createParam( QEProDetectorTemperature,  asynParamInt32,         &P_detectorTemperature);// 14
+    createParam( QEProBoardTemperature,     asynParamInt32,         &P_boardTemperature);   // 15
+    createParam( QEProTempSetPoint,         asynParamInt32,         &P_tempSetPoint);       // 16
+    createParam( QEProTriggerMode,          asynParamInt32,         &P_triggerMode);        // 17
+    createParam( QEProNonLinearity,	        asynParamInt32,         &P_nonLinearity);       // 18
+    createParam( QEProDecouple,             asynParamInt32,         &P_decouple);           // 19
+    createParam( QEProLEDIndicator,         asynParamInt32,         &P_ledIndicator);       // 20
+    createParam( QEProAverages,             asynParamInt32,         &P_averages);           // 21  
+    createParam( QEProXAxisNm,              asynParamFloat64Array,  &P_xAxisNm);            // 22
+    createParam( QEProXAxisRs,              asynParamFloat64Array,  &P_xAxisRs);            // 23
+    createParam( QEProSpectrum,             asynParamFloat64Array,  &P_spectrum);           // 24 
+    createParam( QEProLaser,                asynParamFloat64,       &P_laser);              // 25 
+    createParam( QEProConnected,            asynParamInt32,         &P_connected);          // 26
+    createParam( QEProAcqMode,              asynParamInt32,         &P_acqMode);            // 27
+    createParam( QEProAcqCtl,               asynParamInt32,         &P_acqCtl);             // 28
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -103,9 +106,18 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
 void drvUSBQEPro::getSpectrumThread(void *priv){
 
     int error;
+    int acq_mode;
+    int run;
 
     while(1){
 
+        getIntegerParam(P_acqMode, &acq_mode);
+        getIntegerParam(P_acqCtl, &run);
+
+        asynPrint(pasynUserSelf, 
+                ASYN_TRACE_FLOW, 
+                "getSpectrumThread: acquisition mode = %d\n",
+                acq_mode);
         asynPrint(pasynUserSelf, 
                 ASYN_TRACE_FLOW, 
                 "getSpectrumThread: device_id = 0x%lx\n",
@@ -119,30 +131,41 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                 "getSpectrumThread: num_pixels = %d\n",
                 num_pixels);
 
-      test_connection();
-      if (connected) {
-          lock();
-          asynPrint(pasynUserSelf, 
-                  ASYN_TRACE_FLOW, 
-                  "getSpectrumThread: acquiring spectrum\n");
-          // TODO: This function blocks until a new spectrum is available
-          api->spectrometerGetFormattedSpectrum(
-                  device_id, 
-                  spectrometer_feature_id,
-                  &error, 
-                  spectrum_buffer, 
-                  num_pixels);
-          asynPrint(pasynUserSelf, 
-                  ASYN_TRACE_FLOW, 
-                  "getSpectrumThread: acquired spectrum. Response code = %d [%s]\n",
-                  error,
-                  sbapi_get_error_string(error));
+        test_connection();
 
-          unlock();
+        // Decide if we should acquire or not
+        if (run)
+            if (connected) {
+                lock();
+                asynPrint(pasynUserSelf, 
+                        ASYN_TRACE_FLOW, 
+                        "getSpectrumThread: acquiring spectrum\n");
+                // TODO: This function blocks until a new spectrum is available
+                api->spectrometerGetFormattedSpectrum(
+                        device_id, 
+                        spectrometer_feature_id,
+                        &error, 
+                        spectrum_buffer, 
+                        num_pixels);
+                asynPrint(pasynUserSelf, 
+                        ASYN_TRACE_FLOW, 
+                        "getSpectrumThread: acquired spectrum. Response code = %d [%s]\n",
+                        error,
+                        sbapi_get_error_string(error));
 
-          doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
-      }
-      epicsThreadSleep(m_poll_time);
+                unlock();
+
+                doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
+            }
+
+        // Do a single acquisition
+        if (acq_mode == QEPRO_ACQ_MODE_SINGLE) {
+            run = false;
+            setIntegerParam(P_acqCtl, run);
+            callParamCallbacks();
+        }
+        //TODO: Check if we actually need this
+        epicsThreadSleep(m_poll_time);
     }
 }
 
@@ -240,8 +263,6 @@ asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxC
     char buffer[80];
     int error;
 
-    // TODO: Add connection check.
-    // TODO: Set invalid if disconnected.
     test_connection();
     if (connected) {
         if (function == P_name) {
@@ -265,15 +286,15 @@ asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxC
         } 
         else if (function == P_serialNumber) {
             //sbapi_get_serial_number(
-                api->getSerialNumber(
-                        device_id,
-                        serial_number_feature_id,
-                        &error,
-                        buffer,
-                        79);
-                strcpy(value, buffer);
-                *nActual = strlen(buffer);
-                *eomReason = 0;
+            api->getSerialNumber(
+                    device_id,
+                    serial_number_feature_id,
+                    &error,
+                    buffer,
+                    79);
+            strcpy(value, buffer);
+            *nActual = strlen(buffer);
+            *eomReason = 0;
         } 
         else {
             // All other parameters just get set in parameter list, no need to
@@ -301,6 +322,12 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     function = pasynUser->reason;
     this->getAddress(pasynUser, &addr);
 
+    if (function == P_connected) {
+        *value = connected;
+    }
+
+    // Handle all device related parameters. Must test connection first
+    // before attempting to read.
     test_connection();
     if (connected) {
         if (function == P_numSpecs) {
@@ -425,7 +452,7 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     else
         asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d\n",
                 driverName, functionName, this->portName, *value, addr);
-    
+
     return status;
 }
 
@@ -530,8 +557,6 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
             *nIn = num_wavelengths;
         }
         else if (function == P_spectrum) {
-            // TODO: Add locking of intermediate data to ensure consistent 
-            // data set
             int boxcar_width;
             getIntegerParam(P_boxcarWidth, &boxcar_width);
 
@@ -741,7 +766,7 @@ void drvUSBQEPro::test_connection() {
             // Read spectrometer feature ID
             int num_spectrometer_features = 
                 api->getNumberOfSpectrometerFeatures(device_id, &error);
-                //sbapi_get_number_of_spectrometer_features(device_id, &error);
+            //sbapi_get_number_of_spectrometer_features(device_id, &error);
 
             asynPrint(pasynUserSelf, 
                     ASYN_TRACE_FLOW, 
@@ -817,6 +842,10 @@ void drvUSBQEPro::test_connection() {
             allocate_spectrum_buffer();
         }
     }
+
+    // Update the connected PV status
+    setIntegerParam(P_connected, connected);
+    callParamCallbacks();
 }
 
 void drvUSBQEPro::boxcar(
