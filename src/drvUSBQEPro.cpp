@@ -168,17 +168,13 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                             process_buffer, 
                             boxcar_half_width, 
                             num_pixels);
-                    //memcpy(value, process_buffer, num_pixels * sizeof(double));
                     doCallbacksFloat64Array(process_buffer, num_pixels, P_spectrum, 0);
                     free(process_buffer);
                 }
                 else {
-                    //memcpy(value, spectrum_buffer, num_pixels * sizeof(double));
                     doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
                 }
 
-                // Update the spectrum PV
-                //doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
             }
         }
         else {
@@ -590,26 +586,6 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
                 value[i] = (1./m_laser - 1./wavelengths[i]) *10e7; // Raman shift in cm-1
 
             *nIn = num_wavelengths;
-        }
-        else if (function == P_spectrum) {
-            int boxcar_half_width;
-            getIntegerParam(P_boxcarWidth, &boxcar_half_width);
-
-            if (boxcar_half_width > 0) {
-                double *process_buffer;
-                process_buffer = (double *)calloc(num_pixels, sizeof(double));
-                boxcar(spectrum_buffer, 
-                        process_buffer, 
-                        boxcar_half_width, 
-                        num_pixels);
-                memcpy(value, process_buffer, num_pixels * sizeof(double));
-                free(process_buffer);
-            }
-            else {
-                memcpy(value, spectrum_buffer, num_pixels * sizeof(double));
-            }
-            *nIn = num_pixels;
-
         }
     }
     else
