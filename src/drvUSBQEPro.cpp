@@ -70,6 +70,7 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     createParam( QEProConnected,            asynParamInt32,         &P_connected);          // 26
     createParam( QEProAcqMode,              asynParamInt32,         &P_acqMode);            // 27
     createParam( QEProAcqCtl,               asynParamInt32,         &P_acqCtl);             // 28
+    createParam( QEProAcqSts,               asynParamInt32,         &P_acqSts);             // 29
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -108,11 +109,14 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
     int error;
     int acq_mode;
     int run;
+    int boxcar_half_width;
 
     while(1){
 
+        // Get acquisition mode and control status from PVs
         getIntegerParam(P_acqMode, &acq_mode);
         getIntegerParam(P_acqCtl, &run);
+        getIntegerParam(P_boxcarWidth, &boxcar_half_width);
 
         asynPrint(pasynUserSelf, 
                 ASYN_TRACE_FLOW, 
@@ -130,33 +134,59 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                 ASYN_TRACE_FLOW, 
                 "getSpectrumThread: num_pixels = %d\n",
                 num_pixels);
+        asynPrint(pasynUserSelf, 
+                ASYN_TRACE_FLOW, 
+                "getSpectrumThread: boxcar_half_width = %d\n",
+                boxcar_half_width);
 
         test_connection();
 
         // Decide if we should acquire or not
-        if (run)
+        if (run) {
             if (connected) {
                 lock();
-                asynPrint(pasynUserSelf, 
-                        ASYN_TRACE_FLOW, 
-                        "getSpectrumThread: acquiring spectrum\n");
-                // TODO: This function blocks until a new spectrum is available
+
+                // Set acquisition status PV
+                acquiring = true;
+                setIntegerParam(P_acqSts, acquiring);
+                callParamCallbacks();
+
+                // NOTE: This function blocks until a new spectrum is available
                 api->spectrometerGetFormattedSpectrum(
                         device_id, 
                         spectrometer_feature_id,
                         &error, 
                         spectrum_buffer, 
                         num_pixels);
-                asynPrint(pasynUserSelf, 
-                        ASYN_TRACE_FLOW, 
-                        "getSpectrumThread: acquired spectrum. Response code = %d [%s]\n",
-                        error,
-                        sbapi_get_error_string(error));
 
                 unlock();
 
-                doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
+                if (boxcar_half_width > 0) {
+                    double *process_buffer;
+                    process_buffer = (double *)calloc(num_pixels, sizeof(double));
+                    boxcar(spectrum_buffer, 
+                            process_buffer, 
+                            boxcar_half_width, 
+                            num_pixels);
+                    //memcpy(value, process_buffer, num_pixels * sizeof(double));
+                    doCallbacksFloat64Array(process_buffer, num_pixels, P_spectrum, 0);
+                    free(process_buffer);
+                }
+                else {
+                    //memcpy(value, spectrum_buffer, num_pixels * sizeof(double));
+                    doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
+                }
+
+                // Update the spectrum PV
+                //doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
             }
+        }
+        else {
+            // Set acquisition status PV
+            acquiring = false;
+            setIntegerParam(P_acqSts, acquiring);
+            callParamCallbacks();
+        }
 
         // Do a single acquisition
         if (acq_mode == QEPRO_ACQ_MODE_SINGLE) {
@@ -386,11 +416,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             *value = rval;
             setIntegerParam(addr, P_minIntegrationTime, *value); 
         }
-        else if (function == P_boxcarWidth) {
-            // TODO: Investigate whether device supports boxcar averaging
-            getIntegerParam(P_boxcarWidth, &rval);
-            *value = rval;
-        }
         // this is only 0/1 value, should be in readInt32Digital???
         else if (function == P_electricDark) {
             // TODO: Investigate dark correction
@@ -433,7 +458,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             *value = 0;
             setIntegerParam(addr, P_ledIndicator, *value);
         }
-
         else {
             status = asynPortDriver::readInt32(pasynUser, value); 
         }
@@ -441,6 +465,13 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     else
         status = asynDisconnected;
 
+    // Handle parameters that are not read from the device
+    if (function == P_boxcarWidth) {
+        // TODO: Investigate whether device supports boxcar averaging
+        getIntegerParam(P_boxcarWidth, &rval);
+        *value = rval;
+        status = asynSuccess;
+    }
     // TODO: Add connection test and set of PV status
     // to invalid if disconnected
 
@@ -518,6 +549,10 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
 
     this->getAddress(pasynUser, &addr);
 
+    asynPrint(pasynUser, 
+            ASYN_TRACE_FLOW, 
+            "readFloat64Array: entering\n");
+
     test_connection();
     if (connected) {
         if (function == P_xAxisNm) {
@@ -557,15 +592,15 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
             *nIn = num_wavelengths;
         }
         else if (function == P_spectrum) {
-            int boxcar_width;
-            getIntegerParam(P_boxcarWidth, &boxcar_width);
+            int boxcar_half_width;
+            getIntegerParam(P_boxcarWidth, &boxcar_half_width);
 
-            if (boxcar_width > 0) {
+            if (boxcar_half_width > 0) {
                 double *process_buffer;
                 process_buffer = (double *)calloc(num_pixels, sizeof(double));
                 boxcar(spectrum_buffer, 
                         process_buffer, 
-                        boxcar_width, 
+                        boxcar_half_width, 
                         num_pixels);
                 memcpy(value, process_buffer, num_pixels * sizeof(double));
                 free(process_buffer);
@@ -630,7 +665,8 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
             // Check if implmemented in QEPro
         }
         else if (function == P_boxcarWidth) {
-            // Not implmemented in QEPro. Handle in driver.
+            // Not implmemented in QEPro. Just store the value
+            // in the parameter list.
         }
         else if (function == P_electricDark) {
             // Check if implmemented in QEPro
@@ -858,25 +894,30 @@ void drvUSBQEPro::boxcar(
     double sum;
     double average;
 
+    printf("boxcar: entering\n");
+    printf("boxcar: boxcar_half_width = %d\n", boxcar_half_width);
+    printf("boxcar: num_pixels = %d\n", num_pixels);
+
+
     // TODO: Fix algorithm to keep running total. Only need one addition and one 
     // subtraction per calculation.
     for (int i = 0; i < num_pixels; i++) {
         sum = 0;
         if (i < boxcar_half_width) {
-            for (int j = 0; j < i + boxcar_half_width; j++) 
+            for (int j = 0; j < i + boxcar_half_width + 1; j++) 
                 sum += spectrum_buffer[j];
-            average = sum / (double) i;
+            average = sum / (double) (boxcar_half_width + i + 1);
         }
-        else if (i > num_pixels - boxcar_half_width) {
+        else if (i >= num_pixels - boxcar_half_width) {
             for (int j = i - boxcar_half_width;
                     j < num_pixels;
                     j++)
                 sum += spectrum_buffer[j];
-            average = sum / (double) (num_pixels - i);
+            average = sum / (double) (num_pixels - i + boxcar_half_width);
         }
         else {
             for (int j = i - boxcar_half_width;
-                    j < i + boxcar_half_width;
+                    j < i + boxcar_half_width + 1;
                     j++)
                 sum += spectrum_buffer[j];
             average = sum / (double) boxcar_width;

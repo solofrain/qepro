@@ -1037,30 +1037,6 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
     <tooltip>$(actions)</tooltip>
   </widget>
   <widget type="action_button" version="3.0.0">
-    <name>Action Button_3</name>
-    <actions>
-      <action type="write_pv">
-        <pv_name>$(PREFIX):Action</pv_name>
-        <value>2</value>
-        <description>Single</description>
-      </action>
-    </actions>
-    <text>Single</text>
-    <x>30</x>
-    <y>245</y>
-    <width>60</width>
-    <height>25</height>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color red="240" green="240" blue="240">
-      </color>
-    </background_color>
-    <tooltip>$(actions)</tooltip>
-  </widget>
-  <widget type="action_button" version="3.0.0">
     <name>Action Button_1</name>
     <actions execute_as_one="true">
       <action type="write_pv">
@@ -1194,5 +1170,28 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
       <item>Item 2</item>
       <item>Item 2</item>
     </items>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>Text Update_18</name>
+    <pv_name>$(PREFIX):AcqSts_rbv</pv_name>
+    <x>130</x>
+    <y>263</y>
+    <width>131</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <vertical_alignment>1</vertical_alignment>
+    <wrap_words>false</wrap_words>
+    <actions>
+    </actions>
   </widget>
 </display>

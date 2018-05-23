@@ -34,8 +34,9 @@
 #define QEProConnected          "Connected"             /* asynInt32        ro 26 */
 #define QEProAcqMode            "AcqMode"               /* asynInt32        ro 27 */
 #define QEProAcqCtl             "AcqCtl"                /* asynInt32        ro 28 */
+#define QEProAcqSts             "AcqSts"                /* asynInt32        ro 29 */
 
-#define POLL_TIME 0.01
+#define POLL_TIME 0.5
 
 #define QEPRO_ACQ_MODE_OFF          0
 #define QEPRO_ACQ_MODE_SINGLE       1
@@ -88,7 +89,8 @@ protected:
     int         P_connected;     
     int         P_acqMode;     
     int         P_acqCtl;     
-    #define LAST_QEPRO_PARAM P_acqCtl
+    int         P_acqSts;     
+    #define LAST_QEPRO_PARAM P_acqSts
 
 private:
     //Wrapper wrapper;
@@ -110,6 +112,7 @@ private:
 
     bool connected;
     bool run;
+    bool acquiring;
 
     void test_connection();
     void allocate_spectrum_buffer();

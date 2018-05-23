@@ -129,12 +129,12 @@ record(ai, "$(PREFIX):MaxIntensity_rbv"){
 }
 
 record(ai, "$(PREFIX):BoxcarWidth_rbv"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
-##	field(SCAN, "I/O Intr")
+        #field(PINI, "1")
 }
 
 record(ai, "$(PREFIX):ElectricDark_rbv"){
@@ -266,44 +266,41 @@ record(ao, "$(PREFIX):Averages"){
 }
 
 record(ao, "$(PREFIX):BoxcarWidth"){
-        field(DTYP, "asynInt32")
-	field(VAL, "0")
-        field(PINI, "1")
-        field(DRVL, "0")
-        field(DRVH, "20")
-        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
-        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
+    field(DTYP, "asynInt32")
+    field(VAL, "0")
+    field(PINI, "1")
+    field(DRVL, "0")
+    field(DRVH, "20")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
+    #field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
 }
 
 record(ao, "$(PREFIX):NonLinearity"){
-        field(DTYP, "asynInt32")
-	field(VAL, "0")
-        field(PINI, "1")
-        field(DRVL, "0")
-        field(DRVH, "20")
-        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NonLinearity")
-        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
-}
-
-record(ao, "$(PREFIX):Decouple"){
-        field(DTYP, "asynInt32")
-	field(VAL, "0")
-        field(PINI, "1")
-        field(DRVL, "0")
-        field(DRVH, "20")
-        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Decouple")
-        field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
-}
-
-record(ao, "$(PREFIX):LEDIndicator"){
     field(DTYP, "asynInt32")
 	field(VAL, "0")
+#field(PINI, "1")
     field(DRVL, "0")
-    field(PINI, "1")
     field(DRVH, "20")
-    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LEDIndicator")
-    field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NonLinearity")
 }
+
+#record(ao, "$(PREFIX):Decouple"){
+    #field(DTYP, "asynInt32")
+	#field(VAL, "0")
+    #field(PINI, "1")
+    #field(DRVL, "0")
+    #field(DRVH, "20")
+    #field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Decouple")
+#}
+
+#record(ao, "$(PREFIX):LEDIndicator"){
+    #field(DTYP, "asynInt32")
+	#field(VAL, "0")
+    #field(DRVL, "0")
+    #field(PINI, "1")
+    #field(DRVH, "20")
+    #field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LEDIndicator")
+#}
 
 
 record(ao, "$(PREFIX):IntegrationTime"){
@@ -388,11 +385,22 @@ record(bi, "$(PREFIX):Connection_rbv"){
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Connected")
 }
 
+record(bi, "$(PREFIX):AcqSts_rbv"){
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "0")
+    field(ZNAM, "Idle")
+    field(ONAM, "Acquiring")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqSts")
+}
+
 
 record(mbbo, "$(PREFIX):AcqMode")
 {
     field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
+    field(PINI, "YES")
     field(ZRVL, "0")
     field(ZRST, "Off")
     field(ONVL, "1")
@@ -400,14 +408,18 @@ record(mbbo, "$(PREFIX):AcqMode")
     field(TWVL, "2")
     field(TWST, "Continuous")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqMode")
+
+    #info(autosaveFields, "VAL")
 }
 
 record(bo, "$(PREFIX):AcqCtl")
 {
     field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
-    field(ZRST, "Stop")
-    field(ONST, "Start")
+    field(PINI, "YES")
+    field(ZNAM, "Stop")
+    field(ONAM, "Start")
+    field(VAL,  "0")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqCtl")
 }
 
