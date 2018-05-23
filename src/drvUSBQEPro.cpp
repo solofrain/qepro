@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream>
+#include <ctime>
 
 #include <epicsExport.h>
 
@@ -71,6 +73,12 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     createParam( QEProAcqMode,              asynParamInt32,         &P_acqMode);            // 27
     createParam( QEProAcqCtl,               asynParamInt32,         &P_acqCtl);             // 28
     createParam( QEProAcqSts,               asynParamInt32,         &P_acqSts);             // 29
+    createParam( QEProFileWrite,            asynParamInt32,         &P_fileWrite);          // 30
+    createParam( QEProFilePath,             asynParamOctet,         &P_filePath);           // 31
+    createParam( QEProFileName,             asynParamOctet,         &P_fileName);           // 32
+    createParam( QEProFullFileName,         asynParamOctet,         &P_fullFileName);       // 33
+    createParam( QEProFullFilePath,         asynParamOctet,         &P_fullFilePath);       // 33
+    createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          // 34
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -110,6 +118,7 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
     int acq_mode;
     int run;
     int boxcar_half_width;
+    int file_write;
 
     while(1){
 
@@ -117,6 +126,7 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
         getIntegerParam(P_acqMode, &acq_mode);
         getIntegerParam(P_acqCtl, &run);
         getIntegerParam(P_boxcarWidth, &boxcar_half_width);
+        getIntegerParam(P_fileWrite, &file_write);
 
         asynPrint(pasynUserSelf, 
                 ASYN_TRACE_FLOW, 
@@ -169,12 +179,15 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                             boxcar_half_width, 
                             num_pixels);
                     doCallbacksFloat64Array(process_buffer, num_pixels, P_spectrum, 0);
+                    if (file_write)
+                        write_file(process_buffer, num_pixels);
                     free(process_buffer);
                 }
                 else {
                     doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
+                    if (file_write)
+                        write_file(spectrum_buffer, num_pixels);
                 }
-
             }
         }
         else {
@@ -190,6 +203,8 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
             setIntegerParam(P_acqCtl, run);
             callParamCallbacks();
         }
+        // NOTE: For testing without spectrometer running
+        //write_file(spectrum_buffer, num_pixels);
         //TODO: Check if we actually need this
         epicsThreadSleep(m_poll_time);
     }
@@ -278,6 +293,10 @@ asynStatus drvUSBQEPro::readStatus(){
 }
 
 //--------------------------------------------------------------------------------------------
+// No specific function needed for writeOctet. Use base class implementation.
+// asynStatus drvUSBQEPro::writeOctet (asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason){
+// }
+
 asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason){
 
     int addr=0;
@@ -900,6 +919,93 @@ void drvUSBQEPro::boxcar(
         }
         process_buffer[i] = average;
     }
+}
+
+void drvUSBQEPro::write_file(
+        double *buffer,
+        int num_pixels) {
+
+    const char *functionName = "write_file";
+    const int BUF_SIZE = 80;
+    char file_path[BUF_SIZE + 1];
+    char file_name[BUF_SIZE + 1];
+    char full_file_name[BUF_SIZE + 1];
+    char full_file_path[2 * BUF_SIZE + 1];
+    char text_buffer[BUF_SIZE + 1];
+
+    int file_index;
+
+    std::ofstream outfile;
+
+    getStringParam(P_fileName, BUF_SIZE, file_name);
+    getStringParam(P_filePath, BUF_SIZE, file_path);
+    getIntegerParam(P_fileIndex, &file_index);
+
+    asynPrint(
+            pasynUserSelf,
+            ASYN_TRACE_FLOW,
+            "%s: file name = %s\n",
+            functionName,
+            file_name);
+
+    asynPrint(
+            pasynUserSelf,
+            ASYN_TRACE_FLOW,
+            "%s: file path = %s\n",
+            functionName,
+            file_path);
+
+    snprintf(full_file_name,
+            BUF_SIZE,
+            "%s_%05d.txt",
+            file_name,
+            file_index);
+
+    asynPrint(
+            pasynUserSelf,
+            ASYN_TRACE_FLOW,
+            "%s: file path = %s\n",
+            functionName,
+            file_path);
+
+    strcpy(full_file_path, file_path);
+    strcat(full_file_path, "/");
+    strcat(full_file_path, full_file_name);
+
+    asynPrint(
+            pasynUserSelf,
+            ASYN_TRACE_FLOW,
+            "%s: full file path = %s\n",
+            functionName,
+            full_file_path);
+
+    outfile.open(full_file_path, std::ofstream::out);
+    outfile << "QEPro datafile" << std::endl;
+    
+    time_t rawtime;
+    struct tm * timeinfo;
+    time (&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(text_buffer,
+            BUF_SIZE,
+            "%FT%T%z",
+            timeinfo);
+
+    outfile << text_buffer << std::endl;
+
+    for (int i = 0; i < num_pixels; i++) 
+        outfile << buffer[i] << std::endl;
+
+    outfile.close();
+
+    // Increment the index and save back to the record
+    file_index++;
+    setStringParam(P_fullFileName, full_file_name);
+    setStringParam(P_filePath, file_path);
+    setStringParam(P_fullFilePath, full_file_path);
+    setIntegerParam(P_fileIndex, file_index);
+    callParamCallbacks();
 }
 
 int LIBUSB_CALL drvUSBQEPro::hotplug_callback(

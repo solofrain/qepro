@@ -4,7 +4,7 @@
     <PREFIX>Sp1</PREFIX>
   </macros>
   <width>1300</width>
-  <height>900</height>
+  <height>1100</height>
   <background_color>
     <color red="173" green="173" blue="173">
     </color>
@@ -21,7 +21,7 @@
     <x>10</x>
     <y>130</y>
     <width>330</width>
-    <height>180</height>
+    <height>190</height>
     <line_width>0</line_width>
     <background_color>
       <color red="232" green="232" blue="232">
@@ -45,7 +45,7 @@
     <x>360</x>
     <y>140</y>
     <width>920</width>
-    <height>750</height>
+    <height>870</height>
     <background_color>
       <color red="232" green="232" blue="232">
       </color>
@@ -515,10 +515,10 @@
           </widget>
           <widget type="label" version="2.0.0">
             <name>Label_7</name>
-            <text>X-Asis:</text>
+            <text>X-Axis:</text>
             <x>8</x>
             <y>410</y>
-            <width>47</width>
+            <width>49</width>
             <height>21</height>
             <font>
               <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
@@ -583,7 +583,7 @@
           </widget>
           <widget type="checkbox" version="2.0.0">
             <name>Check Box_4</name>
-            <pv_name>$(PREFIX):ElectricDark</pv_name>
+            <pv_name>$(PREFIX):FileWrite</pv_name>
             <label></label>
             <x>168</x>
             <y>460</y>
@@ -607,7 +607,7 @@
             <x>8</x>
             <y>500</y>
             <width>39</width>
-            <height>21</height>
+            <height>25</height>
             <font>
               <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
               </font>
@@ -628,10 +628,10 @@
           </widget>
           <widget type="label" version="2.0.0">
             <name>Label_13</name>
-            <text>Last file:</text>
+            <text>File prefix:</text>
             <x>8</x>
-            <y>530</y>
-            <width>61</width>
+            <y>560</y>
+            <width>76</width>
             <height>21</height>
             <font>
               <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
@@ -653,9 +653,9 @@
           </widget>
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_14</name>
-            <pv_name>$(PREFIX):TriggerMode_rbv</pv_name>
+            <pv_name>$(PREFIX):FilePath_rbv</pv_name>
             <x>118</x>
-            <y>500</y>
+            <y>530</y>
             <width>205</width>
             <height>25</height>
             <foreground_color>
@@ -666,6 +666,7 @@
               <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
               </color>
             </background_color>
+            <format>6</format>
             <horizontal_alignment>2</horizontal_alignment>
             <vertical_alignment>1</vertical_alignment>
             <wrap_words>false</wrap_words>
@@ -674,9 +675,9 @@
           </widget>
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_16</name>
-            <pv_name>$(PREFIX):TriggerMode_rbv</pv_name>
+            <pv_name>$(PREFIX):FileName_rbv</pv_name>
             <x>118</x>
-            <y>540</y>
+            <y>590</y>
             <width>205</width>
             <height>25</height>
             <foreground_color>
@@ -687,27 +688,7 @@
               <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
               </color>
             </background_color>
-            <horizontal_alignment>2</horizontal_alignment>
-            <vertical_alignment>1</vertical_alignment>
-            <wrap_words>false</wrap_words>
-            <actions>
-            </actions>
-          </widget>
-          <widget type="textupdate" version="2.0.0">
-            <name>Text Update_17</name>
-            <pv_name>$(PREFIX):TriggerMode_rbv</pv_name>
-            <x>198</x>
-            <y>460</y>
-            <width>120</width>
-            <height>25</height>
-            <foreground_color>
-              <color red="0" green="0" blue="0">
-              </color>
-            </foreground_color>
-            <background_color>
-              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
-              </color>
-            </background_color>
+            <format>6</format>
             <horizontal_alignment>2</horizontal_alignment>
             <vertical_alignment>1</vertical_alignment>
             <wrap_words>false</wrap_words>
@@ -735,6 +716,126 @@
             <wrap_words>false</wrap_words>
             <actions>
             </actions>
+          </widget>
+          <widget type="textentry" version="3.0.0">
+            <name>Text Entry</name>
+            <x>298</x>
+            <y>981</y>
+          </widget>
+          <widget type="textentry" version="3.0.0">
+            <name>Text Entry_1</name>
+            <pv_name>$(PREFIX):FilePath</pv_name>
+            <x>118</x>
+            <y>500</y>
+            <width>205</width>
+            <height>25</height>
+          </widget>
+          <widget type="textentry" version="3.0.0">
+            <name>Text Entry_2</name>
+            <pv_name>$(PREFIX):FileName</pv_name>
+            <x>118</x>
+            <y>560</y>
+            <width>205</width>
+            <height>25</height>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_15</name>
+            <text>Full path:</text>
+            <x>9</x>
+            <y>650</y>
+            <width>68</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_19</name>
+            <pv_name>$(PREFIX):FullFilePath_rbv</pv_name>
+            <x>118</x>
+            <y>650</y>
+            <width>205</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <format>6</format>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_17</name>
+            <text>File index:</text>
+            <x>8</x>
+            <y>620</y>
+            <width>73</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_20</name>
+            <pv_name>$(PREFIX):FileIndex_rbv</pv_name>
+            <x>223</x>
+            <y>620</y>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textentry" version="3.0.0">
+            <name>Text Entry_3</name>
+            <pv_name>$(PREFIX):FileIndex</pv_name>
+            <x>118</x>
+            <y>620</y>
+            <height>25</height>
           </widget>
         </children>
       </tab>
@@ -980,9 +1081,9 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
       </tab>
     </tabs>
     <x>10</x>
-    <y>310</y>
+    <y>320</y>
     <width>332</width>
-    <height>630</height>
+    <height>750</height>
     <background_color>
       <color red="232" green="232" blue="232">
       </color>
@@ -1064,9 +1165,8 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
     <name>Progress Bar</name>
     <pv_name>$(PREFIX):ProgressBar</pv_name>
     <x>20</x>
-    <y>290</y>
+    <y>300</y>
     <width>310</width>
-    <height>13</height>
     <fill_color>
       <color red="33" green="150" blue="243">
       </color>
@@ -1121,20 +1221,6 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
     <wrap_words>false</wrap_words>
     <actions>
     </actions>
-  </widget>
-  <widget type="table" version="2.0.0">
-    <name>Table</name>
-    <x>320</x>
-    <y>910</y>
-    <width>1</width>
-    <height>1</height>
-    <columns>
-      <column>
-        <name>Column 1</name>
-        <width>100</width>
-        <editable>true</editable>
-      </column>
-    </columns>
   </widget>
   <widget type="textupdate" version="2.0.0">
     <name>Text Update_13</name>

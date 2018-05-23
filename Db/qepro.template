@@ -423,18 +423,74 @@ record(bo, "$(PREFIX):AcqCtl")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqCtl")
 }
 
+record(bo, "$(PREFIX):FileWrite")
+{
+    field(DTYP, "asynInt32")
+	field(SCAN, "Passive")
+    field(PINI, "YES")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileWrite")
 
-#record(calcout, "$(PREFIX):IsSingleShot")
-#{
-#	field(SCAN, "Passive")
-#	field(INPA, "$(PREFIX):Action")
-#	field(CALC, "A=2?0:1")
-#	field(MDEL, "-1")
-#	field(OUT,  "$(PREFIX):Action.VAL")
-#	field(FLNK, "$(PREFIX):ZeroProgressBar.PROC")
-#}
-#
-#
+    #info(autosaveFields, "VAL")
+}
+
+record(stringout, "$(PREFIX):FileName"){
+    field(DTYP, "asynOctetWrite")
+    field(VAL,  "qepro")
+    field(PINI, "1")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileName")
+
+#info(autosaveFields, "VAL")
+}
+
+record(waveform, "$(PREFIX):FileName_rbv"){
+    field(DTYP, "asynOctetRead")
+    field(FTVL, "CHAR")
+    field(NELM, "200")
+    field(SCAN, "I/O Intr")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FullFileName")
+}
+
+record(stringout, "$(PREFIX):FilePath"){
+    field(DTYP, "asynOctetWrite")
+    field(VAL,  "/tmp")
+    field(PINI, "1")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FilePath")
+
+        #info(autosaveFields, "VAL")
+}
+
+record(waveform, "$(PREFIX):FilePath_rbv"){
+    field(DTYP, "asynOctetRead")
+    field(SCAN, "I/O Intr")
+    field(FTVL, "CHAR")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FilePath")
+    field(NELM, "200")
+}
+
+record(ao, "$(PREFIX):FileIndex"){
+    field(DTYP, "asynInt32")
+    field(PINI, "1")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileIndex")
+
+        #info(autosaveFields, "VAL")
+}
+
+record(ai, "$(PREFIX):FileIndex_rbv"){
+    field(DTYP, "asynInt32")
+    field(SCAN, "I/O Intr")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileIndex")
+}
+
+record(waveform, "$(PREFIX):FullFilePath_rbv"){
+    field(DTYP, "asynOctetRead")
+    field(SCAN, "I/O Intr")
+    field(NELM, "200")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FullFilePath")
+    field(FTVL, "CHAR")
+}
+
 #record(ao, "$(PREFIX):ZeroProgressBar")
 #{
 #	field(SCAN, "Passive")
@@ -454,20 +510,6 @@ record(bo, "$(PREFIX):AcqCtl")
 #	field(INPC, "$(PREFIX):Averages_rbv.VAL")
 #	field(CALC, "A? 20000000./B/C+VAL:0")
 #}
-#
-#record(ao, "$(PREFIX):IndexID"){
-#        field(DTYP, "USBSpectrometers")
-#	field(VAL, "0")
-#        field(OUT, "@setIndex")
-#}
-#
-#record(ao, "$(PREFIX):Channel"){
-#        field(DTYP, "USBSpectrometers")
-#	field(VAL, "0")
-#        field(OUT, "@setChannel")
-#}
-#
-
 
 #record(aai, "$(PREFIX):Xaxis_rbv"){
 #        field(DTYP, "USBSpectrometers")
@@ -478,6 +520,4 @@ record(bo, "$(PREFIX):AcqCtl")
 #        field(FTVL, "DOUBLE")
 #        field(PINI, "1")
 #}
-#
-#
 

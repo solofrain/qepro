@@ -32,9 +32,15 @@
 #define QEProSpectrum           "Spectrum"              /* asynFloat64Array ro 24 */
 #define QEProLaser              "Laser"                 /* asynFloat64      ro 25 */
 #define QEProConnected          "Connected"             /* asynInt32        ro 26 */
-#define QEProAcqMode            "AcqMode"               /* asynInt32        ro 27 */
-#define QEProAcqCtl             "AcqCtl"                /* asynInt32        ro 28 */
+#define QEProAcqMode            "AcqMode"               /* asynInt32        rw 27 */
+#define QEProAcqCtl             "AcqCtl"                /* asynInt32        rw 28 */
 #define QEProAcqSts             "AcqSts"                /* asynInt32        ro 29 */
+#define QEProFileWrite          "FileWrite"             /* asynInt32        rw 30 */
+#define QEProFilePath           "FilePath"              /* asynOctet        rw 31 */
+#define QEProFileName           "FileName"              /* asynOctet        rw 32 */
+#define QEProFullFileName       "FullFileName"          /* asynOctet        rw 33 */
+#define QEProFullFilePath       "FullFilePath"          /* asynOctet        rw 34 */
+#define QEProFileIndex          "FileIndex"             /* asynInt32        rw 35 */
 
 #define POLL_TIME 0.5
 
@@ -90,14 +96,20 @@ protected:
     int         P_acqMode;     
     int         P_acqCtl;     
     int         P_acqSts;     
-    #define LAST_QEPRO_PARAM P_acqSts
+    int         P_fileWrite;
+    int         P_filePath;
+    int         P_fileName;
+    int         P_fullFileName;
+    int         P_fullFilePath;
+    int         P_fileIndex;
+    #define LAST_QEPRO_PARAM P_fileIndex
 
 private:
     //Wrapper wrapper;
     SeaBreezeAPI *api;
     epicsEventId eventId;
     static int zeroIndex;
-    int index;
+    //int index;
 
     libusb_hotplug_callback_handle hp[2];
     libusb_context *context;
@@ -121,6 +133,9 @@ private:
             const double *spectrum_buffer,
             double *process_buffer,
             int boxcar_width,
+            int num_pixels);
+    void write_file(
+            double *buffer, 
             int num_pixels);
 
     unsigned long integration_time;
