@@ -19,14 +19,14 @@
 #########################################################################################
 # Input records, analog, stringin
 #########################################################################################
-record(ai, "$(PREFIX):NrSpec_rbv"){
+record(ai, "$(PREFIX):NrSpec_rbv") {
         field(DTYP, "asynInt32")
         field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumSpecs")
 ##	field(SCAN, "I/O Intr")
 }
 
-record(stringin, "$(PREFIX):Name_rbv"){
+record(stringin, "$(PREFIX):Name_rbv") {
         field(DTYP, "asynOctetRead")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -35,7 +35,7 @@ record(stringin, "$(PREFIX):Name_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(stringin, "$(PREFIX):FirmwareVersion_rbv"){
+record(stringin, "$(PREFIX):FirmwareVersion_rbv") {
         field(DTYP, "asynOctetRead")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -44,7 +44,7 @@ record(stringin, "$(PREFIX):FirmwareVersion_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(stringin, "$(PREFIX):FirmwareModel_rbv"){
+record(stringin, "$(PREFIX):FirmwareModel_rbv") {
         field(DTYP, "asynOctetRead")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -53,7 +53,7 @@ record(stringin, "$(PREFIX):FirmwareModel_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(stringin, "$(PREFIX):SerialNumber_rbv"){
+record(stringin, "$(PREFIX):SerialNumber_rbv") {
         field(DTYP, "asynOctetRead")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -63,7 +63,7 @@ record(stringin, "$(PREFIX):SerialNumber_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(PREFIX):NumberOfPixels_rbv"){
+record(ai, "$(PREFIX):NumberOfPixels_rbv") {
     field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -72,7 +72,7 @@ record(ai, "$(PREFIX):NumberOfPixels_rbv"){
 	field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(PREFIX):NumberOfDarkPixels_rbv"){
+record(ai, "$(PREFIX):NumberOfDarkPixels_rbv") {
     field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -81,7 +81,7 @@ record(ai, "$(PREFIX):NumberOfDarkPixels_rbv"){
 	field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(PREFIX):IntegrationTime_rbv"){
+record(ai, "$(PREFIX):IntegrationTime_rbv") {
         field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -92,7 +92,7 @@ record(ai, "$(PREFIX):IntegrationTime_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(PREFIX):MinIntegrationTime_rbv"){
+record(ai, "$(PREFIX):MinIntegrationTime_rbv") {
         field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -101,7 +101,7 @@ record(ai, "$(PREFIX):MinIntegrationTime_rbv"){
 ##	field(SCAN, "I/O Intr")
 }                     
 
-record(ai, "$(PREFIX):MaxIntegrationTime_rbv"){
+record(ai, "$(PREFIX):MaxIntegrationTime_rbv") {
     field(DTYP, "asynInt32")
 ##	field(SCAN, "I/O Intr")
     field(PINI, "1")
@@ -110,7 +110,7 @@ record(ai, "$(PREFIX):MaxIntegrationTime_rbv"){
 ##        field(DISV, "1")
 }
 
-record(ai, "$(PREFIX):Averages_rbv"){
+record(ai, "$(PREFIX):Averages_rbv") {
     field(DTYP, "asynInt32")
 	#field(SCAN, "I/O Intr")
     #field(PINI, "1")
@@ -120,7 +120,7 @@ record(ai, "$(PREFIX):Averages_rbv"){
 ##        field(DISV, "1")
 }
 
-record(ai, "$(PREFIX):MaxIntensity_rbv"){
+record(ai, "$(PREFIX):MaxIntensity_rbv") {
     field(DTYP, "asynInt32")
 ##	field(SCAN, "I/O Intr")
     field(PINI, "1")
@@ -129,7 +129,7 @@ record(ai, "$(PREFIX):MaxIntensity_rbv"){
 ##        field(DISV, "1")
 }
 
-record(ai, "$(PREFIX):BoxcarWidth_rbv"){
+record(ai, "$(PREFIX):BoxcarWidth_rbv") {
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
@@ -138,7 +138,7 @@ record(ai, "$(PREFIX):BoxcarWidth_rbv"){
 ##        field(DISV, "1")
 }
 
-record(ai, "$(PREFIX):ElectricDark_rbv"){
+record(ai, "$(PREFIX):ElectricDark_rbv") {
         field(DTYP, "asynInt32")
         field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ElectricDark")
@@ -146,7 +146,7 @@ record(ai, "$(PREFIX):ElectricDark_rbv"){
 }
 
 
-record(ai, "$(PREFIX):DetectorTemperature_rbv"){
+record(ai, "$(PREFIX):DetectorTemperature_rbv") {
         field(DTYP, "asynInt32")
         field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DetectorTemperature")
@@ -156,7 +156,7 @@ record(ai, "$(PREFIX):DetectorTemperature_rbv"){
         field(EGU, "C")
 }
 
-record(ai, "$(PREFIX):BoardTemperature_rbv"){
+record(ai, "$(PREFIX):BoardTemperature_rbv") {
         field(DTYP, "asynInt32")
         field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoardTemperature")
@@ -166,7 +166,7 @@ record(ai, "$(PREFIX):BoardTemperature_rbv"){
         field(EGU, "C")
 }
 
-record(ai,  "$(PREFIX):TriggerMode_rbv"){
+record(ai,  "$(PREFIX):TriggerMode_rbv") {
         field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -175,7 +175,7 @@ record(ai,  "$(PREFIX):TriggerMode_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(PREFIX):NonLinearity_rbv"){
+record(ai, "$(PREFIX):NonLinearity_rbv") {
  	field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -184,7 +184,7 @@ record(ai, "$(PREFIX):NonLinearity_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(PREFIX):Decouple_rbv"){
+record(ai, "$(PREFIX):Decouple_rbv") {
 	field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -193,7 +193,7 @@ record(ai, "$(PREFIX):Decouple_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(ai, "$(PREFIX):LEDIndicator_rbv"){
+record(ai, "$(PREFIX):LEDIndicator_rbv") {
  	field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -202,7 +202,7 @@ record(ai, "$(PREFIX):LEDIndicator_rbv"){
 ##	field(SCAN, "I/O Intr")
 }
 
-record(waveform, "$(PREFIX):XaxisNm_rbv"){
+record(waveform, "$(PREFIX):XaxisNm_rbv") {
     field(DESC, "Spectrum wavelengths")
  	field(DTYP, "asynFloat64ArrayIn")
     field(EGU,  "nm")
@@ -212,7 +212,7 @@ record(waveform, "$(PREFIX):XaxisNm_rbv"){
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisNm")
 }
 
-record(waveform, "$(PREFIX):XaxisRs_rbv"){
+record(waveform, "$(PREFIX):XaxisRs_rbv") {
     field(DESC, "Spectrum Raman shift values")
  	field(DTYP, "asynFloat64ArrayIn")
     field(EGU,  "cm-1")
@@ -222,7 +222,7 @@ record(waveform, "$(PREFIX):XaxisRs_rbv"){
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisRs")
 }
 
-record(waveform, "$(PREFIX):Xaxis_rbv"){
+record(waveform, "$(PREFIX):Xaxis_rbv") {
     field(DESC, "Plot X axis values")
  	field(DTYP, "asynFloat64ArrayIn")
     field(EGU,  "au")
@@ -256,7 +256,7 @@ record(waveform, "$(PREFIX):Spectrum_rbv") {
 # output records, analog
 #########################################################################################
 
-#record(ao, "$(PREFIX):TemperatureSetPoint_rbv"){
+#record(ao, "$(PREFIX):TemperatureSetPoint_rbv") {
 #        field(DTYP, "asynInt32")
 #        field(PINI, "1")
 #        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TemperatureSetPoint")
@@ -267,7 +267,7 @@ record(waveform, "$(PREFIX):Spectrum_rbv") {
 #}
 
 
-record(ao, "$(PREFIX):ElectricDark"){
+record(ao, "$(PREFIX):ElectricDark") {
         field(DTYP, "asynInt32")
 	field(VAL, "0")
         field(PINI, "1")
@@ -277,7 +277,7 @@ record(ao, "$(PREFIX):ElectricDark"){
         field(FLNK, "$(PREFIX):ElectricDark_rbv")
 }
 
-record(ao, "$(PREFIX):Averages"){
+record(ao, "$(PREFIX):Averages") {
     field(DTYP, "asynInt32")
     field(PINI, "1")
     field(VAL,  "1")
@@ -287,7 +287,7 @@ record(ao, "$(PREFIX):Averages"){
     #field(FLNK, "$(PREFIX):Averages_rbv")
 }
 
-record(ao, "$(PREFIX):BoxcarWidth"){
+record(ao, "$(PREFIX):BoxcarWidth") {
     field(DTYP, "asynInt32")
     field(VAL, "0")
     field(PINI, "1")
@@ -297,7 +297,7 @@ record(ao, "$(PREFIX):BoxcarWidth"){
     #field(FLNK, "$(PREFIX):BoxcarWidth_rbv")
 }
 
-record(ao, "$(PREFIX):NonLinearity"){
+record(ao, "$(PREFIX):NonLinearity") {
     field(DTYP, "asynInt32")
 	field(VAL, "0")
 #field(PINI, "1")
@@ -306,7 +306,7 @@ record(ao, "$(PREFIX):NonLinearity"){
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NonLinearity")
 }
 
-#record(ao, "$(PREFIX):Decouple"){
+#record(ao, "$(PREFIX):Decouple") {
     #field(DTYP, "asynInt32")
 	#field(VAL, "0")
     #field(PINI, "1")
@@ -315,7 +315,7 @@ record(ao, "$(PREFIX):NonLinearity"){
     #field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Decouple")
 #}
 
-#record(ao, "$(PREFIX):LEDIndicator"){
+#record(ao, "$(PREFIX):LEDIndicator") {
     #field(DTYP, "asynInt32")
 	#field(VAL, "0")
     #field(DRVL, "0")
@@ -325,7 +325,7 @@ record(ao, "$(PREFIX):NonLinearity"){
 #}
 
 
-record(ao, "$(PREFIX):IntegrationTime"){
+record(ao, "$(PREFIX):IntegrationTime") {
     field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
 	field(DOL,  "$(PREFIX):IntegrationTime:Calcout PP")
@@ -341,7 +341,7 @@ record(ao, "$(PREFIX):IntegrationTime"){
     field(FLNK, "$(PREFIX):IntegrationTime_rbv")
 }
 
-record(bo, "$(PREFIX):IntegrationTime:Unit"){
+record(bo, "$(PREFIX):IntegrationTime:Unit") {
     field(DTYP, "Raw Soft Channel")
     field(SCAN, "Passive")
     field(ZNAM, " ms")
@@ -351,7 +351,7 @@ record(bo, "$(PREFIX):IntegrationTime:Unit"){
 	field(VAL,  "1")
 }
 
-record(ao, "$(PREFIX):IntegrationTime:Value"){
+record(ao, "$(PREFIX):IntegrationTime:Value") {
     field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
 	field(DRVL, "0")
@@ -363,14 +363,14 @@ record(ao, "$(PREFIX):IntegrationTime:Value"){
     #info(autosaveFields, "VAL")
 }
 
-record(ao, "$(PREFIX):Laser"){
+record(ao, "$(PREFIX):Laser") {
     field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
     field(PINI, "1")
 	field(VAL,  "$(LASER)")
 }
 
-record(calcout, "$(PREFIX):IntegrationTime:Calcout"){
+record(calcout, "$(PREFIX):IntegrationTime:Calcout") {
 	field(SCAN, "Passive")
 	field(MDEL, "-1")
 	field(INPA, "$(PREFIX):IntegrationTime:Unit.VAL")
@@ -378,7 +378,7 @@ record(calcout, "$(PREFIX):IntegrationTime:Calcout"){
     field(CALC, "A? B*1000000:B*1000")
 }
 
-record(mbbo,  "$(PREFIX):TriggerMode"){
+record(mbbo,  "$(PREFIX):TriggerMode") {
 	field(DTYP, "asynInt32")
 	field(ZRVL, "0")    	
     field(ZRST,"Free run")
@@ -396,7 +396,7 @@ record(mbbo,  "$(PREFIX):TriggerMode"){
 ####################################################################################################################
 ## records for controling device
 #
-record(bi, "$(PREFIX):Connection_rbv"){
+record(bi, "$(PREFIX):Connection_rbv") {
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 ##        field(SDIS, "Connection_rbv")
@@ -407,7 +407,7 @@ record(bi, "$(PREFIX):Connection_rbv"){
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Connected")
 }
 
-record(bi, "$(PREFIX):AcqSts_rbv"){
+record(bi, "$(PREFIX):AcqSts_rbv") {
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
 ##        field(SDIS, "Connection_rbv")
@@ -417,9 +417,7 @@ record(bi, "$(PREFIX):AcqSts_rbv"){
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqSts")
 }
 
-
-record(mbbo, "$(PREFIX):AcqMode")
-{
+record(mbbo, "$(PREFIX):AcqMode") {
     field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
     field(PINI, "YES")
@@ -434,8 +432,7 @@ record(mbbo, "$(PREFIX):AcqMode")
     #info(autosaveFields, "VAL")
 }
 
-record(bo, "$(PREFIX):AcqCtl")
-{
+record(bo, "$(PREFIX):AcqCtl") {
     field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
     field(PINI, "YES")
@@ -443,10 +440,30 @@ record(bo, "$(PREFIX):AcqCtl")
     field(ONAM, "Start")
     field(VAL,  "0")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqCtl")
+    #field(FLNK, "$(PREFIX):AcqCtl:BusySet")
 }
 
-record(bo, "$(PREFIX):FileWrite")
-{
+#record(bo, "$(PREFIX):AcqCtl:BusySet") {
+    #field(DESC, "Busy record setter")
+    #field(VAL,  "1")
+    #field(OUT,  "$(PREFIX):AcqCtl:Busy PP")
+    #field(TPRO, "1")
+#}
+
+#record(busy, "$(PREFIX):AcqCtl:Busy") {
+    #field(TPRO, "1")
+#}
+
+#record(calcout, $(PREFIX):AcqCtl:BusyReset") {
+    #field(DESC, "Busy record resetter")
+    #field(INPA, "$(PREFIX):AcqSts_rbv CPP")
+    #field(CALC, "A")
+    #field(OOPT, "Transition To Zero")
+    #field(OUT,  "$(PREFIX):AcqSts:Busy CA")
+    #field(TPRO, "1")
+#}
+
+record(bo, "$(PREFIX):FileWrite") {
     field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
     field(PINI, "YES")
@@ -457,7 +474,7 @@ record(bo, "$(PREFIX):FileWrite")
     #info(autosaveFields, "VAL")
 }
 
-record(stringout, "$(PREFIX):FileName"){
+record(stringout, "$(PREFIX):FileName") {
     field(DTYP, "asynOctetWrite")
     field(VAL,  "qepro")
     field(PINI, "1")
@@ -466,7 +483,7 @@ record(stringout, "$(PREFIX):FileName"){
 #info(autosaveFields, "VAL")
 }
 
-record(waveform, "$(PREFIX):FileName_rbv"){
+record(waveform, "$(PREFIX):FileName_rbv") {
     field(DTYP, "asynOctetRead")
     field(FTVL, "CHAR")
     field(NELM, "200")
@@ -474,7 +491,7 @@ record(waveform, "$(PREFIX):FileName_rbv"){
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FullFileName")
 }
 
-record(stringout, "$(PREFIX):FilePath"){
+record(stringout, "$(PREFIX):FilePath") {
     field(DTYP, "asynOctetWrite")
     field(VAL,  "/tmp")
     field(PINI, "1")
@@ -483,7 +500,7 @@ record(stringout, "$(PREFIX):FilePath"){
         #info(autosaveFields, "VAL")
 }
 
-record(waveform, "$(PREFIX):FilePath_rbv"){
+record(waveform, "$(PREFIX):FilePath_rbv") {
     field(DTYP, "asynOctetRead")
     field(SCAN, "I/O Intr")
     field(FTVL, "CHAR")
@@ -491,7 +508,7 @@ record(waveform, "$(PREFIX):FilePath_rbv"){
     field(NELM, "200")
 }
 
-record(ao, "$(PREFIX):FileIndex"){
+record(ao, "$(PREFIX):FileIndex") {
     field(DTYP, "asynInt32")
     field(PINI, "1")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileIndex")
@@ -499,13 +516,13 @@ record(ao, "$(PREFIX):FileIndex"){
         #info(autosaveFields, "VAL")
 }
 
-record(ai, "$(PREFIX):FileIndex_rbv"){
+record(ai, "$(PREFIX):FileIndex_rbv") {
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileIndex")
 }
 
-record(waveform, "$(PREFIX):FullFilePath_rbv"){
+record(waveform, "$(PREFIX):FullFilePath_rbv") {
     field(DTYP, "asynOctetRead")
     field(SCAN, "I/O Intr")
     field(NELM, "200")
@@ -547,7 +564,6 @@ record(ao, "$(PREFIX):ProgressBarReset") {
     field(SCAN, "Passive")
     field(VAL,  "0")
     field(OUT,  "$(PREFIX):ProgressBar PP")
-    field(TPRO, "1")
 }
 
 
