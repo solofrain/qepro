@@ -171,20 +171,6 @@ private:
     asynStatus disconnectSpec();
     asynStatus readStatus();
 
-    static int LIBUSB_CALL hotplug_callback(
-            libusb_context *ctx, 
-            libusb_device *dev, 
-            libusb_hotplug_event event, 
-                void *user_data);
-    static int LIBUSB_CALL hotplug_callback_detach(
-            libusb_context *ctx, 
-            libusb_device *dev, 
-            libusb_hotplug_event event, 
-            void *user_data);
-    asynStatus registerUSBCallbacks();
-
-
-
 };
 
 static void worker(void *pPvt) {

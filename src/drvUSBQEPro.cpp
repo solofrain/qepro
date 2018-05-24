@@ -303,8 +303,6 @@ void drvUSBQEPro::convert_nm_to_raman_shift(
 
 asynStatus drvUSBQEPro::connectSpec(){
     asynStatus status = asynSuccess;
-    // Set up USB hotplug callbacks
-    //registerUSBCallbacks();
 
     test_connection();
 
@@ -338,48 +336,6 @@ void drvUSBQEPro::deallocate_spectrum_buffer() {
             free(raman_shift_buffer);
         raman_shift_buffer = NULL;
     }
-}
-
-asynStatus drvUSBQEPro::registerUSBCallbacks() {
-    int rc;
-    rc = libusb_hotplug_register_callback(
-            NULL, 
-            LIBUSB_HOTPLUG_EVENT_DEVICE_ARRIVED,
-            (libusb_hotplug_flag) 0,
-            OOI_VENDOR_ID,
-            LIBUSB_HOTPLUG_MATCH_ANY,
-            LIBUSB_HOTPLUG_MATCH_ANY,
-            hotplug_callback,
-            NULL, 
-            &hp[0]);
-    if (LIBUSB_SUCCESS != rc) {
-        printf("Error registering connect callback\n");
-        libusb_exit(NULL);
-        return asynError;
-    }
-    else {
-        printf("Registered USB connect callback\n");
-    }
-
-    rc = libusb_hotplug_register_callback(
-            NULL, 
-            LIBUSB_HOTPLUG_EVENT_DEVICE_LEFT,
-            (libusb_hotplug_flag) 0,
-            OOI_VENDOR_ID,
-            LIBUSB_HOTPLUG_MATCH_ANY,
-            LIBUSB_HOTPLUG_MATCH_ANY,
-            hotplug_callback_detach,
-            NULL, 
-            &hp[0]);
-    if (LIBUSB_SUCCESS != rc) {
-        printf("Error registering detach callback\n");
-        libusb_exit(NULL);
-        return asynError;
-    }
-    else {
-        printf("Registered USB detach callback\n");
-    }
-    return asynSuccess;
 }
 
 //-----------------------------------------------------------------------------------------------------------------
@@ -1169,40 +1125,6 @@ void drvUSBQEPro::write_header(std::ofstream &outfile, char *full_file_name) {
     outfile << "Number of pixels in spectrum: " << num_pixels << std::endl;
 
     outfile << ">>>>> Begin Spectral Data <<<<<" << std::endl;
-}
-
-int LIBUSB_CALL drvUSBQEPro::hotplug_callback(
-        libusb_context *ctx, 
-        libusb_device *dev, 
-        libusb_hotplug_event event, 
-        void *user_data)
-{
-    //(void)ctx;
-    //(void)dev;
-    //(void)event;
-    //(void)user_data;
-
-    printf ("Device attached\n");
-    //drvUSBQEPro::connected = true;
-
-    return 0;
-}
-
-int LIBUSB_CALL drvUSBQEPro::hotplug_callback_detach(
-        libusb_context *ctx, 
-        libusb_device *dev, 
-        libusb_hotplug_event event, 
-        void *user_data)
-{
-    //(void)ctx;
-    //(void)dev;
-    //(void)event;
-    //(void)user_data;
-
-    printf ("Device detached\n");
-    //drvUSBQEPro::connected = false;
-
-    return 0;
 }
 
 extern "C" {
