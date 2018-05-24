@@ -433,25 +433,33 @@ record(mbbo, "$(PREFIX):AcqMode") {
     info(autosaveFields, "VAL")
 }
 
-record(bo, "$(PREFIX):AcqCtl") {
+record(bo, "$(PREFIX):AcqStart") {
     field(DTYP, "asynInt32")
 	field(SCAN, "Passive")
     field(PINI, "YES")
-    field(ZNAM, "Stop")
+    field(ZNAM, "")
     field(ONAM, "Start")
-    field(VAL,  "0")
-    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqCtl")
+    field(HIGH, "1.0")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqStart")
     field(FLNK, "$(PREFIX):AcqCtl:BusySet")
 }
 
+record(bo, "$(PREFIX):AcqStop") {
+    field(DTYP, "asynInt32")
+	field(SCAN, "Passive")
+    field(PINI, "YES")
+    field(ZNAM, "")
+    field(ONAM, "Stop")
+    field(HIGH, "1.0")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqStop")
+}
+
 record(bo, "$(PREFIX):AcqCtl:BusySet") {
-    field(DESC, "Busy record setter")
     field(VAL,  "1")
     field(OUT,  "$(PREFIX):AcqCtl:Busy PP")
 }
 
 record(busy, "$(PREFIX):AcqCtl:Busy") {
-    #field(TPRO, "1")
 }
 
 record(calcout, "$(PREFIX):AcqCtl:BusyReset") {
@@ -460,7 +468,6 @@ record(calcout, "$(PREFIX):AcqCtl:BusyReset") {
     field(CALC, "A")
     field(OOPT, "Transition To Zero")
     field(OUT,  "$(PREFIX):AcqCtl:Busy CA")
-    #field(TPRO, "1")
 }
 
 record(bo, "$(PREFIX):FileWrite") {

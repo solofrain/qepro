@@ -73,16 +73,17 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     createParam( QEProLaser,                asynParamFloat64,       &P_laser);              // 25 
     createParam( QEProConnected,            asynParamInt32,         &P_connected);          // 26
     createParam( QEProAcqMode,              asynParamInt32,         &P_acqMode);            // 27
-    createParam( QEProAcqCtl,               asynParamInt32,         &P_acqCtl);             // 28
-    createParam( QEProAcqSts,               asynParamInt32,         &P_acqSts);             // 29
-    createParam( QEProFileWrite,            asynParamInt32,         &P_fileWrite);          // 30
-    createParam( QEProFilePath,             asynParamOctet,         &P_filePath);           // 31
-    createParam( QEProFileName,             asynParamOctet,         &P_fileName);           // 32
-    createParam( QEProFullFileName,         asynParamOctet,         &P_fullFileName);       // 33
-    createParam( QEProFullFilePath,         asynParamOctet,         &P_fullFilePath);       // 34
-    createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          // 35
-    createParam( QEProXAxisMode,            asynParamInt32,         &P_xAxisMode);          // 36
-    createParam( QEProXAxis,                asynParamFloat64Array,  &P_xAxis);              // 37
+    createParam( QEProAcqStart,             asynParamInt32,         &P_acqStart);           // 28
+    createParam( QEProAcqStop,              asynParamInt32,         &P_acqStop);            // 29
+    createParam( QEProAcqSts,               asynParamInt32,         &P_acqSts);             // 30
+    createParam( QEProFileWrite,            asynParamInt32,         &P_fileWrite);          // 31
+    createParam( QEProFilePath,             asynParamOctet,         &P_filePath);           // 32
+    createParam( QEProFileName,             asynParamOctet,         &P_fileName);           // 33
+    createParam( QEProFullFileName,         asynParamOctet,         &P_fullFileName);       // 34
+    createParam( QEProFullFilePath,         asynParamOctet,         &P_fullFilePath);       // 35
+    createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          // 36
+    createParam( QEProXAxisMode,            asynParamInt32,         &P_xAxisMode);          // 37
+    createParam( QEProXAxis,                asynParamFloat64Array,  &P_xAxis);              // 38
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -121,16 +122,18 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
     int error;
     int acq_mode;
     int start;
+    int stop;
     int boxcar_half_width;
     int file_write;
     int x_axis_mode;
-    bool run;
+    bool run = false;
 
     while(1){
 
         // Get acquisition mode and control status from PVs
         getIntegerParam(P_acqMode, &acq_mode);
-        getIntegerParam(P_acqCtl, &start);
+        getIntegerParam(P_acqStart, &start);
+        getIntegerParam(P_acqStop, &stop);
         getIntegerParam(P_boxcarWidth, &boxcar_half_width);
         getIntegerParam(P_fileWrite, &file_write);
 
@@ -165,10 +168,8 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
         else if (start &&
                 acq_mode == QEPRO_ACQ_MODE_OFF) {
             run = false;
-            setIntegerParam(P_acqCtl, run);
-            callParamCallbacks();
         }
-        else {
+        else if (stop) {
             run = false;
         }
 
@@ -281,8 +282,6 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
         // Do a single acquisition
         if (acq_mode == QEPRO_ACQ_MODE_SINGLE) {
             run = false;
-            setIntegerParam(P_acqCtl, run);
-            callParamCallbacks();
         }
         //TODO: Check if we actually need this
         epicsThreadSleep(m_poll_time);

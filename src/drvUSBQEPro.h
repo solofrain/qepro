@@ -36,16 +36,17 @@
 #define QEProLaser              "Laser"                 /* asynFloat64      ro 25 */
 #define QEProConnected          "Connected"             /* asynInt32        ro 26 */
 #define QEProAcqMode            "AcqMode"               /* asynInt32        rw 27 */
-#define QEProAcqCtl             "AcqCtl"                /* asynInt32        rw 28 */
-#define QEProAcqSts             "AcqSts"                /* asynInt32        ro 29 */
-#define QEProFileWrite          "FileWrite"             /* asynInt32        rw 30 */
-#define QEProFilePath           "FilePath"              /* asynOctet        rw 31 */
-#define QEProFileName           "FileName"              /* asynOctet        rw 32 */
-#define QEProFullFileName       "FullFileName"          /* asynOctet        rw 33 */
-#define QEProFullFilePath       "FullFilePath"          /* asynOctet        rw 34 */
-#define QEProFileIndex          "FileIndex"             /* asynInt32        rw 35 */
-#define QEProXAxisMode          "XAxisMode"             /* asynInt32        rw 36 */
-#define QEProXAxis              "XAxis"                 /* asynFloat64Array ro 37 */
+#define QEProAcqStart           "AcqStart"              /* asynInt32        rw 28 */
+#define QEProAcqStop            "AcqStop"               /* asynInt32        rw 29 */
+#define QEProAcqSts             "AcqSts"                /* asynInt32        ro 30 */
+#define QEProFileWrite          "FileWrite"             /* asynInt32        rw 31 */
+#define QEProFilePath           "FilePath"              /* asynOctet        rw 32 */
+#define QEProFileName           "FileName"              /* asynOctet        rw 33 */
+#define QEProFullFileName       "FullFileName"          /* asynOctet        rw 34 */
+#define QEProFullFilePath       "FullFilePath"          /* asynOctet        rw 35 */
+#define QEProFileIndex          "FileIndex"             /* asynInt32        rw 36 */
+#define QEProXAxisMode          "XAxisMode"             /* asynInt32        rw 37 */
+#define QEProXAxis              "XAxis"                 /* asynFloat64Array ro 38 */
 
 #define POLL_TIME 0.5
 
@@ -103,7 +104,8 @@ protected:
     int         P_laser;     // laser wavelength needed for Raman shift calculation
     int         P_connected;     
     int         P_acqMode;     
-    int         P_acqCtl;     
+    int         P_acqStart;     
+    int         P_acqStop;     
     int         P_acqSts;     
     int         P_fileWrite;
     int         P_filePath;

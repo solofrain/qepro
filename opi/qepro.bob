@@ -1128,11 +1128,11 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
     <actions>
       <action type="write_pv">
         <pv_name>$(pv_name)</pv_name>
-        <value>0</value>
+        <value>1</value>
         <description>Stop</description>
       </action>
     </actions>
-    <pv_name>$(PREFIX):AcqCtl</pv_name>
+    <pv_name>$(PREFIX):AcqStop</pv_name>
     <text>Stop</text>
     <x>240</x>
     <y>220</y>
@@ -1158,7 +1158,7 @@ $(pv_value)</tooltip>
         <description>Start</description>
       </action>
     </actions>
-    <pv_name>$(PREFIX):AcqCtl</pv_name>
+    <pv_name>$(PREFIX):AcqStart</pv_name>
     <text>Start</text>
     <x>240</x>
     <y>180</y>
