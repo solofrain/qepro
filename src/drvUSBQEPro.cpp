@@ -284,12 +284,11 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
             setIntegerParam(P_acqCtl, run);
             callParamCallbacks();
         }
-        // NOTE: For testing without spectrometer running
-        //write_file(x_axis_buffer, spectrum_buffer);
         //TODO: Check if we actually need this
         epicsThreadSleep(m_poll_time);
     }
 }
+
 
 void drvUSBQEPro::convert_nm_to_raman_shift(
         double *raman_shift_buffer,
@@ -425,10 +424,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     function = pasynUser->reason;
     this->getAddress(pasynUser, &addr);
 
-    if (function == P_connected) {
-        *value = connected;
-    }
-
     // Handle all device related parameters. Must test connection first
     // before attempting to read.
     test_connection();
@@ -518,12 +513,10 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
         }
 
         else if (function == P_averages) {
-            // Feature not implemented in QEPro
-            *value = 0;
-            setIntegerParam(addr, P_averages, *value);
+            // Feature not yet implemented in QEPro seabreeze driver
         }
         else if (function == P_decouple) {
-            // Feature not implemented in QEPro
+            // Feature not implemented in QEPro?
             *value = 0;
             setIntegerParam(addr, P_triggerMode, *value);
         }
@@ -545,6 +538,16 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
         *value = rval;
         status = asynSuccess;
     }
+    else if (function == P_connected) {
+        *value = connected;
+        status = asynSuccess;
+    }
+    else if (function == P_averages) {
+        getIntegerParam(P_averages, &rval);
+        *value = rval;
+        status = asynSuccess;
+    }
+
     // TODO: Add connection test and set of PV status
     // to invalid if disconnected
 
@@ -1160,8 +1163,4 @@ extern "C" {
     }
 
     epicsExportRegistrar(drvUSBQEProRegister);
-
 }
-
-
-

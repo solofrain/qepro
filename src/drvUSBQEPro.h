@@ -70,9 +70,8 @@ public:
     virtual asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason);
     virtual asynStatus readFloat64Array (asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn );     
 
-    virtual void getSpectrumThread(void *);
     /* Thread function to read spectra from device */
-    void getSpectrumTask(void);
+    virtual void getSpectrumThread(void *);
 
 protected:
     int         P_numSpecs;
@@ -177,3 +176,4 @@ static void worker(void *pPvt) {
     drvUSBQEPro *ptr = (drvUSBQEPro *)pPvt;
     ptr->getSpectrumThread(ptr);
 }
+
