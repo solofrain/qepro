@@ -239,7 +239,7 @@ record(bo, "$(PREFIX):XAxisMode") {
     field(ONAM, "Raman shift")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisMode")
 
-    #info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL")
 }
 
 record(waveform, "$(PREFIX):Spectrum_rbv") {
@@ -360,7 +360,7 @@ record(ao, "$(PREFIX):IntegrationTime:Value") {
     field(PHAS, "4")
 	field(VAL,  "5")
 
-    #info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL")
 }
 
 record(ao, "$(PREFIX):Laser") {
@@ -388,9 +388,10 @@ record(mbbo,  "$(PREFIX):TriggerMode") {
     field(TWST,"Ext. synchronous")
 	field(THVL, "3")	
     field(THST,"Ext. edge")
-	field(VAL,  "0")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TriggerMode")
     field(FLNK, "$(PREFIX):TriggerMode")
+
+    info(autosaveFields, "VAL")
 }
 
 ####################################################################################################################
@@ -429,7 +430,7 @@ record(mbbo, "$(PREFIX):AcqMode") {
     field(TWST, "Continuous")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))AcqMode")
 
-    #info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL")
 }
 
 record(bo, "$(PREFIX):AcqCtl") {
@@ -471,7 +472,7 @@ record(bo, "$(PREFIX):FileWrite") {
     field(ONAM, "Yes")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileWrite")
 
-    #info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL")
 }
 
 record(stringout, "$(PREFIX):FileName") {
@@ -480,7 +481,7 @@ record(stringout, "$(PREFIX):FileName") {
     field(PINI, "1")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileName")
 
-#info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL")
 }
 
 record(waveform, "$(PREFIX):FileName_rbv") {
@@ -497,7 +498,7 @@ record(stringout, "$(PREFIX):FilePath") {
     field(PINI, "1")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FilePath")
 
-        #info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL")
 }
 
 record(waveform, "$(PREFIX):FilePath_rbv") {
@@ -513,7 +514,7 @@ record(ao, "$(PREFIX):FileIndex") {
     field(PINI, "1")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FileIndex")
 
-        #info(autosaveFields, "VAL")
+    info(autosaveFields, "VAL")
 }
 
 record(ai, "$(PREFIX):FileIndex_rbv") {
