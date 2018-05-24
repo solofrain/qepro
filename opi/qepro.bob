@@ -1182,9 +1182,10 @@ $(pv_value)</tooltip>
     <y>300</y>
     <width>310</width>
     <fill_color>
-      <color red="33" green="150" blue="243">
+      <color name="OK" red="61" green="216" blue="61">
       </color>
     </fill_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
   </widget>
   <widget type="label" version="2.0.0">
     <name>Label_14</name>

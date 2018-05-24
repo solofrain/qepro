@@ -102,39 +102,40 @@ record(ai, "$(PREFIX):MinIntegrationTime_rbv"){
 }                     
 
 record(ai, "$(PREFIX):MaxIntegrationTime_rbv"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
+##	field(SCAN, "I/O Intr")
+    field(PINI, "1")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntegrationTime")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntegrationTime")
-##	field(SCAN, "I/O Intr")
 }
 
 record(ai, "$(PREFIX):Averages_rbv"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
+	#field(SCAN, "I/O Intr")
+    #field(PINI, "1")
+    field(VAL,  "1")
+    #field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
-##	field(SCAN, "I/O Intr")
 }
 
 record(ai, "$(PREFIX):MaxIntensity_rbv"){
-        field(DTYP, "asynInt32")
+    field(DTYP, "asynInt32")
+##	field(SCAN, "I/O Intr")
+    field(PINI, "1")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntensity")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntensity")
-##	field(SCAN, "I/O Intr")
 }
 
 record(ai, "$(PREFIX):BoxcarWidth_rbv"){
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
+        #field(PINI, "1")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        #field(PINI, "1")
 }
 
 record(ai, "$(PREFIX):ElectricDark_rbv"){
@@ -248,6 +249,7 @@ record(waveform, "$(PREFIX):Spectrum_rbv") {
     field(NELM, "$(SIZE)")
     field(FTVL, "DOUBLE")
     field(SCAN, "I/O Intr")
+    field(FLNK, "$(PREFIX):ProgressBarReset")
 }
 
 #########################################################################################
@@ -276,13 +278,13 @@ record(ao, "$(PREFIX):ElectricDark"){
 }
 
 record(ao, "$(PREFIX):Averages"){
-        field(DTYP, "asynInt32")
-        field(PINI, "1")
-	field(VAL, "1")
-        field(DRVL, "1")
-        field(LOPR, "1")
-        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
-        field(FLNK, "$(PREFIX):Averages_rbv")
+    field(DTYP, "asynInt32")
+    field(PINI, "1")
+    field(VAL,  "1")
+    field(DRVL, "1")
+    field(LOPR, "1")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
+    #field(FLNK, "$(PREFIX):Averages_rbv")
 }
 
 record(ao, "$(PREFIX):BoxcarWidth"){
@@ -519,15 +521,33 @@ record(waveform, "$(PREFIX):FullFilePath_rbv"){
 #	field(OUT,  "$(PREFIX):ProgressBar.VAL")
 #}
 #
-#record(calcout, "$(PREFIX):ProgressBar")
-#{
-#	field(SCAN, ".2 second")
+record(calcout, "$(PREFIX):ProgressBar:Calc") {
+    field(DESC, "Progress bar calculation")
+	field(SCAN, ".2 second")
 ##	field(SDIS, "$(PREFIX):Action")
 ##	field(DISV, "0")
-#	field(MDEL, "-1")
-#	field(INPA, "$(PREFIX):Action.VAL")
-#	field(INPB, "$(PREFIX):IntegrationTime.VAL")
-#	field(INPC, "$(PREFIX):Averages_rbv.VAL")
-#	field(CALC, "A? 20000000./B/C+VAL:0")
-#}
+	#field(MDEL, "-1")
+	field(INPA, "$(PREFIX):AcqSts_rbv")
+	field(INPB, "$(PREFIX):IntegrationTime")
+	field(INPC, "$(PREFIX):Averages_rbv")
+	field(INPD, "$(PREFIX):ProgressBar")
+    field(INPE, "2e5")
+	field(CALC, "A?(100*E/B/C)+D:D")
+    field(OUT,  "$(PREFIX):ProgressBar PP")
+}
+
+record(ao, "$(PREFIX):ProgressBar") {
+    field(DESC, "Progress bar value")
+    field(DRVL, "0")
+    field(DRVH, "100")
+}
+
+record(ao, "$(PREFIX):ProgressBarReset") {
+    field(DESC, "Reset progress bar")
+    field(SCAN, "Passive")
+    field(VAL,  "0")
+    field(OUT,  "$(PREFIX):ProgressBar PP")
+    field(TPRO, "1")
+}
+
 
