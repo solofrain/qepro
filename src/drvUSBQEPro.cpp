@@ -3,15 +3,17 @@
 #include <epicsMutex.h>
 #include <epicsEvent.h>
 #include <iocsh.h>
+#include <epicsExport.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fstream>
-#include <ctime>
-
-#include <epicsExport.h>
-
 #include <libusb-1.0/libusb.h>
+
+#include <fstream>
+#include <iostream>
+#include <ctime>
+#include <iomanip>
 
 #include "drvUSBQEPro.h"
 #include "api/seabreezeapi/SeaBreezeAPI.h"
@@ -77,8 +79,10 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     createParam( QEProFilePath,             asynParamOctet,         &P_filePath);           // 31
     createParam( QEProFileName,             asynParamOctet,         &P_fileName);           // 32
     createParam( QEProFullFileName,         asynParamOctet,         &P_fullFileName);       // 33
-    createParam( QEProFullFilePath,         asynParamOctet,         &P_fullFilePath);       // 33
-    createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          // 34
+    createParam( QEProFullFilePath,         asynParamOctet,         &P_fullFilePath);       // 34
+    createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          // 35
+    createParam( QEProXAxisMode,            asynParamInt32,         &P_xAxisMode);          // 36
+    createParam( QEProXAxis,                asynParamFloat64Array,  &P_xAxis);              // 37
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -116,15 +120,17 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
 
     int error;
     int acq_mode;
-    int run;
+    int start;
     int boxcar_half_width;
     int file_write;
+    int x_axis_mode;
+    bool run;
 
     while(1){
 
         // Get acquisition mode and control status from PVs
         getIntegerParam(P_acqMode, &acq_mode);
-        getIntegerParam(P_acqCtl, &run);
+        getIntegerParam(P_acqCtl, &start);
         getIntegerParam(P_boxcarWidth, &boxcar_half_width);
         getIntegerParam(P_fileWrite, &file_write);
 
@@ -151,6 +157,21 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
 
         test_connection();
 
+        if (start && 
+                (acq_mode == QEPRO_ACQ_MODE_SINGLE ||
+                 acq_mode == QEPRO_ACQ_MODE_CONTINUOUS )) {
+            run = true;
+        }
+        else if (start &&
+                acq_mode == QEPRO_ACQ_MODE_OFF) {
+            run = false;
+            setIntegerParam(P_acqCtl, run);
+            callParamCallbacks();
+        }
+        else {
+            run = false;
+        }
+
         // Decide if we should acquire or not
         if (run) {
             if (connected) {
@@ -169,24 +190,84 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                         spectrum_buffer, 
                         num_pixels);
 
+                num_wavelengths = api->spectrometerGetWavelengths(
+                        device_id, 
+                        spectrometer_feature_id,
+                        &error, 
+                        wavelength_buffer, 
+                        num_pixels);
+
                 unlock();
+
+                assert(num_wavelengths == num_pixels);
+
+                convert_nm_to_raman_shift(
+                        raman_shift_buffer, 
+                        wavelength_buffer, 
+                        num_wavelengths);
+
+                doCallbacksFloat64Array(
+                        raman_shift_buffer, 
+                        num_wavelengths, 
+                        P_xAxisRs, 
+                        0);
+                doCallbacksFloat64Array(
+                        wavelength_buffer, 
+                        num_wavelengths, 
+                        P_xAxisNm, 
+                        0);
+
+                getIntegerParam(P_xAxisMode, &x_axis_mode);
+                // Send the values to the PV used for the plot x axis
+                if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT) {
+                    doCallbacksFloat64Array(
+                            raman_shift_buffer, 
+                            num_wavelengths, 
+                            P_xAxis, 
+                            0);
+                }
+                else {
+                    doCallbacksFloat64Array(
+                            wavelength_buffer, 
+                            num_wavelengths, 
+                            P_xAxis, 
+                            0);
+                }
+
 
                 if (boxcar_half_width > 0) {
                     double *process_buffer;
-                    process_buffer = (double *)calloc(num_pixels, sizeof(double));
+                    process_buffer = (double *)calloc(
+                            num_pixels, 
+                            sizeof(double));
                     boxcar(spectrum_buffer, 
                             process_buffer, 
-                            boxcar_half_width, 
-                            num_pixels);
-                    doCallbacksFloat64Array(process_buffer, num_pixels, P_spectrum, 0);
-                    if (file_write)
-                        write_file(process_buffer, num_pixels);
+                            boxcar_half_width);
+                    doCallbacksFloat64Array(
+                            process_buffer, 
+                            num_pixels, 
+                            P_spectrum, 
+                            0);
+                    if (file_write) {
+                        if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
+                            write_file(raman_shift_buffer, process_buffer);
+                        else
+                            write_file(wavelength_buffer, process_buffer);
+                    }
                     free(process_buffer);
                 }
                 else {
-                    doCallbacksFloat64Array(spectrum_buffer, num_pixels, P_spectrum, 0);
-                    if (file_write)
-                        write_file(spectrum_buffer, num_pixels);
+                    doCallbacksFloat64Array(
+                            spectrum_buffer, 
+                            num_pixels, 
+                            P_spectrum, 
+                            0);
+                    if (file_write) {
+                        if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
+                            write_file(raman_shift_buffer, spectrum_buffer);
+                        else
+                            write_file(wavelength_buffer, spectrum_buffer);
+                    }
                 }
             }
         }
@@ -204,10 +285,20 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
             callParamCallbacks();
         }
         // NOTE: For testing without spectrometer running
-        //write_file(spectrum_buffer, num_pixels);
+        //write_file(x_axis_buffer, spectrum_buffer);
         //TODO: Check if we actually need this
         epicsThreadSleep(m_poll_time);
     }
+}
+
+void drvUSBQEPro::convert_nm_to_raman_shift(
+        double *raman_shift_buffer,
+        const double *wavelength_buffer,
+        int num_wavelengths) {
+    // Calculate Raman shift in cm-1
+    for(int i = 0; i < num_wavelengths; i++)
+        raman_shift_buffer[i] = 
+            (1./m_laser - 1./wavelength_buffer[i]) *10e7; 
 }
 
 asynStatus drvUSBQEPro::connectSpec(){
@@ -228,13 +319,24 @@ void drvUSBQEPro::allocate_spectrum_buffer() {
                 spectrometer_feature_id,
                 &error);
         spectrum_buffer = (double *)calloc(num_pixels, sizeof(double));
+        wavelength_buffer = (double *)calloc(num_pixels, sizeof(double));
+        raman_shift_buffer = (double *)calloc(num_pixels, sizeof(double));
     }
 }
 
 void drvUSBQEPro::deallocate_spectrum_buffer() {
     if (!connected) {
-        free(spectrum_buffer);
+        if (spectrum_buffer)
+            free(spectrum_buffer);
         spectrum_buffer = NULL;
+
+        if (wavelength_buffer)
+            free(wavelength_buffer);
+        wavelength_buffer = NULL;
+
+        if (raman_shift_buffer)
+            free(raman_shift_buffer);
+        raman_shift_buffer = NULL;
     }
 }
 
@@ -558,9 +660,9 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
 
     const char* functionName = "readFloat64Array";
     asynStatus status = asynSuccess;
-    int function = pasynUser->reason;
+    //int function = pasynUser->reason;
     int addr;
-    int error;
+    //int error;
 
     this->getAddress(pasynUser, &addr);
 
@@ -570,6 +672,7 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
 
     test_connection();
     if (connected) {
+        /*
         if (function == P_xAxisNm) {
             double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
             int num_wavelengths = api->spectrometerGetWavelengths(
@@ -606,9 +709,12 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
 
             *nIn = num_wavelengths;
         }
+    */
     }
-    else
+    else {
         status = asynDisconnected;
+    }
+
 
     if (status)
         asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
@@ -882,8 +988,7 @@ void drvUSBQEPro::test_connection() {
 void drvUSBQEPro::boxcar(
         const double *spectrum_buffer,
         double *process_buffer,
-        int boxcar_half_width,
-        int num_pixels) {
+        int boxcar_half_width) {
 
     int boxcar_width = 2 * boxcar_half_width + 1;
     double sum;
@@ -922,16 +1027,15 @@ void drvUSBQEPro::boxcar(
 }
 
 void drvUSBQEPro::write_file(
-        double *buffer,
-        int num_pixels) {
+        double *x_axis_buffer,
+        double *data_buffer) {
 
     const char *functionName = "write_file";
-    const int BUF_SIZE = 80;
+    //const int BUF_SIZE = 80;
     char file_path[BUF_SIZE + 1];
     char file_name[BUF_SIZE + 1];
     char full_file_name[BUF_SIZE + 1];
     char full_file_path[2 * BUF_SIZE + 1];
-    char text_buffer[BUF_SIZE + 1];
 
     int file_index;
 
@@ -980,22 +1084,18 @@ void drvUSBQEPro::write_file(
             full_file_path);
 
     outfile.open(full_file_path, std::ofstream::out);
-    outfile << "QEPro datafile" << std::endl;
+
+    write_header(outfile, full_file_name);
     
-    time_t rawtime;
-    struct tm * timeinfo;
-    time (&rawtime);
-    timeinfo = localtime(&rawtime);
+    outfile.precision(4);
 
-    strftime(text_buffer,
-            BUF_SIZE,
-            "%FT%T%z",
-            timeinfo);
-
-    outfile << text_buffer << std::endl;
-
-    for (int i = 0; i < num_pixels; i++) 
-        outfile << buffer[i] << std::endl;
+    for (int i = 0; i < num_pixels; i++) {
+        outfile << std::left << std::setw(12) << std::fixed;
+        outfile << x_axis_buffer[i];
+        outfile << std::left << std::setw(12) << std::fixed;
+        outfile << data_buffer[i];
+        outfile << std::endl;
+    }
 
     outfile.close();
 
@@ -1006,6 +1106,69 @@ void drvUSBQEPro::write_file(
     setStringParam(P_fullFilePath, full_file_path);
     setIntegerParam(P_fileIndex, file_index);
     callParamCallbacks();
+}
+
+void drvUSBQEPro::write_header(std::ofstream &outfile, char *full_file_name) {
+    int integration_time;
+    char serial_number[BUF_SIZE + 1];
+    char text_buffer[BUF_SIZE + 1];
+    int trigger_mode;
+    int electric_dark_correction;
+    int nonlinearity_correction;
+    int boxcar_width;
+    int x_axis_mode;
+    int scans_to_average = 1;
+
+    outfile << "QEPro datafile: " << full_file_name << std::endl;
+    
+    time_t rawtime;
+    struct tm * timeinfo;
+    time (&rawtime);
+    timeinfo = localtime(&rawtime);
+
+    strftime(text_buffer,
+            BUF_SIZE,
+            "%FT%T%Z",
+            timeinfo);
+
+    outfile << "Date: " << text_buffer << std::endl;
+    outfile << "User: " << std::endl;
+    getStringParam(P_serialNumber, BUF_SIZE, serial_number);
+    printf("serial number = %s\n", serial_number);
+    outfile << "Spectrometer: " << serial_number << std::endl;
+
+    getIntegerParam(P_triggerMode, &trigger_mode);
+    outfile << "Trigger mode: " << trigger_mode << std::endl;
+
+    outfile.precision(5);
+    getIntegerParam(P_integrationTime, &integration_time);
+    outfile << "Integration time (s): " << std::scientific;
+    outfile <<  integration_time/1000000 << std::endl;
+
+    getIntegerParam(P_averages, &scans_to_average);
+    outfile << "Scans to average: " << scans_to_average << std::endl;
+
+    getIntegerParam(P_electricDark, &electric_dark_correction);
+    outfile << "Electric dark correction enabled: ";
+    outfile << ((electric_dark_correction==0)?"false":"true");
+    outfile << std::endl;
+
+    getIntegerParam(P_nonLinearity, &nonlinearity_correction);
+    outfile << "Nonlinearity correction enabled: ";
+    outfile << ((nonlinearity_correction==0)?"false":"true");
+    outfile << std::endl;
+
+    getIntegerParam(P_boxcarWidth, &boxcar_width);
+    outfile << "Boxcar width: " << boxcar_width << std::endl;
+
+    getIntegerParam(P_xAxisMode, &x_axis_mode);
+    outfile << "XAxis mode: ";
+    outfile << ((x_axis_mode==0)?"Wavelength (nm)":"Raman Shifts");
+    outfile << std::endl;
+
+    outfile << "Number of pixels in spectrum: " << num_pixels << std::endl;
+
+    outfile << ">>>>> Begin Spectral Data <<<<<" << std::endl;
 }
 
 int LIBUSB_CALL drvUSBQEPro::hotplug_callback(

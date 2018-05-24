@@ -1,7 +1,10 @@
 #include <iocsh.h>
 #include <epicsExport.h>
 #include <asynPortDriver.h>
+
 #include <libusb-1.0/libusb.h>
+
+#include <fstream>
 
 #include "api/seabreezeapi/SeaBreezeAPI.h"
 
@@ -41,12 +44,19 @@
 #define QEProFullFileName       "FullFileName"          /* asynOctet        rw 33 */
 #define QEProFullFilePath       "FullFilePath"          /* asynOctet        rw 34 */
 #define QEProFileIndex          "FileIndex"             /* asynInt32        rw 35 */
+#define QEProXAxisMode          "XAxisMode"             /* asynInt32        rw 36 */
+#define QEProXAxis              "XAxis"                 /* asynFloat64Array ro 37 */
 
 #define POLL_TIME 0.5
 
 #define QEPRO_ACQ_MODE_OFF          0
 #define QEPRO_ACQ_MODE_SINGLE       1
 #define QEPRO_ACQ_MODE_CONTINUOUS   2
+
+#define QEPRO_XAXIS_WAVELENGTH      0
+#define QEPRO_XAXIS_RAMAN_SHIFT     1
+
+#define BUF_SIZE                    80
 
 class drvUSBQEPro : public asynPortDriver {
 
@@ -102,7 +112,9 @@ protected:
     int         P_fullFileName;
     int         P_fullFilePath;
     int         P_fileIndex;
-    #define LAST_QEPRO_PARAM P_fileIndex
+    int         P_xAxisMode;
+    int         P_xAxis;
+    #define LAST_QEPRO_PARAM P_xAxis
 
 private:
     //Wrapper wrapper;
@@ -123,7 +135,6 @@ private:
     long nonlinearity_feature_id;
 
     bool connected;
-    bool run;
     bool acquiring;
 
     void test_connection();
@@ -132,17 +143,26 @@ private:
     void boxcar(
             const double *spectrum_buffer,
             double *process_buffer,
-            int boxcar_width,
-            int num_pixels);
+            int boxcar_width);
     void write_file(
-            double *buffer, 
-            int num_pixels);
+            double *x_axis_buffer,
+            double *data_buffer);
+    void write_header(
+            std::ofstream &outfile,
+            char *full_file_path);
+    void convert_nm_to_raman_shift(
+            double *raman_shift_buffer,
+            const double *wavelength_buffer,
+            int num_wavelengths);
 
     unsigned long integration_time;
     int trigger_mode;
     int num_pixels;
+    int num_wavelengths;
 
     double *spectrum_buffer;
+    double *wavelength_buffer;
+    double *raman_shift_buffer;
 
     double m_laser;
     double m_poll_time;

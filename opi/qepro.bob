@@ -58,7 +58,7 @@
     <actions>
     </actions>
     <x_axis>
-      <title>wavelength [nm]</title>
+      <title>Wavelength [nm]/Raman shuft [cm-1]</title>
       <autoscale>true</autoscale>
       <minimum>0.0</minimum>
       <maximum>10.0</maximum>
@@ -140,7 +140,7 @@
     <x>510</x>
     <y>70</y>
     <width>353</width>
-    <height>27</height>
+    <height>28</height>
     <font>
       <font name="LARGE-MONO-BOLD-ITALIC" family="Source Code Pro" style="BOLD_ITALIC" size="21.0">
       </font>
@@ -507,6 +507,7 @@
             </background_color>
             <actions>
             </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
             <items>
               <item>Continous</item>
               <item>Edge</item>
@@ -540,6 +541,7 @@
           </widget>
           <widget type="combo" version="2.0.0">
             <name>Combo_2</name>
+            <pv_name>$(PREFIX):XAxisMode</pv_name>
             <x>178</x>
             <y>410</y>
             <width>131</width>
@@ -554,7 +556,7 @@
             </background_color>
             <actions>
             </actions>
-            <items_from_pv>false</items_from_pv>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="label" version="2.0.0">
             <name>Label_11</name>
@@ -562,7 +564,7 @@
             <x>8</x>
             <y>460</y>
             <width>75</width>
-            <height>21</height>
+            <height>25</height>
             <font>
               <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
               </font>
@@ -585,19 +587,20 @@
             <name>Check Box_4</name>
             <pv_name>$(PREFIX):FileWrite</pv_name>
             <label></label>
-            <x>168</x>
+            <x>118</x>
             <y>460</y>
-            <width>17</width>
+            <width>25</width>
             <height>25</height>
             <actions>
             </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="fileselector" version="2.0.0">
             <name>File Selector</name>
             <filespace>1</filespace>
             <component>3</component>
-            <x>108</x>
-            <y>450</y>
+            <x>278</x>
+            <y>460</y>
             <width>30</width>
             <height>30</height>
           </widget>
@@ -607,7 +610,7 @@
             <x>8</x>
             <y>500</y>
             <width>39</width>
-            <height>25</height>
+            <height>21</height>
             <font>
               <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
               </font>
@@ -672,6 +675,7 @@
             <wrap_words>false</wrap_words>
             <actions>
             </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_16</name>
@@ -694,6 +698,7 @@
             <wrap_words>false</wrap_words>
             <actions>
             </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_10</name>
@@ -729,6 +734,7 @@
             <y>500</y>
             <width>205</width>
             <height>25</height>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="textentry" version="3.0.0">
             <name>Text Entry_2</name>
@@ -737,6 +743,7 @@
             <y>560</y>
             <width>205</width>
             <height>25</height>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="label" version="2.0.0">
             <name>Label_15</name>
@@ -784,6 +791,7 @@
             <wrap_words>false</wrap_words>
             <actions>
             </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="label" version="2.0.0">
             <name>Label_17</name>
@@ -829,6 +837,7 @@
             <wrap_words>false</wrap_words>
             <actions>
             </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
           <widget type="textentry" version="3.0.0">
             <name>Text Entry_3</name>
@@ -836,6 +845,7 @@
             <x>118</x>
             <y>620</y>
             <height>25</height>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
           </widget>
         </children>
       </tab>
@@ -1117,11 +1127,12 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
     <name>Action Button_2</name>
     <actions>
       <action type="write_pv">
-        <pv_name>$(PREFIX):AcqCtl</pv_name>
+        <pv_name>$(pv_name)</pv_name>
         <value>0</value>
         <description>Stop</description>
       </action>
     </actions>
+    <pv_name>$(PREFIX):AcqCtl</pv_name>
     <text>Stop</text>
     <x>240</x>
     <y>220</y>
@@ -1135,17 +1146,19 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
       <color red="240" green="240" blue="240">
       </color>
     </background_color>
-    <tooltip>$(actions)</tooltip>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
   </widget>
   <widget type="action_button" version="3.0.0">
     <name>Action Button_1</name>
     <actions execute_as_one="true">
       <action type="write_pv">
-        <pv_name>$(PREFIX):AcqCtl</pv_name>
+        <pv_name>$(pv_name)</pv_name>
         <value>1</value>
         <description>Start</description>
       </action>
     </actions>
+    <pv_name>$(PREFIX):AcqCtl</pv_name>
     <text>Start</text>
     <x>240</x>
     <y>180</y>
@@ -1159,7 +1172,8 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
       <color red="240" green="240" blue="240">
       </color>
     </background_color>
-    <tooltip>$(actions)</tooltip>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
   </widget>
   <widget type="progressbar" version="2.0.0">
     <name>Progress Bar</name>

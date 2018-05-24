@@ -202,23 +202,43 @@ record(ai, "$(PREFIX):LEDIndicator_rbv"){
 }
 
 record(waveform, "$(PREFIX):XaxisNm_rbv"){
+    field(DESC, "Spectrum wavelengths")
  	field(DTYP, "asynFloat64ArrayIn")
-        field(EGU,  "nm")
-	field(NELM, "$(SIZE)")
-        field(FTVL, "DOUBLE")
-        field(PINI, "1")
-##	field(SCAN, "I/O Intr")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisNm")
+    field(EGU,  "nm")
+    field(NELM, "$(SIZE)")
+    field(FTVL, "DOUBLE")
+	field(SCAN, "I/O Intr")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisNm")
 }
 
 record(waveform, "$(PREFIX):XaxisRs_rbv"){
+    field(DESC, "Spectrum Raman shift values")
  	field(DTYP, "asynFloat64ArrayIn")
-        field(EGU,  "nm")
-	field(NELM, "$(SIZE)")
-        field(FTVL, "DOUBLE")
-        field(PINI, "1")
-##	field(SCAN, "I/O Intr")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisRs")
+    field(EGU,  "cm-1")
+    field(NELM, "$(SIZE)")
+    field(FTVL, "DOUBLE")
+	field(SCAN, "I/O Intr")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisRs")
+}
+
+record(waveform, "$(PREFIX):Xaxis_rbv"){
+    field(DESC, "Plot X axis values")
+ 	field(DTYP, "asynFloat64ArrayIn")
+    field(EGU,  "au")
+    field(NELM, "$(SIZE)")
+    field(FTVL, "DOUBLE")
+	field(SCAN, "I/O Intr")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxis")
+}
+
+record(bo, "$(PREFIX):XAxisMode") {
+    field(DESC, "X Axis mode")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "Wavelength")
+    field(ONAM, "Raman shift")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XAxisMode")
+
+    #info(autosaveFields, "VAL")
 }
 
 record(waveform, "$(PREFIX):Spectrum_rbv") {
@@ -509,15 +529,5 @@ record(waveform, "$(PREFIX):FullFilePath_rbv"){
 #	field(INPB, "$(PREFIX):IntegrationTime.VAL")
 #	field(INPC, "$(PREFIX):Averages_rbv.VAL")
 #	field(CALC, "A? 20000000./B/C+VAL:0")
-#}
-
-#record(aai, "$(PREFIX):Xaxis_rbv"){
-#        field(DTYP, "USBSpectrometers")
-#        field(INP,  "@getAxis")
-#        field(EGU,  "nm")
-#	field(NELM, "2048")
-#        field(PHAS, "5")
-#        field(FTVL, "DOUBLE")
-#        field(PINI, "1")
 #}
 
