@@ -16,14 +16,14 @@
 #include <iomanip>
 
 #include "drvUSBQEPro.h"
-#include "api/seabreezeapi/SeaBreezeAPI.h"
+#include "drvUSBQEProWorker.h"
+#include "api/SeaBreezeWrapper.h"
 
 #define NUM_QEPRO_PARAMS ((int)(&LAST_QEPRO_PARAM - &FIRST_QEPRO_PARAM + 1))
 
 static const char *driverName="drvUSBQEPro";
 
 int drvUSBQEPro::zeroIndex = 0;
-//bool drvUSBQEPro::connected = false;
 
 drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
    : asynPortDriver(portName,
@@ -40,11 +40,12 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
 {
     asynStatus status;
     const char *functionName = "drvUSBQEPro";
+    spec_index = 0;
 
     // Initialize connection status
     connected = false;
 
-    eventId = epicsEventCreate(epicsEventEmpty);
+    //eventId = epicsEventCreate(epicsEventEmpty);
     createParam( QEProNumSpecs,             asynParamInt32,         &P_numSpecs);		    //  0 
     createParam( QEProId,                   asynParamInt32,         &P_nrBoard);		    //  1
     createParam( QEProName,                 asynParamOctet,         &P_name);		        //  2
@@ -84,6 +85,9 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          // 36
     createParam( QEProXAxisMode,            asynParamInt32,         &P_xAxisMode);          // 37
     createParam( QEProXAxis,                asynParamFloat64Array,  &P_xAxis);              // 38
+    createParam( QEProCPUTemperature,       asynParamFloat64,       &P_cpuTemperature);     // 39
+    createParam( QEProPCBTemperature,       asynParamFloat64,       &P_pcbTemperature);     // 40
+    createParam( QEProDetTemperature,       asynParamFloat64,       &P_detTemperature);     // 41
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -367,7 +371,6 @@ asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxC
     test_connection();
     if (connected) {
         if (function == P_name) {
-            //sbapi_get_device_type(device_id, &error, buffer, 79);
             api->getDeviceType(device_id, &error, buffer, 79);
             strcpy(value, buffer);
             *nActual = strlen(buffer);
@@ -386,7 +389,6 @@ asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxC
             *eomReason = 0;
         } 
         else if (function == P_serialNumber) {
-            //sbapi_get_serial_number(
             api->getSerialNumber(
                     device_id,
                     serial_number_feature_id,
@@ -428,14 +430,12 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
     test_connection();
     if (connected) {
         if (function == P_numSpecs) {
-            //rval = sbapi_get_number_of_device_ids();
             rval = api->getNumberOfDeviceIDs();
             *value = rval;
             setIntegerParam(addr, P_numSpecs, *value);
         }
 
         else if (function == P_numberOfPixels) {
-            //rval = sbapi_spectrometer_get_formatted_spectrum_length(
             rval = api->spectrometerGetFormattedSpectrumLength(
                     device_id,
                     spectrometer_feature_id,
@@ -446,7 +446,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
         }
 
         else if (function == P_numberOfDarkPixels) {
-            //rval = sbapi_spectrometer_get_electric_dark_pixel_count(
             rval = api->spectrometerGetElectricDarkPixelCount(
                     device_id,
                     spectrometer_feature_id,
@@ -473,7 +472,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             setIntegerParam(addr, P_maxIntegrationTime, *value); 
         }
         else if (function == P_minIntegrationTime) {
-            //rval = sbapi_spectrometer_get_minimum_integration_time_micros(
             rval = api->spectrometerGetMinimumIntegrationTimeMicros(
                     device_id,
                     spectrometer_feature_id,
@@ -491,19 +489,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             //setIntegerParam(addr, P_electricDark, *value);
         }
 
-        else if (function == P_detectorTemperature) {
-            // TODO: Investigate this more. test program shows no temperatures.
-            // Feature not implemented in QEPro
-            *value = 0;
-            setIntegerParam(addr, P_detectorTemperature, *value);
-        }
-
-        else if (function == P_boardTemperature) {
-            // TODO: Investigate this more. test program shows no temperatures.
-            // Feature not implemented in QEPro
-            *value = 0;
-            setIntegerParam(addr, P_boardTemperature, *value);
-        }
 
         else if (function == P_triggerMode) {
             rval = trigger_mode;
@@ -587,7 +572,6 @@ asynStatus drvUSBQEPro::readFloat64(asynUser *pasynUser, epicsFloat64 *value){
         }
         else if (function == P_nonLinearity) {
             double buffer;
-            //sbapi_nonlinearity_coeffs_get(
             api->nonlinearityCoeffsGet(
                     device_id,
                     nonlinearity_feature_id,
@@ -596,6 +580,16 @@ asynStatus drvUSBQEPro::readFloat64(asynUser *pasynUser, epicsFloat64 *value){
                     1);
             *value = buffer;
             setDoubleParam(addr, P_nonLinearity, *value);
+        }
+        else if (function == P_cpuTemperature) {
+            read_temperatures();
+            *value = temperatures[CPU_TEMPERATURE];
+        }
+        else if (function == P_pcbTemperature) {
+            *value = temperatures[PCB_TEMPERATURE];
+        }
+        else if (function == P_detTemperature) {
+            *value = temperatures[TEC_TEMPERATURE];
         }
         else {
             status = asynPortDriver::readFloat64(pasynUser, value); 
@@ -784,15 +778,10 @@ void drvUSBQEPro::test_connection() {
     bool found_ooi_spectrometer = false;
 
     // Check the USB device list to see if the Ocean Optics spectrometer
-    // is on the bus
-    //libusb_context *context = NULL;
     //context = NULL;
     libusb_device **list;
     int rc = 0;
     ssize_t count = 0;
-
-    //rc = libusb_init(&context);
-    //assert(rc == 0);
 
     count = libusb_get_device_list(context, &list);
     assert(count > 0);
@@ -839,7 +828,6 @@ void drvUSBQEPro::test_connection() {
                     number_of_devices);
 
             long * device_ids = (long *)calloc(number_of_devices, sizeof(long));
-            //sbapi_get_device_ids(device_ids, number_of_devices);
             api->getDeviceIDs(device_ids, number_of_devices);
             // Assume only one device
             device_id = device_ids[0];
@@ -861,7 +849,6 @@ void drvUSBQEPro::test_connection() {
             // Read spectrometer feature ID
             int num_spectrometer_features = 
                 api->getNumberOfSpectrometerFeatures(device_id, &error);
-            //sbapi_get_number_of_spectrometer_features(device_id, &error);
 
             asynPrint(pasynUserSelf, 
                     ASYN_TRACE_FLOW, 
@@ -872,7 +859,6 @@ void drvUSBQEPro::test_connection() {
                 long * spectrometer_feature_ids = 
                     (long *)calloc(num_spectrometer_features, sizeof(long));
 
-                //sbapi_get_spectrometer_features(
                 api->getSpectrometerFeatures(
                         device_ids[0],
                         &error,
@@ -886,9 +872,34 @@ void drvUSBQEPro::test_connection() {
                     "test_connection: spectrometer feature id = 0x%lx\n", 
                     spectrometer_feature_id);
 
+            // Read USB feature ID
+            int num_usb_features = 
+                api->getNumberOfRawUSBBusAccessFeatures(device_id, &error);
+
+            asynPrint(pasynUserSelf, 
+                    ASYN_TRACE_FLOW, 
+                    "test_connection: number of usb features = %d\n",
+                    num_usb_features);
+
+            if (num_usb_features > 0) {
+                long * usb_feature_ids = 
+                    (long *)calloc(num_usb_features, sizeof(long));
+
+                api->getRawUSBBusAccessFeatures(
+                        device_ids[0],
+                        &error,
+                        usb_feature_ids, 
+                        num_usb_features);
+
+                usb_feature_id = usb_feature_ids[0];
+            }
+            asynPrint(pasynUserSelf, 
+                    ASYN_TRACE_FLOW, 
+                    "test_connection: usb feature id = 0x%lx\n", 
+                    usb_feature_id);
+
             // Read serial number feature ID
             int num_serial_number_features = 
-                //sbapi_get_number_of_serial_number_features(
                 api->getNumberOfSerialNumberFeatures(
                         device_id, 
                         &error);
@@ -899,7 +910,6 @@ void drvUSBQEPro::test_connection() {
                             num_serial_number_features, 
                             sizeof(long));
 
-                //sbapi_get_serial_number_features(
                 api->getSerialNumberFeatures(
                         device_id,
                         &error,
@@ -912,7 +922,6 @@ void drvUSBQEPro::test_connection() {
 
             // Read non-linearity coefficients feature ID
             int num_nonlinearity_features = 
-                //sbapi_get_number_of_nonlinearity_coeffs_features(
                 api->getNumberOfNonlinearityCoeffsFeatures(
                         device_id, 
                         &error);
@@ -923,7 +932,6 @@ void drvUSBQEPro::test_connection() {
                             num_nonlinearity_features, 
                             sizeof(long));
 
-                //sbapi_get_nonlinearity_coeffs_features(
                 api->getNonlinearityCoeffsFeatures(
                         device_id,
                         &error,
@@ -1162,4 +1170,9 @@ extern "C" {
     }
 
     epicsExportRegistrar(drvUSBQEProRegister);
+}
+
+static void worker(void *pPvt) {
+    drvUSBQEPro *ptr = (drvUSBQEPro *)pPvt;
+    ptr->getSpectrumThread(ptr);
 }

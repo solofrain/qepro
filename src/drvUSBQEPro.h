@@ -1,3 +1,5 @@
+#ifndef DRVUSBQEPRO_H
+#define DRVUSBQEPRO_H
 #include <iocsh.h>
 #include <epicsExport.h>
 #include <asynPortDriver.h>
@@ -6,6 +8,7 @@
 
 #include <fstream>
 
+#include "drvUSBQEProOBP.h"
 #include "api/seabreezeapi/SeaBreezeAPI.h"
 
 #define QEProNumSpecs           "NumSpecs"              /* asynInt32        ro  0 */
@@ -28,7 +31,7 @@
 #define QEProTriggerMode        "TriggerMode"           /* asynInt32        rw 17 */
 #define QEProNonLinearity       "NonLinearity"          /* asynInt32        rw 18 */
 #define QEProDecouple           "Decouple"              /* asynInt32        rw 19 */
-#define QEProLEDIndicator       "LEDIndicator"          /* asynInt32    rw 20 */
+#define QEProLEDIndicator       "LEDIndicator"          /* asynInt32        rw 20 */
 #define QEProAverages           "Averages"              /* asynInt32        rw 21 */
 #define QEProXAxisNm            "XAxisNm"               /* asynFloat64Array ro 22 */
 #define QEProXAxisRs            "XAxisRs"               /* asynFloat64Array ro 23 */
@@ -47,6 +50,9 @@
 #define QEProFileIndex          "FileIndex"             /* asynInt32        rw 36 */
 #define QEProXAxisMode          "XAxisMode"             /* asynInt32        rw 37 */
 #define QEProXAxis              "XAxis"                 /* asynFloat64Array ro 38 */
+#define QEProCPUTemperature     "CPUTemperature"        /* asynFloat64      ro 39 */
+#define QEProPCBTemperature     "PCBTemperature"        /* asynFloat64      ro 40 */
+#define QEProDetTemperature     "DetTemperature"        /* asynFloat64      ro 41 */
 
 #define POLL_TIME 0.5
 
@@ -58,6 +64,14 @@
 #define QEPRO_XAXIS_RAMAN_SHIFT     1
 
 #define BUF_SIZE                    80
+
+#define STS_REQUEST_ENDPOINT        0x01
+#define STS_RESPONSE_ENDPOINT       0x81
+
+#define NUM_TEMP_SENSORS            8
+#define CPU_TEMPERATURE             0
+#define PCB_TEMPERATURE             2
+#define TEC_TEMPERATURE             3
 
 class drvUSBQEPro : public asynPortDriver {
 
@@ -115,12 +129,15 @@ protected:
     int         P_fileIndex;
     int         P_xAxisMode;
     int         P_xAxis;
-    #define LAST_QEPRO_PARAM P_xAxis
+    int         P_cpuTemperature;
+    int         P_pcbTemperature;
+    int         P_detTemperature;
+    #define LAST_QEPRO_PARAM P_detTemperature
 
 private:
     //Wrapper wrapper;
     SeaBreezeAPI *api;
-    epicsEventId eventId;
+    //epicsEventId eventId;
     static int zeroIndex;
     //int index;
 
@@ -133,7 +150,11 @@ private:
     long device_id;
     long serial_number_feature_id;
     long spectrometer_feature_id;
+    long usb_feature_id;
     long nonlinearity_feature_id;
+    int spec_index;
+
+    double temperatures[NUM_TEMP_SENSORS];
 
     bool connected;
     bool acquiring;
@@ -156,6 +177,16 @@ private:
             const double *wavelength_buffer,
             int num_wavelengths);
 
+    // QEPro functions using OBP
+    int abort();
+    void read_temperatures();
+
+    // OBP support functions
+    int sendOBPMessage(OBPExchange *xfer);
+    const char* getOBPError(unsigned err_no);
+    void write_buffer(unsigned char *request, size_t len);
+    int read_buffer(unsigned char *response, size_t len);
+
     unsigned long integration_time;
     int trigger_mode;
     int num_pixels;
@@ -174,8 +205,11 @@ private:
 
 };
 
-static void worker(void *pPvt) {
-    drvUSBQEPro *ptr = (drvUSBQEPro *)pPvt;
-    ptr->getSpectrumThread(ptr);
-}
 
+//static void worker(void *pPvt);
+//static void worker(void *pPvt) {
+    //drvUSBQEPro *ptr = (drvUSBQEPro *)pPvt;
+    //ptr->getSpectrumThread(ptr);
+//}
+
+#endif

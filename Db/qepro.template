@@ -115,7 +115,7 @@ record(ai, "$(PREFIX):Averages_rbv") {
 	#field(SCAN, "I/O Intr")
     #field(PINI, "1")
     field(VAL,  "1")
-    #field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
 }
@@ -145,25 +145,31 @@ record(ai, "$(PREFIX):ElectricDark_rbv") {
 ##	field(SCAN, "I/O Intr")
 }
 
-
-record(ai, "$(PREFIX):DetectorTemperature_rbv") {
-        field(DTYP, "asynInt32")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DetectorTemperature")
-##	field(SCAN, "I/O Intr")
+record(ai, "$(PREFIX):CPUTemperature_rbv") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))CPUTemperature")
+	field(SCAN, "10 second")
+    field(EGU, "C")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(EGU, "C")
 }
 
 record(ai, "$(PREFIX):BoardTemperature_rbv") {
-        field(DTYP, "asynInt32")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoardTemperature")
-##	field(SCAN, "I/O Intr")
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PCBTemperature")
+	field(SCAN, "10 second")
+    field(EGU, "C")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(EGU, "C")
+}
+
+record(ai, "$(PREFIX):DetectorTemperature_rbv") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DetTemperature")
+	field(SCAN, "10 second")
+    field(EGU, "C")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
 }
 
 record(ai,  "$(PREFIX):TriggerMode_rbv") {
