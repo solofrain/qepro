@@ -202,6 +202,7 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
 
                 getIntegerParam(P_minIntegrationTime, &min_integration_time);
 
+                /*
                 api->spectrometerSetIntegrationTimeMicros(
                         device_id,
                         spectrometer_feature_id,
@@ -228,7 +229,9 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                         &error,
                         integration_time);
 
+                */
                 // Do one acquisition to flush out old data, one to get real data
+                /*
                 for (int i = 0; i < 2; i++)
                     api->spectrometerGetFormattedSpectrum(
                             device_id, 
@@ -236,6 +239,19 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                             &error, 
                             dark_buffer, 
                             num_pixels);
+                            */
+
+                // Restart acquisition
+                abort();
+                clear_buffers();
+                start_acquisition();
+
+                api->spectrometerGetFormattedSpectrum(
+                        device_id, 
+                        spectrometer_feature_id,
+                        &error, 
+                        dark_buffer, 
+                        num_pixels);
 
                 dark_valid = true;
                 setIntegerParam(P_darkValid, dark_valid);
@@ -255,6 +271,9 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
         if (run) {
             if (connected) {
                 lock();
+
+                // If not yet acquiring, start the detector
+                start_acquisition();
 
                 // Set acquisition status PV
                 acquiring = true;
@@ -364,6 +383,12 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
             }
         }
         else {
+            // Stop the acquisition
+            test_connection();
+            if (acquiring && connected) {
+                abort();
+                clear_buffers();
+            }
             // Set acquisition status PV
             acquiring = false;
             setIntegerParam(P_acqSts, acquiring);

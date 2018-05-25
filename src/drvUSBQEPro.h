@@ -195,6 +195,8 @@ private:
 
     // QEPro functions using OBP
     int abort();
+    int clear_buffers();
+    int start_acquisition();
     void read_temperatures();
 
     // OBP support functions

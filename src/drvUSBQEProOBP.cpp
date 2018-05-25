@@ -28,6 +28,42 @@ int drvUSBQEPro::abort() {
 
 }
 
+int drvUSBQEPro::clear_buffers() {
+    OBPExchange xfer;
+
+    memset(&xfer, 0, sizeof(xfer));
+    xfer.message_type = OBP_MESSAGE_CLEAR_BUFFERS;
+
+    printf("\naclearing buffers\n");
+    if (!sendOBPMessage(&xfer)) {
+        printf("  buffer clear successful\n");
+    }
+    else {
+        printf("ERROR: unable to execute CLEAR_BUFFER transaction\n");
+        return -1;
+    }
+    return 0;
+}
+
+
+int drvUSBQEPro::start_acquisition() {
+
+    OBPExchange xfer;
+
+    memset(&xfer, 0, sizeof(xfer));
+    xfer.message_type = OBP_MESSAGE_START_BUFFERING;
+
+    printf("\nstarting buffering...\n");
+    if (!sendOBPMessage(&xfer)) {
+        printf("  start successful\n");
+    }
+    else {
+        printf("ERROR: unable to execute START_BUFFERING transaction\n");
+        return -1;
+    }
+    return 0;
+}
+
 // execute an OBP request-response pair over serial (returns 0 on success)
 int drvUSBQEPro::sendOBPMessage(OBPExchange *xfer)
 {
