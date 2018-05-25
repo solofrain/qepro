@@ -88,6 +88,17 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     createParam( QEProCPUTemperature,       asynParamFloat64,       &P_cpuTemperature);     // 39
     createParam( QEProPCBTemperature,       asynParamFloat64,       &P_pcbTemperature);     // 40
     createParam( QEProDetTemperature,       asynParamFloat64,       &P_detTemperature);     // 41
+    createParam( QEProROI0LowWavelength,    asynParamFloat64,       &P_roi0LowWavelength);  // 42
+    createParam( QEProROI0HighWavelength,   asynParamFloat64,       &P_roi0HighWavelength); // 43
+    createParam( QEProROI1LowWavelength,    asynParamFloat64,       &P_roi1LowWavelength);  // 44
+    createParam( QEProROI1HighWavelength,   asynParamFloat64,       &P_roi1HighWavelength); // 45
+    createParam( QEProROI0Sum,              asynParamFloat64,       &P_roi0Sum);            // 46
+    createParam( QEProROI1Sum,              asynParamFloat64,       &P_roi1Sum);            // 47
+    createParam( QEProROIRatio,             asynParamFloat64,       &P_roiRatio);           // 48
+    createParam( QEProDarkAcq,              asynParamInt32,         &P_darkAcq);            // 49
+    createParam( QEProDarkSubtract,         asynParamInt32,         &P_darkSubtract);       // 50
+    createParam( QEProDarkSpectrum,         asynParamFloat64Array,  &P_darkSpectrum);       // 51
+    createParam( QEProDarkValid,            asynParamInt32,         &P_darkValid);          // 52
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -97,6 +108,10 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     rc = libusb_init(&context);
     assert(rc == 0);
 
+    // General initialisation
+    dark_valid = false;
+
+    // Set up connection
     status = connectSpec();
     if (status) {
         asynPrint(
@@ -177,10 +192,52 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
             run = false;
         }
 
+        // Collect a dark spectra if requested
+        if (dark_acquire) {
+            test_connection();
+            if (connected) {
+                int min_integration_time;
+                int error;
+
+                asynPrint(pasynUserSelf, 
+                        ASYN_TRACE_FLOW, 
+                        "getSpectrumThread: acquiring dark spectrum\n");
+
+                getIntegerParam(P_minIntegrationTime, &min_integration_time);
+
+                // Restart acquisition
+                abort();
+                clear_buffers();
+                start_acquisition();
+
+                api->spectrometerGetFormattedSpectrum(
+                        device_id, 
+                        spectrometer_feature_id,
+                        &error, 
+                        dark_buffer, 
+                        num_pixels);
+
+                dark_valid = true;
+                setIntegerParam(P_darkValid, dark_valid);
+                callParamCallbacks();
+                dark_acquire = false;
+
+                // Send the data to the dark spectrum PV
+                doCallbacksFloat64Array(
+                        dark_buffer, 
+                        num_pixels, 
+                        P_darkSpectrum, 
+                        0);
+            }
+        }
+
         // Decide if we should acquire or not
         if (run) {
             if (connected) {
                 lock();
+
+                // If not yet acquiring, start the detector
+                start_acquisition();
 
                 // Set acquisition status PV
                 acquiring = true;
@@ -216,6 +273,7 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                         num_wavelengths, 
                         P_xAxisRs, 
                         0);
+
                 doCallbacksFloat64Array(
                         wavelength_buffer, 
                         num_wavelengths, 
@@ -239,6 +297,21 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                             0);
                 }
 
+
+                if (dark_subtract && dark_valid) {
+                    asynPrint(
+                            pasynUserSelf,
+                            ASYN_TRACE_FLOW,
+                            "getSpectrumThread: doing dark subtraction\n");
+
+                    for (int i = 0; i < num_pixels; i++) {
+                        spectrum_buffer[i] -= dark_buffer[i];
+                        if (spectrum_buffer[i] < 0)
+                            spectrum_buffer[i] = 0;
+                    }
+                }
+
+                integrate_rois();
 
                 if (boxcar_half_width > 0) {
                     double *process_buffer;
@@ -277,6 +350,12 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
             }
         }
         else {
+            // Stop the acquisition
+            test_connection();
+            if (acquiring && connected) {
+                abort();
+                clear_buffers();
+            }
             // Set acquisition status PV
             acquiring = false;
             setIntegerParam(P_acqSts, acquiring);
@@ -292,6 +371,25 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
     }
 }
 
+// TODO: Make this work properly with the boxcar averaging
+void drvUSBQEPro::integrate_rois() {
+    for (int i = 0; i < NUM_ROIS; i++) {
+        roi_sum[i] = 0;
+        for (int j = 0; j < num_pixels; j++) {
+            if (wavelength_buffer[j] > roi_low[i] 
+                    && wavelength_buffer[j] < roi_high[i]) {
+                roi_sum[i] += spectrum_buffer[j];
+            }
+        }
+    }
+
+    roi_ratio = roi_sum[0] / roi_sum[1];
+
+    setDoubleParam(P_roiRatio, roi_ratio);
+    setDoubleParam(P_roi0Sum, roi_sum[0]);
+    setDoubleParam(P_roi1Sum, roi_sum[1]);
+    callParamCallbacks();
+}
 
 void drvUSBQEPro::convert_nm_to_raman_shift(
         double *raman_shift_buffer,
@@ -321,6 +419,7 @@ void drvUSBQEPro::allocate_spectrum_buffer() {
         spectrum_buffer = (double *)calloc(num_pixels, sizeof(double));
         wavelength_buffer = (double *)calloc(num_pixels, sizeof(double));
         raman_shift_buffer = (double *)calloc(num_pixels, sizeof(double));
+        dark_buffer = (double *)calloc(num_pixels, sizeof(double));
     }
 }
 
@@ -337,6 +436,10 @@ void drvUSBQEPro::deallocate_spectrum_buffer() {
         if (raman_shift_buffer)
             free(raman_shift_buffer);
         raman_shift_buffer = NULL;
+
+        if (dark_buffer)
+            free(dark_buffer);
+        dark_buffer = NULL;
     }
 }
 
@@ -625,43 +728,43 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
     test_connection();
     if (connected) {
         /*
-        if (function == P_xAxisNm) {
-            double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
-            int num_wavelengths = api->spectrometerGetWavelengths(
-                    device_id, 
-                    spectrometer_feature_id, 
-                    &error, 
-                    wavelengths, 
-                    num_pixels);
+           if (function == P_xAxisNm) {
+           double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
+           int num_wavelengths = api->spectrometerGetWavelengths(
+           device_id, 
+           spectrometer_feature_id, 
+           &error, 
+           wavelengths, 
+           num_pixels);
 
-            for(int i = 0; i < num_wavelengths; i++)
-                value[i] = wavelengths[i];
+           for(int i = 0; i < num_wavelengths; i++)
+           value[i] = wavelengths[i];
 
-            *nIn = num_wavelengths;
+         *nIn = num_wavelengths;
 
-            asynPrint(pasynUser, 
-                    ASYN_TRACE_FLOW, 
-                    "readFloat64Array: reading wavelengths\n");
-            asynPrint(pasynUser, 
-                    ASYN_TRACE_FLOW, 
-                    "readFloat64Array: num_wavelengths = %d\n",
-                    num_wavelengths);
-        }
-        else if (function == P_xAxisRs) {
-            double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
-            int num_wavelengths = api->spectrometerGetWavelengths(
-                    device_id, 
-                    spectrometer_feature_id, 
-                    &error, 
-                    wavelengths, 
-                    num_pixels);
+         asynPrint(pasynUser, 
+         ASYN_TRACE_FLOW, 
+         "readFloat64Array: reading wavelengths\n");
+         asynPrint(pasynUser, 
+         ASYN_TRACE_FLOW, 
+         "readFloat64Array: num_wavelengths = %d\n",
+         num_wavelengths);
+         }
+         else if (function == P_xAxisRs) {
+         double *wavelengths = (double *)calloc(num_pixels, sizeof(double));
+         int num_wavelengths = api->spectrometerGetWavelengths(
+         device_id, 
+         spectrometer_feature_id, 
+         &error, 
+         wavelengths, 
+         num_pixels);
 
-            for(int i = 0; i < num_wavelengths; i++)
-                value[i] = (1./m_laser - 1./wavelengths[i]) *10e7; // Raman shift in cm-1
+         for(int i = 0; i < num_wavelengths; i++)
+         value[i] = (1./m_laser - 1./wavelengths[i]) *10e7; // Raman shift in cm-1
 
-            *nIn = num_wavelengths;
-        }
-    */
+         *nIn = num_wavelengths;
+         }
+         */
     }
     else {
         status = asynDisconnected;
@@ -713,6 +816,10 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
                     spectrometer_feature_id,
                     &error,
                     integration_time);
+            // Invalidate the current dark spectra
+            dark_valid = false;
+            setIntegerParam(P_darkValid, dark_valid);
+            callParamCallbacks();
         }
         else if (function == P_averages) {
             // Check if implmemented in QEPro
@@ -757,6 +864,18 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
         }
     }
 
+    // Do functions that are not dependent on connection
+    if (function == P_darkSubtract) {
+        if (value == 0)
+            dark_subtract = false;
+        else
+            dark_subtract = true;
+    }
+    else if (function == P_darkAcq) {
+        if (value == 1)
+            dark_acquire = true;
+    }
+
     /* Do callbacks so higher layers see any changes */
     status = (asynStatus) callParamCallbacks();
 
@@ -769,6 +888,42 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
     return status;
 
 }
+
+asynStatus drvUSBQEPro::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
+{
+    int function = pasynUser->reason;
+    asynStatus status = asynSuccess;
+    const char* functionName = "writeFloat64";
+    int addr;
+
+    /* Set the parameter in the parameter library. */
+    status = (asynStatus) setDoubleParam(function, value);
+
+    this->getAddress(pasynUser, &addr);
+
+    if (function == P_roi0LowWavelength) {
+        roi_low[0] = value;
+    }
+    else if (function == P_roi0HighWavelength) {
+        roi_high[0] = value;
+    }
+    else if (function == P_roi1LowWavelength) {
+        roi_low[1] = value;
+    }
+    else if (function == P_roi1HighWavelength) {
+        roi_high[1] = value;
+    }
+
+    if (status)
+        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
+                driverName, functionName, this->portName, value, addr, (int)status);
+    else
+        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d\n",
+                driverName, functionName, this->portName, value, addr);
+    return status;
+
+}
+
 
 // Test whether spectrometer is connected. If it is was previously
 // disconnected, read the various id values and store to avoid needing to 
@@ -960,11 +1115,6 @@ void drvUSBQEPro::boxcar(
     double sum;
     double average;
 
-    printf("boxcar: entering\n");
-    printf("boxcar: boxcar_half_width = %d\n", boxcar_half_width);
-    printf("boxcar: num_pixels = %d\n", num_pixels);
-
-
     // TODO: Fix algorithm to keep running total. Only need one addition and one 
     // subtraction per calculation.
     for (int i = 0; i < num_pixels; i++) {
@@ -1052,7 +1202,7 @@ void drvUSBQEPro::write_file(
     outfile.open(full_file_path, std::ofstream::out);
 
     write_header(outfile, full_file_name);
-    
+
     outfile.precision(4);
 
     for (int i = 0; i < num_pixels; i++) {
@@ -1086,7 +1236,7 @@ void drvUSBQEPro::write_header(std::ofstream &outfile, char *full_file_name) {
     int scans_to_average = 1;
 
     outfile << "QEPro datafile: " << full_file_name << std::endl;
-    
+
     time_t rawtime;
     struct tm * timeinfo;
     time (&rawtime);
@@ -1100,7 +1250,6 @@ void drvUSBQEPro::write_header(std::ofstream &outfile, char *full_file_name) {
     outfile << "Date: " << text_buffer << std::endl;
     outfile << "User: " << std::endl;
     getStringParam(P_serialNumber, BUF_SIZE, serial_number);
-    printf("serial number = %s\n", serial_number);
     outfile << "Spectrometer: " << serial_number << std::endl;
 
     getIntegerParam(P_triggerMode, &trigger_mode);

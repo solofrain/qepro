@@ -16,16 +16,43 @@ int drvUSBQEPro::abort() {
     memset(&xfer, 0, sizeof(xfer));
     xfer.message_type = OBP_MESSAGE_ABORT_ACQUISITION;
 
-    printf("\naborting acqusition...\n");
     if (!sendOBPMessage(&xfer)) {
-        printf("  abort successful\n");
+        return 0;
     }
     else {
-        printf("ERROR: unable to execute ABORT_ACQUISITION transaction\n");
         return -1;
     }
-    return 0;
 
+}
+
+int drvUSBQEPro::clear_buffers() {
+    OBPExchange xfer;
+
+    memset(&xfer, 0, sizeof(xfer));
+    xfer.message_type = OBP_MESSAGE_CLEAR_BUFFERS;
+
+    if (!sendOBPMessage(&xfer)) {
+        return 0;
+    }
+    else {
+        return -1;
+    }
+}
+
+
+int drvUSBQEPro::start_acquisition() {
+
+    OBPExchange xfer;
+
+    memset(&xfer, 0, sizeof(xfer));
+    xfer.message_type = OBP_MESSAGE_START_BUFFERING;
+
+    if (!sendOBPMessage(&xfer)) {
+        return 0;
+    }
+    else {
+        return -1;
+    }
 }
 
 // execute an OBP request-response pair over serial (returns 0 on success)
@@ -33,7 +60,6 @@ int drvUSBQEPro::sendOBPMessage(OBPExchange *xfer)
 {
     if (!xfer)
     {
-        printf("%s: null OBPExchange\n", __FUNCTION__);
         return 1;
     }
 
@@ -41,14 +67,12 @@ int drvUSBQEPro::sendOBPMessage(OBPExchange *xfer)
 
     if (xfer->request_len > 16)
     {
-        printf("%s: currently only supports immediate-mode request params <= 16 bytes\n", __FUNCTION__);
         return 1;
     }
 
     // check that compiler / architecture hasn't broken anything
     if (sizeof(OBPHeader) != 44)
     {
-        printf("%s: header size is %u bytes (expected 44)\n", __FUNCTION__, (unsigned) sizeof(OBPHeader));
         return 1;
     }
 
