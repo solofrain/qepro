@@ -284,6 +284,7 @@ record(bi, "$(PREFIX):DarkValid_rbv") {
     field(SCAN, "I/O Intr")
     field(DTYP, "asynInt32")
     field(ZNAM, "Invalid")
+    field(ZSV,  "MAJOR")
     field(ONAM, "Valid")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkValid")
 }
