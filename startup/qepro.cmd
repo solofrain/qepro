@@ -8,7 +8,7 @@ require autosave,5.7.0
  epicsEnvSet(EPICS_CA_MAX_ARRAY_BYTES,64000000)
 
 epicsEnvSet("PREFIX", "Sp1")
-epicsEnvSet("PORT",   "Flame")
+epicsEnvSet("PORT",   "QEPro")
 epicsEnvSet("SIZE",   "3648")
 epicsEnvSet("LASER",  "478")
 
