@@ -53,6 +53,14 @@
 #define QEProCPUTemperature     "CPUTemperature"        /* asynFloat64      ro 39 */
 #define QEProPCBTemperature     "PCBTemperature"        /* asynFloat64      ro 40 */
 #define QEProDetTemperature     "DetTemperature"        /* asynFloat64      ro 41 */
+#define QEProROI1LowWavelength  "ROI1LowWavelength"     /* asynFloat64      ro 42 */
+#define QEProROI1HighWavelength "ROI1HighWavelength"    /* asynFloat64      ro 43 */
+#define QEProROI2LowWavelength  "ROI2LowWavelength"     /* asynFloat64      ro 44 */
+#define QEProROI2HighWavelength "ROI2HighWavelength"    /* asynFloat64      ro 45 */
+#define QEProDarkAcq            "DarkAcq"               /* asynInt32        rw 46 */
+#define QEProDarkSubtract       "DarkSubtract"          /* asynInt32        rw 47 */
+#define QEProDarkSpectrum       "DarkSpectrum"          /* asynFloat64Array ro 48 */
+#define QEProDarkValid          "DarkValid"             /* asynInt32        ro 49 */
 
 #define POLL_TIME 0.5
 
@@ -132,7 +140,15 @@ protected:
     int         P_cpuTemperature;
     int         P_pcbTemperature;
     int         P_detTemperature;
-    #define LAST_QEPRO_PARAM P_detTemperature
+    int         P_roi1LowWavelength;
+    int         P_roi1HighWavelength;
+    int         P_roi2LowWavelength;
+    int         P_roi2HighWavelength;
+    int         P_darkAcq;
+    int         P_darkSubtract;
+    int         P_darkSpectrum;
+    int         P_darkValid;
+    #define LAST_QEPRO_PARAM P_darkValid
 
 private:
     //Wrapper wrapper;
@@ -191,10 +207,14 @@ private:
     int trigger_mode;
     int num_pixels;
     int num_wavelengths;
+    bool dark_valid;
+    bool dark_subtract;
+    bool dark_acquire;
 
     double *spectrum_buffer;
     double *wavelength_buffer;
     double *raman_shift_buffer;
+    double *dark_buffer;
 
     double m_laser;
     double m_poll_time;

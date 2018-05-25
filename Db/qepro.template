@@ -1,6 +1,6 @@
 ####################################################################################################################
 ## File:
-##      devUSBSpectrometers.cpp
+##      qepro.template
 ## Description:
 ##      This file contains the EPICS data base for QEPro Raman spectrometer.
 ##      It is based on the original file written by David Beauregard from Canadian Light Source.
@@ -258,6 +258,45 @@ record(waveform, "$(PREFIX):Spectrum_rbv") {
     field(FLNK, "$(PREFIX):ProgressBarReset")
 }
 
+# Control of dark spectrum acquisition
+#
+record(bo, "$(PREFIX):DarkAcquire") {
+    field(DESC, "Acquire dark spectrum")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "")
+    field(ONAM, "Acquire")
+    field(HIGH, "1.0")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkAcq")
+}
+
+record(bo, "$(PREFIX):DarkSubtract") {
+    field(DESC, "Subtract dark spectrum")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkSubtract")
+
+    info(autosaveFields, "VAL")
+}
+
+record(bi, "$(PREFIX):DarkValid_rbv") {
+    field(DESC, "Acquire dark spectrum")
+    field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "Invalid")
+    field(ONAM, "Valid")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkValid")
+}
+
+record(waveform, "$(PREFIX):DarkSpectrum_rbv") {
+    field(DTYP, "asynFloat64ArrayIn")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkSpectrum")
+    field(EGU,  "counts")
+    field(NELM, "$(SIZE)")
+    field(FTVL, "DOUBLE")
+    field(SCAN, "I/O Intr")
+}
+
 #########################################################################################
 # output records, analog
 #########################################################################################
@@ -342,29 +381,31 @@ record(ao, "$(PREFIX):IntegrationTime") {
     field(LOPR, "8000")
     field(HOPR, "2147483647")
     field(PINI, "1")
-    field(PHAS, "5")
+    #field(PHAS, "5")
     field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))IntegrationTime")
     field(FLNK, "$(PREFIX):IntegrationTime_rbv")
 }
 
 record(bo, "$(PREFIX):IntegrationTime:Unit") {
-    field(DTYP, "Raw Soft Channel")
+    #field(DTYP, "Raw Soft Channel")
     field(SCAN, "Passive")
     field(ZNAM, " ms")
     field(ONAM, "sec")
     field(PINI, "1")
-    field(PHAS, "4")
-	field(VAL,  "1")
+    #field(PHAS, "4")
+	#field(VAL,  "1")
+
+    info(autosaveFields, "VAL")
 }
 
 record(ao, "$(PREFIX):IntegrationTime:Value") {
-    field(DTYP, "Raw Soft Channel")
+    #field(DTYP, "Raw Soft Channel")
 	field(SCAN, "Passive")
 	field(DRVL, "0")
 	field(DRVH, "2147483647")
     field(PINI, "1")
-    field(PHAS, "4")
-	field(VAL,  "5")
+    #field(PHAS, "4")
+	#field(VAL,  "5")
 
     info(autosaveFields, "VAL")
 }
