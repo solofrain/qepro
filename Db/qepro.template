@@ -252,6 +252,7 @@ record(waveform, "$(PREFIX):Spectrum_rbv") {
     field(DTYP, "asynFloat64ArrayIn")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Spectrum")
     field(EGU,  "counts")
+    field(PREC, "0")
     field(NELM, "$(SIZE)")
     field(FTVL, "DOUBLE")
     field(SCAN, "I/O Intr")
@@ -293,9 +294,71 @@ record(waveform, "$(PREFIX):DarkSpectrum_rbv") {
     field(DTYP, "asynFloat64ArrayIn")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkSpectrum")
     field(EGU,  "counts")
+    field(PREC, "0")
     field(NELM, "$(SIZE)")
     field(FTVL, "DOUBLE")
     field(SCAN, "I/O Intr")
+}
+
+# ROI definition
+#
+record(ao, "$(PREFIX):ROI0Low") {
+    field(DTYP, "asynFloat64")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI0LowWavelength")
+    field(EGU,  "nm")
+    field(PINI, "YES")
+
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(PREFIX):ROI0High") {
+    field(DTYP, "asynFloat64")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI0HighWavelength")
+    field(EGU,  "nm")
+    field(PINI, "YES")
+
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(PREFIX):ROI1Low") {
+    field(DTYP, "asynFloat64")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI1LowWavelength")
+    field(EGU,  "nm")
+    field(PINI, "YES")
+
+    info(autosaveFields, "VAL")
+}
+
+record(ao, "$(PREFIX):ROI1High") {
+    field(DTYP, "asynFloat64")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI1HighWavelength")
+    field(EGU,  "nm")
+    field(PINI, "YES")
+
+    info(autosaveFields, "VAL")
+}
+
+record(ai, "$(PREFIX):ROI0Sum_rbv") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI0Sum")
+    field(SCAN, "I/O Intr")
+    field(EGU,  "counts")
+    field(PREC, "0")
+}
+
+record(ai, "$(PREFIX):ROI1Sum_rbv") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI1Sum")
+    field(SCAN, "I/O Intr")
+    field(EGU,  "counts")
+    field(PREC, "0")
+}
+
+record(ai, "$(PREFIX):ROIRatio_rbv") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROIRatio")
+    field(SCAN, "I/O Intr")
+    field(PREC, "5")
 }
 
 #########################################################################################

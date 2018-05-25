@@ -53,14 +53,17 @@
 #define QEProCPUTemperature     "CPUTemperature"        /* asynFloat64      ro 39 */
 #define QEProPCBTemperature     "PCBTemperature"        /* asynFloat64      ro 40 */
 #define QEProDetTemperature     "DetTemperature"        /* asynFloat64      ro 41 */
-#define QEProROI1LowWavelength  "ROI1LowWavelength"     /* asynFloat64      ro 42 */
-#define QEProROI1HighWavelength "ROI1HighWavelength"    /* asynFloat64      ro 43 */
-#define QEProROI2LowWavelength  "ROI2LowWavelength"     /* asynFloat64      ro 44 */
-#define QEProROI2HighWavelength "ROI2HighWavelength"    /* asynFloat64      ro 45 */
-#define QEProDarkAcq            "DarkAcq"               /* asynInt32        rw 46 */
-#define QEProDarkSubtract       "DarkSubtract"          /* asynInt32        rw 47 */
-#define QEProDarkSpectrum       "DarkSpectrum"          /* asynFloat64Array ro 48 */
-#define QEProDarkValid          "DarkValid"             /* asynInt32        ro 49 */
+#define QEProROI0LowWavelength  "ROI0LowWavelength"     /* asynFloat64      ro 42 */
+#define QEProROI0HighWavelength "ROI0HighWavelength"    /* asynFloat64      ro 43 */
+#define QEProROI1LowWavelength  "ROI1LowWavelength"     /* asynFloat64      ro 44 */
+#define QEProROI1HighWavelength "ROI1HighWavelength"    /* asynFloat64      ro 45 */
+#define QEProROI0Sum            "ROI0Sum"               /* asynFloat64      ro 46 */
+#define QEProROI1Sum            "ROI1Sum"               /* asynFloat64      ro 47 */
+#define QEProROIRatio           "ROIRatio"              /* asynFloat64      ro 48 */
+#define QEProDarkAcq            "DarkAcq"               /* asynInt32        rw 49 */
+#define QEProDarkSubtract       "DarkSubtract"          /* asynInt32        rw 50 */
+#define QEProDarkSpectrum       "DarkSpectrum"          /* asynFloat64Array ro 51 */
+#define QEProDarkValid          "DarkValid"             /* asynInt32        ro 52 */
 
 #define POLL_TIME 0.5
 
@@ -81,6 +84,8 @@
 #define PCB_TEMPERATURE             2
 #define TEC_TEMPERATURE             3
 
+#define NUM_ROIS                    2
+
 class drvUSBQEPro : public asynPortDriver {
 
 public:
@@ -90,6 +95,7 @@ public:
     virtual asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
     virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
     virtual asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
+    virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     virtual asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason);
     virtual asynStatus readFloat64Array (asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn );     
 
@@ -140,10 +146,13 @@ protected:
     int         P_cpuTemperature;
     int         P_pcbTemperature;
     int         P_detTemperature;
+    int         P_roi0LowWavelength;
+    int         P_roi0HighWavelength;
     int         P_roi1LowWavelength;
     int         P_roi1HighWavelength;
-    int         P_roi2LowWavelength;
-    int         P_roi2HighWavelength;
+    int         P_roi0Sum;
+    int         P_roi1Sum;
+    int         P_roiRatio;
     int         P_darkAcq;
     int         P_darkSubtract;
     int         P_darkSpectrum;
@@ -192,6 +201,12 @@ private:
             double *raman_shift_buffer,
             const double *wavelength_buffer,
             int num_wavelengths);
+    void integrate_rois();
+
+    double roi_low[NUM_ROIS];
+    double roi_high[NUM_ROIS];
+    double roi_sum[NUM_ROIS];
+    double roi_ratio;
 
     // QEPro functions using OBP
     int abort();
