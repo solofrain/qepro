@@ -667,7 +667,7 @@ record(calcout, "$(PREFIX):ProgressBar:Calc") {
 	field(INPC, "$(PREFIX):Averages_rbv")
 	field(INPD, "$(PREFIX):ProgressBar")
     field(INPE, "2e5")
-	field(CALC, "A?(100*E/B/C)+D:D")
+	field(CALC, "A?(100*E/B/C)+D:0")
     field(OUT,  "$(PREFIX):ProgressBar PP")
 }
 
