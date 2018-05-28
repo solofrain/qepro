@@ -3,6 +3,7 @@ require qeproasyn,waynelewis
 #require busy,1.6.0-ESS0
 require busy,1.6.0+
 require autosave,5.7.0
+require seabreeze,3.0.11
 
 #epicsEnvSet(EPICS_CA_ADDR_LIST,10.0.2.15)
  epicsEnvSet(EPICS_CA_MAX_ARRAY_BYTES,64000000)
