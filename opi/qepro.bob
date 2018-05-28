@@ -21,7 +21,7 @@
     <x>10</x>
     <y>130</y>
     <width>330</width>
-    <height>190</height>
+    <height>240</height>
     <line_width>0</line_width>
     <background_color>
       <color red="232" green="232" blue="232">
@@ -140,7 +140,7 @@
     <x>510</x>
     <y>70</y>
     <width>353</width>
-    <height>27</height>
+    <height>28</height>
     <font>
       <font name="LARGE-MONO-BOLD-ITALIC" family="Source Code Pro" style="BOLD_ITALIC" size="21.0">
       </font>
@@ -1181,7 +1181,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <x>8</x>
             <y>50</y>
             <width>95</width>
-            <height>25</height>
+            <height>21</height>
             <font>
               <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
               </font>
@@ -1622,14 +1622,13 @@ $(pv_value)</tooltip>
       </tab>
     </tabs>
     <x>10</x>
-    <y>320</y>
+    <y>380</y>
     <width>332</width>
-    <height>750</height>
+    <height>730</height>
     <background_color>
       <color red="232" green="232" blue="232">
       </color>
     </background_color>
-    <active_tab>3</active_tab>
   </widget>
   <widget type="textupdate" version="2.0.0">
     <name>Text Update</name>
@@ -1666,8 +1665,8 @@ $(pv_value)</tooltip>
     </actions>
     <pv_name>$(PREFIX):AcqStop</pv_name>
     <text>Stop</text>
-    <x>240</x>
-    <y>220</y>
+    <x>260</x>
+    <y>210</y>
     <width>60</width>
     <height>25</height>
     <foreground_color>
@@ -1692,7 +1691,7 @@ $(pv_value)</tooltip>
     </actions>
     <pv_name>$(PREFIX):AcqStart</pv_name>
     <text>Start</text>
-    <x>240</x>
+    <x>260</x>
     <y>180</y>
     <width>60</width>
     <height>25</height>
@@ -1711,7 +1710,7 @@ $(pv_value)</tooltip>
     <name>Progress Bar</name>
     <pv_name>$(PREFIX):ProgressBar</pv_name>
     <x>20</x>
-    <y>300</y>
+    <y>330</y>
     <width>310</width>
     <fill_color>
       <color name="OK" red="61" green="216" blue="61">
@@ -1774,7 +1773,7 @@ $(pv_value)</tooltip>
     <pv_name>$(PREFIX):Connection_rbv</pv_name>
     <x>130</x>
     <y>142</y>
-    <width>131</width>
+    <width>120</width>
     <height>25</height>
     <foreground_color>
       <color red="0" green="0" blue="0">
@@ -1786,7 +1785,6 @@ $(pv_value)</tooltip>
     </background_color>
     <format>6</format>
     <show_units>false</show_units>
-    <horizontal_alignment>2</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
     <wrap_words>false</wrap_words>
     <actions>
@@ -1797,6 +1795,7 @@ $(pv_value)</tooltip>
     <pv_name>$(PREFIX):AcqMode</pv_name>
     <x>130</x>
     <y>180</y>
+    <width>120</width>
     <height>83</height>
     <items>
       <item>Item 1</item>
@@ -1808,8 +1807,8 @@ $(pv_value)</tooltip>
     <name>Text Update_18</name>
     <pv_name>$(PREFIX):AcqSts_rbv</pv_name>
     <x>130</x>
-    <y>263</y>
-    <width>131</width>
+    <y>270</y>
+    <width>120</width>
     <height>25</height>
     <foreground_color>
       <color red="0" green="0" blue="0">
@@ -1821,10 +1820,35 @@ $(pv_value)</tooltip>
     </background_color>
     <format>6</format>
     <show_units>false</show_units>
-    <horizontal_alignment>2</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
     <wrap_words>false</wrap_words>
     <actions>
     </actions>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>Action Button_5</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(pv_name)</pv_name>
+        <value>1</value>
+        <description>Abort </description>
+      </action>
+    </actions>
+    <pv_name>$(PREFIX):Abort</pv_name>
+    <text>Abort</text>
+    <x>260</x>
+    <y>240</y>
+    <width>60</width>
+    <height>25</height>
+    <foreground_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="240" green="240" blue="240">
+      </color>
+    </background_color>
+    <tooltip>$(pv_name)
+$(pv_value)</tooltip>
   </widget>
 </display>
