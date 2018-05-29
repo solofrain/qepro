@@ -151,19 +151,14 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
     int acq_mode;
     int start;
     int stop;
-    int boxcar_half_width;
-    int file_write;
-    int x_axis_mode;
     bool run = false;
 
-    while(1){
+    while(1) {
 
         // Get acquisition mode and control status from PVs
         getIntegerParam(P_acqMode, &acq_mode);
         getIntegerParam(P_acqStart, &start);
         getIntegerParam(P_acqStop, &stop);
-        getIntegerParam(P_boxcarWidth, &boxcar_half_width);
-        getIntegerParam(P_fileWrite, &file_write);
 
         asynPrint(pasynUserSelf, 
                 ASYN_TRACE_FLOW, 
@@ -181,12 +176,6 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                 ASYN_TRACE_FLOW, 
                 "getSpectrumThread: num_pixels = %d\n",
                 num_pixels);
-        asynPrint(pasynUserSelf, 
-                ASYN_TRACE_FLOW, 
-                "getSpectrumThread: boxcar_half_width = %d\n",
-                boxcar_half_width);
-
-        test_connection();
 
         if (start && 
                 (acq_mode == QEPRO_ACQ_MODE_SINGLE ||
@@ -203,83 +192,17 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
 
         // Collect a dark spectra if requested
         if (dark_acquire) {
-            test_connection();
-            if (connected) {
-                int min_integration_time;
-                int error;
-
-                asynPrint(pasynUserSelf, 
-                        ASYN_TRACE_FLOW, 
-                        "getSpectrumThread: acquiring dark spectrum\n");
-
-                getIntegerParam(P_minIntegrationTime, &min_integration_time);
-
-                // Restart acquisition
-                abort();
-                clear_buffers();
-                start_acquisition();
-
-                api->spectrometerGetFormattedSpectrum(
-                        device_id, 
-                        spectrometer_feature_id,
-                        &error, 
-                        dark_buffer, 
-                        num_pixels);
-
-                dark_valid = true;
-                setIntegerParam(P_darkValid, dark_valid);
-                callParamCallbacks();
-                dark_acquire = false;
-
-                // Send the data to the dark spectrum PV
-                doCallbacksFloat64Array(
-                        dark_buffer, 
-                        num_pixels, 
-                        P_darkSpectrum, 
-                        0);
-            }
+            acquire_dark();
         }
 
         // Collect a background spectra if requested
         if (bg_acquire) {
-            test_connection();
-            if (connected) {
-                int min_integration_time;
-                int error;
-
-                asynPrint(pasynUserSelf, 
-                        ASYN_TRACE_FLOW, 
-                        "getSpectrumThread: acquiring background spectrum\n");
-
-                getIntegerParam(P_minIntegrationTime, &min_integration_time);
-
-                // Restart acquisition
-                abort();
-                clear_buffers();
-                start_acquisition();
-
-                api->spectrometerGetFormattedSpectrum(
-                        device_id, 
-                        spectrometer_feature_id,
-                        &error, 
-                        bg_buffer, 
-                        num_pixels);
-
-                bg_valid = true;
-                setIntegerParam(P_bgValid, bg_valid);
-                callParamCallbacks();
-                bg_acquire = false;
-
-                // Send the data to the background spectrum PV
-                doCallbacksFloat64Array(
-                        bg_buffer, 
-                        num_pixels, 
-                        P_bgSpectrum, 
-                        0);
-            }
+            acquire_bg();
         }
+
         // Decide if we should acquire or not
         if (run) {
+            test_connection();
             if (connected) {
                 lock();
 
@@ -299,12 +222,6 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                         raw_spectrum_buffer, 
                         num_pixels);
 
-                // Copy the raw data into the buffer used for processing
-                memcpy(
-                        spectrum_buffer, 
-                        raw_spectrum_buffer, 
-                        num_pixels * sizeof(double));
-
                 num_wavelengths = api->spectrometerGetWavelengths(
                         device_id, 
                         spectrometer_feature_id,
@@ -321,98 +238,13 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
                         wavelength_buffer, 
                         num_wavelengths);
 
-                if (dark_subtract && (dark_valid || dark_valid_override)) {
-                    asynPrint(
-                            pasynUserSelf,
-                            ASYN_TRACE_FLOW,
-                            "getSpectrumThread: doing dark subtraction\n");
-
-                    for (int i = 0; i < num_pixels; i++) {
-                        spectrum_buffer[i] -= dark_buffer[i];
-                        if (spectrum_buffer[i] < 0)
-                            spectrum_buffer[i] = 0;
-                    }
-                }
-
-                if (bg_subtract && (bg_valid || bg_valid_override)) {
-                    asynPrint(
-                            pasynUserSelf,
-                            ASYN_TRACE_FLOW,
-                            "getSpectrumThread: doing background subtraction\n");
-
-                    for (int i = 0; i < num_pixels; i++) {
-                        spectrum_buffer[i] -= bg_buffer[i];
-                        if (spectrum_buffer[i] < 0)
-                            spectrum_buffer[i] = 0;
-                    }
-                }
+                update_data_spectrum();
 
                 integrate_rois();
 
-                if (boxcar_half_width > 0) {
-                    double *process_buffer;
-                    process_buffer = (double *)calloc(
-                            num_pixels, 
-                            sizeof(double));
-                    boxcar(spectrum_buffer, 
-                            process_buffer, 
-                            boxcar_half_width);
-                    doCallbacksFloat64Array(
-                            process_buffer, 
-                            num_pixels, 
-                            P_spectrum, 
-                            0);
-                    if (file_write) {
-                        if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
-                            write_file(raman_shift_buffer, process_buffer);
-                        else
-                            write_file(wavelength_buffer, process_buffer);
-                    }
-                    free(process_buffer);
-                }
-                else {
-                    doCallbacksFloat64Array(
-                            spectrum_buffer, 
-                            num_pixels, 
-                            P_spectrum, 
-                            0);
-                    if (file_write) {
-                        if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
-                            write_file(raman_shift_buffer, spectrum_buffer);
-                        else
-                            write_file(wavelength_buffer, spectrum_buffer);
-                    }
-                }
+                update_axis_arrays();
 
-                // Do all the other array callbacks
-                getIntegerParam(P_xAxisMode, &x_axis_mode);
-                // Send the values to the PV used for the plot x axis
-                if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT) {
-                    doCallbacksFloat64Array(
-                            raman_shift_buffer, 
-                            num_wavelengths, 
-                            P_xAxis, 
-                            0);
-                }
-                else {
-                    doCallbacksFloat64Array(
-                            wavelength_buffer, 
-                            num_wavelengths, 
-                            P_xAxis, 
-                            0);
-                }
-
-                doCallbacksFloat64Array(
-                        raman_shift_buffer, 
-                        num_wavelengths, 
-                        P_xAxisRs, 
-                        0);
-
-                doCallbacksFloat64Array(
-                        wavelength_buffer, 
-                        num_wavelengths, 
-                        P_xAxisNm, 
-                        0);
+                write_data_files();
 
             }
         }
@@ -435,6 +267,207 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
         }
         //TODO: Check if we actually need this
         epicsThreadSleep(m_poll_time);
+    }
+}
+
+void drvUSBQEPro::update_axis_arrays() {
+    int x_axis_mode;
+    // Do all the other array callbacks
+    getIntegerParam(P_xAxisMode, &x_axis_mode);
+    // Send the values to the PV used for the plot x axis
+    if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT) {
+        doCallbacksFloat64Array(
+                raman_shift_buffer, 
+                num_wavelengths, 
+                P_xAxis, 
+                0);
+    }
+    else {
+        doCallbacksFloat64Array(
+                wavelength_buffer, 
+                num_wavelengths, 
+                P_xAxis, 
+                0);
+    }
+
+    doCallbacksFloat64Array(
+            raman_shift_buffer, 
+            num_wavelengths, 
+            P_xAxisRs, 
+            0);
+
+    doCallbacksFloat64Array(
+            wavelength_buffer, 
+            num_wavelengths, 
+            P_xAxisNm, 
+            0);
+}
+
+void drvUSBQEPro::acquire_dark() {
+    test_connection();
+    if (connected) {
+        int min_integration_time;
+        int error;
+
+        asynPrint(pasynUserSelf, 
+                ASYN_TRACE_FLOW, 
+                "getSpectrumThread: acquiring dark spectrum\n");
+
+        getIntegerParam(P_minIntegrationTime, &min_integration_time);
+
+        // Restart acquisition
+        abort();
+        clear_buffers();
+        start_acquisition();
+
+        api->spectrometerGetFormattedSpectrum(
+                device_id, 
+                spectrometer_feature_id,
+                &error, 
+                dark_buffer, 
+                num_pixels);
+
+        dark_valid = true;
+        setIntegerParam(P_darkValid, dark_valid);
+        callParamCallbacks();
+        dark_acquire = false;
+
+        // Send the data to the dark spectrum PV
+        doCallbacksFloat64Array(
+                dark_buffer, 
+                num_pixels, 
+                P_darkSpectrum, 
+                0);
+    }
+}
+
+void drvUSBQEPro::acquire_bg() {
+    test_connection();
+    if (connected) {
+        int min_integration_time;
+        int error;
+
+        asynPrint(pasynUserSelf, 
+                ASYN_TRACE_FLOW, 
+                "getSpectrumThread: acquiring background spectrum\n");
+
+        getIntegerParam(P_minIntegrationTime, &min_integration_time);
+
+        // Restart acquisition
+        abort();
+        clear_buffers();
+        start_acquisition();
+
+        api->spectrometerGetFormattedSpectrum(
+                device_id, 
+                spectrometer_feature_id,
+                &error, 
+                raw_bg_buffer, 
+                num_pixels);
+
+        bg_valid = true;
+        setIntegerParam(P_bgValid, bg_valid);
+        callParamCallbacks();
+        bg_acquire = false;
+
+        update_bg();
+    }
+}
+
+void drvUSBQEPro::update_data_spectrum() {
+    int boxcar_half_width;
+
+    getIntegerParam(P_boxcarWidth, &boxcar_half_width);
+
+    asynPrint(pasynUserSelf, 
+            ASYN_TRACE_FLOW, 
+            "getSpectrumThread: boxcar_half_width = %d\n",
+            boxcar_half_width);
+
+    if (bg_subtract && (bg_valid || bg_valid_override)) {
+        asynPrint(
+                pasynUserSelf,
+                ASYN_TRACE_FLOW,
+                "update_data_spectrum: doing background subtraction\n");
+
+        subtract_spectra(spectrum_buffer, raw_spectrum_buffer, raw_bg_buffer);
+    }
+    else if (dark_subtract && (dark_valid || dark_valid_override)) {
+        asynPrint(
+                pasynUserSelf,
+                ASYN_TRACE_FLOW,
+                "update_data_spectrum: doing dark subtraction\n");
+
+        subtract_spectra(spectrum_buffer, raw_spectrum_buffer, dark_buffer);
+    }
+    else {
+        memcpy(
+                spectrum_buffer, 
+                raw_spectrum_buffer, 
+                num_pixels * sizeof(double));
+    }
+
+    if (boxcar_half_width > 0) {
+        boxcar(spectrum_buffer,  
+                spectrum_buffer,
+                boxcar_half_width);
+    }
+
+    // Send the data to the background spectrum PV
+    doCallbacksFloat64Array(
+            spectrum_buffer, 
+            num_pixels, 
+            P_spectrum, 
+            0);
+}
+
+void drvUSBQEPro::write_data_files() {
+    int file_write;
+    int x_axis_mode;
+
+    getIntegerParam(P_fileWrite, &file_write);
+    getIntegerParam(P_xAxisMode, &x_axis_mode);
+
+    if (file_write) {
+        if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
+            write_file(raman_shift_buffer, spectrum_buffer);
+        else
+            write_file(wavelength_buffer, spectrum_buffer);
+    }
+}
+
+void drvUSBQEPro::update_bg() {
+    if (dark_subtract && (dark_valid || dark_valid_override)) {
+        asynPrint(
+                pasynUserSelf,
+                ASYN_TRACE_FLOW,
+                "getSpectrumThread: doing dark subtraction\n");
+
+        subtract_spectra(bg_buffer, raw_bg_buffer, dark_buffer);
+    }
+    else {
+        memcpy(
+                bg_buffer, 
+                raw_bg_buffer, 
+                num_pixels * sizeof(double));
+    }
+
+    // Send the data to the background spectrum PV
+    doCallbacksFloat64Array(
+            bg_buffer, 
+            num_pixels, 
+            P_bgSpectrum, 
+            0);
+}
+
+void drvUSBQEPro::subtract_spectra(
+        double *result_spectrum, 
+        const double *spectrum1, 
+        const double *spectrum2) {
+    for (int i = 0; i < num_pixels; i++) {
+        result_spectrum[i] = spectrum1[i] - spectrum2[i];
+        if (result_spectrum[i] < 0)
+            result_spectrum[i] = 0;
     }
 }
 
@@ -488,12 +521,17 @@ void drvUSBQEPro::allocate_spectrum_buffer() {
         wavelength_buffer = (double *)calloc(num_pixels, sizeof(double));
         raman_shift_buffer = (double *)calloc(num_pixels, sizeof(double));
         dark_buffer = (double *)calloc(num_pixels, sizeof(double));
+        raw_bg_buffer = (double *)calloc(num_pixels, sizeof(double));
         bg_buffer = (double *)calloc(num_pixels, sizeof(double));
     }
 }
 
 void drvUSBQEPro::deallocate_spectrum_buffer() {
     if (!connected) {
+        if (raw_spectrum_buffer)
+            free(raw_spectrum_buffer);
+        raw_spectrum_buffer = NULL;
+
         if (spectrum_buffer)
             free(spectrum_buffer);
         spectrum_buffer = NULL;
@@ -509,6 +547,14 @@ void drvUSBQEPro::deallocate_spectrum_buffer() {
         if (dark_buffer)
             free(dark_buffer);
         dark_buffer = NULL;
+
+        if (raw_bg_buffer)
+            free(raw_bg_buffer);
+        raw_bg_buffer = NULL;
+
+        if (bg_buffer)
+            free(bg_buffer);
+        bg_buffer = NULL;
     }
 }
 
@@ -547,18 +593,21 @@ asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxC
             strcpy(value, buffer);
             *nActual = strlen(buffer);
             *eomReason = 0;
+            setStringParam(P_name, buffer);
         } 
         else if (function == P_firmwareVersion) {
             strcpy(buffer, "Not available");
             strcpy(value, buffer);
             *nActual = strlen(buffer);
             *eomReason = 0;
+            setStringParam(P_firmwareVersion, buffer);
         } 
         else if (function == P_firmwareModel) {
             strcpy(buffer, "Not available");
             strcpy(value, buffer);
             *nActual = strlen(buffer);
             *eomReason = 0;
+            setStringParam(P_firmwareModel, buffer);
         } 
         else if (function == P_serialNumber) {
             api->getSerialNumber(
@@ -570,6 +619,7 @@ asynStatus drvUSBQEPro::readOctet (asynUser *pasynUser, char *value, size_t maxC
             strcpy(value, buffer);
             *nActual = strlen(buffer);
             *eomReason = 0;
+            setStringParam(P_serialNumber, buffer);
         } 
         else {
             // All other parameters just get set in parameter list, no need to
@@ -860,7 +910,6 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
     const char* functionName = "writeInt32";
     int addr;
     int error;
-    //int boxcar, averages, electricDark, nonLinearity, triggerMode;
     int triggerMode;
     int decouple, ledIndicator;
 
@@ -887,15 +936,17 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
                     integration_time);
             // Invalidate the current dark spectra
             dark_valid = false;
+            bg_valid = false;
             setIntegerParam(P_darkValid, dark_valid);
+            setIntegerParam(P_bgValid, bg_valid);
             callParamCallbacks();
         }
         else if (function == P_averages) {
             // Check if implmemented in QEPro
         }
         else if (function == P_boxcarWidth) {
-            // Not implmemented in QEPro. Just store the value
-            // in the parameter list.
+            // Update the calculated spectrum
+            update_data_spectrum();
         }
         else if (function == P_electricDark) {
             // Check if implmemented in QEPro
@@ -939,6 +990,8 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
             dark_subtract = false;
         else
             dark_subtract = true;
+        update_bg();
+        update_data_spectrum();
     }
     else if (function == P_darkAcq) {
         if (value == 1)
@@ -955,6 +1008,7 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
             bg_subtract = false;
         else
             bg_subtract = true;
+        update_data_spectrum();
     }
     else if (function == P_bgAcq) {
         if (value == 1)
@@ -1200,8 +1254,8 @@ void drvUSBQEPro::test_connection() {
 }
 
 void drvUSBQEPro::boxcar(
-        const double *spectrum_buffer,
-        double *process_buffer,
+        double *output_buffer,
+        const double *input_buffer,
         int boxcar_half_width) {
 
     int boxcar_width = 2 * boxcar_half_width + 1;
@@ -1214,24 +1268,24 @@ void drvUSBQEPro::boxcar(
         sum = 0;
         if (i < boxcar_half_width) {
             for (int j = 0; j < i + boxcar_half_width + 1; j++) 
-                sum += spectrum_buffer[j];
+                sum += input_buffer[j];
             average = sum / (double) (boxcar_half_width + i + 1);
         }
         else if (i >= num_pixels - boxcar_half_width) {
             for (int j = i - boxcar_half_width;
                     j < num_pixels;
                     j++)
-                sum += spectrum_buffer[j];
+                sum += input_buffer[j];
             average = sum / (double) (num_pixels - i + boxcar_half_width);
         }
         else {
             for (int j = i - boxcar_half_width;
                     j < i + boxcar_half_width + 1;
                     j++)
-                sum += spectrum_buffer[j];
+                sum += input_buffer[j];
             average = sum / (double) boxcar_width;
         }
-        process_buffer[i] = average;
+        output_buffer[i] = average;
     }
 }
 

@@ -200,8 +200,8 @@ private:
     void allocate_spectrum_buffer();
     void deallocate_spectrum_buffer();
     void boxcar(
-            const double *spectrum_buffer,
-            double *process_buffer,
+            double *output_buffer,
+            const double *input_buffer,
             int boxcar_width);
     void write_file(
             double *x_axis_buffer,
@@ -250,7 +250,20 @@ private:
     double *wavelength_buffer;
     double *raman_shift_buffer;
     double *dark_buffer;
+    double *raw_bg_buffer;
     double *bg_buffer;
+
+    void subtract_spectra(
+            double *result, 
+            const double *spectra1, 
+            const double *spectra2);
+
+    void update_bg();
+    void update_data_spectrum();
+    void update_axis_arrays();
+    void acquire_dark();
+    void acquire_bg();
+    void write_data_files();
 
     double m_laser;
     double m_poll_time;

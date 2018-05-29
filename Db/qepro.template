@@ -20,75 +20,66 @@
 # Input records, analog, stringin
 #########################################################################################
 record(ai, "$(PREFIX):NrSpec_rbv") {
-        field(DTYP, "asynInt32")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumSpecs")
-##	field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumSpecs")
+    field(SCAN, "I/O Intr")
 }
 
 record(stringin, "$(PREFIX):Name_rbv") {
-        field(DTYP, "asynOctetRead")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Name")
+	field(SCAN, "I/O Intr")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Name")
-##	field(SCAN, "I/O Intr")
 }
 
 record(stringin, "$(PREFIX):FirmwareVersion_rbv") {
-        field(DTYP, "asynOctetRead")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FirmwareVersion")
+    field(SCAN, "I/O Intr")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FirmwareVersion")
-##	field(SCAN, "I/O Intr")
 }
 
 record(stringin, "$(PREFIX):FirmwareModel_rbv") {
-        field(DTYP, "asynOctetRead")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FirmwareModel")
+	field(SCAN, "I/O Intr")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))FirmwareModel")
-##	field(SCAN, "I/O Intr")
 }
 
 record(stringin, "$(PREFIX):SerialNumber_rbv") {
-        field(DTYP, "asynOctetRead")
+    field(DTYP, "asynOctetRead")
+    field(SCAN, "I/O Intr")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))SerialNumber")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
-        field(SCAN, "10 second")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))SerialNumber")
-##	field(SCAN, "I/O Intr")
 }
 
 record(ai, "$(PREFIX):NumberOfPixels_rbv") {
     field(DTYP, "asynInt32")
-##        field(SDIS, "Connection_rbv")
-##        field(DISV, "1")
-    field(PINI, "1")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfPixels")
 	field(SCAN, "I/O Intr")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
 }
 
 record(ai, "$(PREFIX):NumberOfDarkPixels_rbv") {
     field(DTYP, "asynInt32")
-##        field(SDIS, "Connection_rbv")
-##        field(DISV, "1")
-    field(PINI, "1")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NumberOfDarkPixels")
 	field(SCAN, "I/O Intr")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
 }
 
 record(ai, "$(PREFIX):IntegrationTime_rbv") {
         field(DTYP, "asynInt32")
-##        field(SDIS, "Connection_rbv")
-##        field(DISV, "1")
-        field(PINI, "1")
         field(LINR, "NO CONVERSION")
         field(EGU,  "ms")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))IntegrationTime")
+##        field(SDIS, "Connection_rbv")
+##        field(DISV, "1")
 ##	field(SCAN, "I/O Intr")
 }
 
@@ -96,7 +87,6 @@ record(ai, "$(PREFIX):MinIntegrationTime_rbv") {
         field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MinIntegrationTime")
 ##	field(SCAN, "I/O Intr")
 }                     
@@ -104,7 +94,6 @@ record(ai, "$(PREFIX):MinIntegrationTime_rbv") {
 record(ai, "$(PREFIX):MaxIntegrationTime_rbv") {
     field(DTYP, "asynInt32")
 ##	field(SCAN, "I/O Intr")
-    field(PINI, "1")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntegrationTime")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -113,7 +102,6 @@ record(ai, "$(PREFIX):MaxIntegrationTime_rbv") {
 record(ai, "$(PREFIX):Averages_rbv") {
     field(DTYP, "asynInt32")
 	#field(SCAN, "I/O Intr")
-    #field(PINI, "1")
     field(VAL,  "1")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Averages")
 ##        field(SDIS, "Connection_rbv")
@@ -123,7 +111,6 @@ record(ai, "$(PREFIX):Averages_rbv") {
 record(ai, "$(PREFIX):MaxIntensity_rbv") {
     field(DTYP, "asynInt32")
 ##	field(SCAN, "I/O Intr")
-    field(PINI, "1")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MaxIntensity")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -133,14 +120,12 @@ record(ai, "$(PREFIX):BoxcarWidth_rbv") {
     field(DTYP, "asynInt32")
     field(SCAN, "I/O Intr")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BoxcarWidth")
-        #field(PINI, "1")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
 }
 
 record(ai, "$(PREFIX):ElectricDark_rbv") {
         field(DTYP, "asynInt32")
-        field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ElectricDark")
 ##	field(SCAN, "I/O Intr")
 }
@@ -176,7 +161,6 @@ record(ai,  "$(PREFIX):TriggerMode_rbv") {
         field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))TriggerMode")
 ##	field(SCAN, "I/O Intr")
 }
@@ -185,7 +169,6 @@ record(ai, "$(PREFIX):NonLinearity_rbv") {
  	field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))NonLinearity")
 ##	field(SCAN, "I/O Intr")
 }
@@ -194,7 +177,6 @@ record(ai, "$(PREFIX):Decouple_rbv") {
 	field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))Decouple")
 ##	field(SCAN, "I/O Intr")
 }
@@ -203,7 +185,6 @@ record(ai, "$(PREFIX):LEDIndicator_rbv") {
  	field(DTYP, "asynInt32")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
-        field(PINI, "1")
         field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))LEDIndicator")
 ##	field(SCAN, "I/O Intr")
 }
