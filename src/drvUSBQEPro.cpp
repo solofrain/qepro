@@ -1050,15 +1050,19 @@ asynStatus drvUSBQEPro::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 
     if (function == P_roi0LowWavelength) {
         roi_low[0] = value;
+        integrate_rois();
     }
     else if (function == P_roi0HighWavelength) {
         roi_high[0] = value;
+        integrate_rois();
     }
     else if (function == P_roi1LowWavelength) {
         roi_low[1] = value;
+        integrate_rois();
     }
     else if (function == P_roi1HighWavelength) {
         roi_high[1] = value;
+        integrate_rois();
     }
 
     if (status)

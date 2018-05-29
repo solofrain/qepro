@@ -108,6 +108,40 @@
         <point_size>4</point_size>
       </trace>
     </traces>
+    <marker>
+      <marker>
+        <color>
+          <color name="SECONDARY-LIGHT" red="202" green="151" blue="152">
+          </color>
+        </color>
+        <pv_name>$(PREFIX):ROI0Low</pv_name>
+        <interactive>true</interactive>
+      </marker>
+      <marker>
+        <color>
+          <color name="SECONDARY-LIGHT" red="202" green="151" blue="152">
+          </color>
+        </color>
+        <pv_name>$(PREFIX):ROI0High</pv_name>
+        <interactive>true</interactive>
+      </marker>
+      <marker>
+        <color>
+          <color name="SECONDARY-LIGHT" red="202" green="151" blue="152">
+          </color>
+        </color>
+        <pv_name>$(PREFIX):ROI1Low</pv_name>
+        <interactive>true</interactive>
+      </marker>
+      <marker>
+        <color>
+          <color name="SECONDARY-LIGHT" red="202" green="151" blue="152">
+          </color>
+        </color>
+        <pv_name>$(PREFIX):ROI1High</pv_name>
+        <interactive>true</interactive>
+      </marker>
+    </marker>
   </widget>
   <widget type="label" version="2.0.0">
     <name>Label_1</name>
