@@ -290,9 +290,71 @@ record(bi, "$(PREFIX):DarkValid_rbv") {
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkValid")
 }
 
+record(bo, "$(PREFIX):DarkValidOverride") {
+    field(DESC, "Override dark spectrum validity check")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "")
+    field(ONAM, "Override")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkValidOverride")
+
+    info(autosaveFields, "VAL")
+}
+
 record(waveform, "$(PREFIX):DarkSpectrum_rbv") {
     field(DTYP, "asynFloat64ArrayIn")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DarkSpectrum")
+    field(EGU,  "counts")
+    field(PREC, "0")
+    field(NELM, "$(SIZE)")
+    field(FTVL, "DOUBLE")
+    field(SCAN, "I/O Intr")
+}
+
+# Control of background spectrum acquisition
+#
+record(bo, "$(PREFIX):BGAcquire") {
+    field(DESC, "Acquire background spectrum")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "")
+    field(ONAM, "Acquire")
+    field(HIGH, "1.0")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BGAcq")
+}
+
+record(bo, "$(PREFIX):BGSubtract") {
+    field(DESC, "Subtract background spectrum")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "No")
+    field(ONAM, "Yes")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BGSubtract")
+
+    info(autosaveFields, "VAL")
+}
+
+record(bi, "$(PREFIX):BGValid_rbv") {
+    field(DESC, "Acquire background spectrum")
+    field(SCAN, "I/O Intr")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "Invalid")
+    field(ZSV,  "MAJOR")
+    field(ONAM, "Valid")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BGValid")
+}
+
+record(bo, "$(PREFIX):BGValidOverride") {
+    field(DESC, "Override background spectrum validity check")
+    field(DTYP, "asynInt32")
+    field(ZNAM, "")
+    field(ONAM, "Override")
+    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BGValidOverride")
+
+    info(autosaveFields, "VAL")
+}
+
+record(waveform, "$(PREFIX):BGSpectrum_rbv") {
+    field(DESC, "Background spectrum")
+    field(DTYP, "asynFloat64ArrayIn")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))BGSpectrum")
     field(EGU,  "counts")
     field(PREC, "0")
     field(NELM, "$(SIZE)")

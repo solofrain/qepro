@@ -64,6 +64,12 @@
 #define QEProDarkSubtract       "DarkSubtract"          /* asynInt32        rw 50 */
 #define QEProDarkSpectrum       "DarkSpectrum"          /* asynFloat64Array ro 51 */
 #define QEProDarkValid          "DarkValid"             /* asynInt32        ro 52 */
+#define QEProDarkValidOverride  "DarkValidOverride"     /* asynInt32        rw 53 */
+#define QEProBGAcq              "BGAcq"                 /* asynInt32        rw 54 */
+#define QEProBGSubtract         "BGSubtract"            /* asynInt32        rw 55 */
+#define QEProBGSpectrum         "BGSpectrum"            /* asynFloat64Array ro 56 */
+#define QEProBGValid            "BGValid"               /* asynInt32        ro 57 */
+#define QEProBGValidOverride    "BGValidOverride"       /* asynInt32        ro 58 */
 
 #define POLL_TIME 0.5
 
@@ -157,7 +163,13 @@ protected:
     int         P_darkSubtract;
     int         P_darkSpectrum;
     int         P_darkValid;
-    #define LAST_QEPRO_PARAM P_darkValid
+    int         P_darkValidOverride;
+    int         P_bgAcq;
+    int         P_bgSubtract;
+    int         P_bgSpectrum;
+    int         P_bgValid;
+    int         P_bgValidOverride;
+    #define LAST_QEPRO_PARAM P_bgValidOverride
 
 private:
     //Wrapper wrapper;
@@ -225,13 +237,20 @@ private:
     int num_pixels;
     int num_wavelengths;
     bool dark_valid;
+    bool dark_valid_override;
     bool dark_subtract;
     bool dark_acquire;
+    bool bg_valid;
+    bool bg_valid_override;
+    bool bg_subtract;
+    bool bg_acquire;
 
+    double *raw_spectrum_buffer;
     double *spectrum_buffer;
     double *wavelength_buffer;
     double *raman_shift_buffer;
     double *dark_buffer;
+    double *bg_buffer;
 
     double m_laser;
     double m_poll_time;

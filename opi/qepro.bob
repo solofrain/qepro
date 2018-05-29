@@ -1090,13 +1090,13 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
         </children>
       </tab>
       <tab>
-        <name>Dark</name>
+        <name>Dark/BG</name>
         <children>
           <widget type="label" version="2.0.0">
             <name>Label_18</name>
             <text>Dark subtraction:</text>
             <x>8</x>
-            <y>80</y>
+            <y>40</y>
             <width>125</width>
             <height>21</height>
             <font>
@@ -1122,7 +1122,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <pv_name>$(PREFIX):DarkSubtract</pv_name>
             <label></label>
             <x>178</x>
-            <y>80</y>
+            <y>40</y>
             <width>25</width>
             <height>25</height>
             <actions>
@@ -1133,7 +1133,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <name>Label_19</name>
             <text>Dark valid?</text>
             <x>8</x>
-            <y>110</y>
+            <y>70</y>
             <width>80</width>
             <height>21</height>
             <font>
@@ -1158,7 +1158,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <name>Text Update_17</name>
             <pv_name>$(PREFIX):DarkValid_rbv</pv_name>
             <x>178</x>
-            <y>110</y>
+            <y>70</y>
             <width>140</width>
             <height>25</height>
             <foreground_color>
@@ -1179,7 +1179,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <name>Label_20</name>
             <text>Acquire dark:</text>
             <x>8</x>
-            <y>50</y>
+            <y>10</y>
             <width>95</width>
             <height>21</height>
             <font>
@@ -1212,7 +1212,7 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <pv_name>$(PREFIX):DarkAcquire</pv_name>
             <text>Acquire</text>
             <x>178</x>
-            <y>50</y>
+            <y>10</y>
             <width>60</width>
             <height>25</height>
             <foreground_color>
@@ -1229,9 +1229,9 @@ $(pv_value)</tooltip>
           <widget type="xyplot" version="2.0.0">
             <name>XY Graph_1</name>
             <x>8</x>
-            <y>180</y>
+            <y>130</y>
             <width>310</width>
-            <height>280</height>
+            <height>170</height>
             <background_color>
               <color red="232" green="232" blue="232">
               </color>
@@ -1240,7 +1240,6 @@ $(pv_value)</tooltip>
               <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
               </font>
             </title_font>
-            <show_toolbar>true</show_toolbar>
             <actions>
             </actions>
             <x_axis>
@@ -1294,6 +1293,282 @@ $(pv_value)</tooltip>
                 <point_size>4</point_size>
               </trace>
             </traces>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_30</name>
+            <text>BG subtraction:</text>
+            <x>8</x>
+            <y>340</y>
+            <width>111</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="checkbox" version="2.0.0">
+            <name>Check Box_6</name>
+            <pv_name>$(PREFIX):BGSubtract</pv_name>
+            <label></label>
+            <x>178</x>
+            <y>340</y>
+            <width>25</width>
+            <height>25</height>
+            <actions>
+            </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_31</name>
+            <text>BG valid?</text>
+            <x>8</x>
+            <y>370</y>
+            <width>66</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_24</name>
+            <pv_name>$(PREFIX):BGValid_rbv</pv_name>
+            <x>178</x>
+            <y>370</y>
+            <width>140</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_32</name>
+            <text>Acquire background:</text>
+            <x>8</x>
+            <y>310</y>
+            <width>148</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="action_button" version="3.0.0">
+            <name>Action Button_6</name>
+            <actions execute_as_one="true">
+              <action type="write_pv">
+                <pv_name>$(pv_name)</pv_name>
+                <value>1</value>
+                <description>Acquire</description>
+              </action>
+            </actions>
+            <pv_name>$(PREFIX):BGAcquire</pv_name>
+            <text>Acquire</text>
+            <x>178</x>
+            <y>310</y>
+            <width>60</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="240" green="240" blue="240">
+              </color>
+            </background_color>
+            <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+          </widget>
+          <widget type="xyplot" version="2.0.0">
+            <name>XY Graph_2</name>
+            <x>8</x>
+            <y>430</y>
+            <width>310</width>
+            <height>170</height>
+            <background_color>
+              <color red="232" green="232" blue="232">
+              </color>
+            </background_color>
+            <title_font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </title_font>
+            <actions>
+            </actions>
+            <x_axis>
+              <title>Wavelength [nm]/Raman shift [cm-1]</title>
+              <autoscale>true</autoscale>
+              <minimum>0.0</minimum>
+              <maximum>10.0</maximum>
+              <show_grid>true</show_grid>
+              <title_font>
+                <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+                </font>
+              </title_font>
+              <scale_font>
+                <font name="Default" family="Source Sans Pro" style="REGULAR" size="16.0">
+                </font>
+              </scale_font>
+            </x_axis>
+            <y_axes>
+              <y_axis>
+                <title>Intensity [Counts]</title>
+                <autoscale>true</autoscale>
+                <log_scale>false</log_scale>
+                <minimum>0.0</minimum>
+                <maximum>2000.0</maximum>
+                <show_grid>true</show_grid>
+                <title_font>
+                  <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+                  </font>
+                </title_font>
+                <scale_font>
+                  <font name="Default" family="Source Sans Pro" style="REGULAR" size="16.0">
+                  </font>
+                </scale_font>
+                <visible>true</visible>
+              </y_axis>
+            </y_axes>
+            <traces>
+              <trace>
+                <name></name>
+                <x_pv>$(PREFIX):Xaxis_rbv</x_pv>
+                <y_pv>$(PREFIX):BGSpectrum_rbv</y_pv>
+                <err_pv></err_pv>
+                <axis>0</axis>
+                <trace_type>1</trace_type>
+                <color>
+                  <color red="21" green="21" blue="196">
+                  </color>
+                </color>
+                <line_width>1</line_width>
+                <point_type>0</point_type>
+                <point_size>4</point_size>
+              </trace>
+            </traces>
+          </widget>
+          <widget type="checkbox" version="2.0.0">
+            <name>Check Box_7</name>
+            <pv_name>$(PREFIX):DarkValidOverride</pv_name>
+            <label></label>
+            <x>178</x>
+            <y>100</y>
+            <width>25</width>
+            <height>25</height>
+            <actions>
+            </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_33</name>
+            <text>Dark valid override:</text>
+            <x>8</x>
+            <y>100</y>
+            <width>141</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="checkbox" version="2.0.0">
+            <name>Check Box_8</name>
+            <pv_name>$(PREFIX):BGValidOverride</pv_name>
+            <label></label>
+            <x>178</x>
+            <y>400</y>
+            <width>25</width>
+            <height>25</height>
+            <actions>
+            </actions>
+            <border_alarm_sensitive>false</border_alarm_sensitive>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_34</name>
+            <text>BG valid override:</text>
+            <x>8</x>
+            <y>400</y>
+            <width>127</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
           </widget>
         </children>
       </tab>
@@ -1629,6 +1904,7 @@ $(pv_value)</tooltip>
       <color red="232" green="232" blue="232">
       </color>
     </background_color>
+    <active_tab>2</active_tab>
   </widget>
   <widget type="textupdate" version="2.0.0">
     <name>Text Update</name>
@@ -1840,6 +2116,7 @@ $(pv_value)</tooltip>
     <y>240</y>
     <width>60</width>
     <height>25</height>
+    <visible>false</visible>
     <foreground_color>
       <color red="0" green="0" blue="0">
       </color>
