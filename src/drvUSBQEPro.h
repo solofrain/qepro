@@ -172,11 +172,8 @@ protected:
     #define LAST_QEPRO_PARAM P_bgValidOverride
 
 private:
-    //Wrapper wrapper;
     SeaBreezeAPI *api;
-    //epicsEventId eventId;
     static int zeroIndex;
-    //int index;
 
     libusb_hotplug_callback_handle hp[2];
     libusb_context *context;
@@ -232,6 +229,7 @@ private:
     void write_buffer(unsigned char *request, size_t len);
     int read_buffer(unsigned char *response, size_t len);
 
+    // Internally stored values and flags
     unsigned long integration_time;
     int trigger_mode;
     int num_pixels;
@@ -245,19 +243,21 @@ private:
     bool bg_subtract;
     bool bg_acquire;
 
+    // Data buffers for raw and calculated spectra
     double *raw_spectrum_buffer;
     double *spectrum_buffer;
-    double *wavelength_buffer;
-    double *raman_shift_buffer;
     double *dark_buffer;
     double *raw_bg_buffer;
     double *bg_buffer;
+    // Data buffers for x-axis values
+    double *wavelength_buffer;
+    double *raman_shift_buffer;
 
+    // Utility functions
     void subtract_spectra(
             double *result, 
             const double *spectra1, 
             const double *spectra2);
-
     void update_bg();
     void update_data_spectrum();
     void update_axis_arrays();
@@ -268,17 +268,11 @@ private:
     double m_laser;
     double m_poll_time;
 
+    // Spectrometer connection handling
     asynStatus connectSpec();
     asynStatus disconnectSpec();
     asynStatus readStatus();
 
 };
-
-
-//static void worker(void *pPvt);
-//static void worker(void *pPvt) {
-    //drvUSBQEPro *ptr = (drvUSBQEPro *)pPvt;
-    //ptr->getSpectrumThread(ptr);
-//}
 
 #endif
