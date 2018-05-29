@@ -10,7 +10,8 @@ DBDS = src/drvUSBQEProSupport.dbd
 
 AUTO_DEPENDENCIES = NO
 USR_DEPENDENCIES += asyn,4.3+
-USR_DEPENDENCIES += seabreeze,3.0.11
+#USR_DEPENDENCIES += seabreeze,3.0.11
+USR_DEPENDENCIES += seabreeze,waynelewis
 
 #USR_CPPFLAGS += -I/vagrant/SeaBreeze/include -DLINUX
 
