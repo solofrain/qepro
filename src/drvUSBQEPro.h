@@ -11,65 +11,66 @@
 #include "drvUSBQEProOBP.h"
 #include "api/seabreezeapi/SeaBreezeAPI.h"
 
-#define QEProNumSpecs           "NumSpecs"              /* asynInt32        ro  0 */
-#define QEProId                 "NrBoard"               /* asynInt32        ro  1 */
-#define QEProName               "Name"                  /* asynOctet        ro  2 */ 
-#define QEProFirmwareVersion    "FirmwareVersion"       /* asynOctet        ro  3 */
-#define QEProFirmwareModel      "FirmwareModel"         /* asynOctet        ro  4 */    
-#define QEProSerialNumber       "SerialNumber"          /* asynOctet        ro  5 */
-#define QEProNumberOfPixels     "NumberOfPixels"        /* asynInt32        rw  6 */
-#define QEProNumberOfDarkPixels "NumberOfDarkPixels"    /* asynInt32        rw  7 */
-#define QEProIntegrationTime    "IntegrationTime"       /* asynInt32        rw  8 */
-#define QEProMaxIntegrationTime "MaxIntegrationTime"    /* asynInt32        rw  9 */
-#define QEProMinIntegrationTime "MinIntegrationTime"    /* asynInt32        rw 10 */
-#define QEProMaxIntensity       "MaxIntensity"          /* asynInt32        rw 11 */
-#define QEProBoxcarWidth        "BoxcarWidth"           /* asynInt32        rw 12 */
-#define QEProElectricDark       "ElectricDark"          /* asynInt32        rw 13 */
-#define QEProDetectorTemperature "DetectorTemperature"  /* asynInt32        rw 14 */
-#define QEProBoardTemperature   "BoardTemperature"      /* asynInt32        rw 15 */
-#define QEProTempSetPoint       "TempSetPoint"          /* asynInt32        rw 16 */
-#define QEProTriggerMode        "TriggerMode"           /* asynInt32        rw 17 */
-#define QEProNonLinearity       "NonLinearity"          /* asynInt32        rw 18 */
-#define QEProDecouple           "Decouple"              /* asynInt32        rw 19 */
-#define QEProLEDIndicator       "LEDIndicator"          /* asynInt32        rw 20 */
-#define QEProAverages           "Averages"              /* asynInt32        rw 21 */
-#define QEProXAxisNm            "XAxisNm"               /* asynFloat64Array ro 22 */
-#define QEProXAxisRs            "XAxisRs"               /* asynFloat64Array ro 23 */
-#define QEProSpectrum           "Spectrum"              /* asynFloat64Array ro 24 */
-#define QEProLaser              "Laser"                 /* asynFloat64      ro 25 */
-#define QEProConnected          "Connected"             /* asynInt32        ro 26 */
-#define QEProAcqMode            "AcqMode"               /* asynInt32        rw 27 */
-#define QEProAcqStart           "AcqStart"              /* asynInt32        rw 28 */
-#define QEProAcqStop            "AcqStop"               /* asynInt32        rw 29 */
-#define QEProAcqSts             "AcqSts"                /* asynInt32        ro 30 */
-#define QEProFileWrite          "FileWrite"             /* asynInt32        rw 31 */
-#define QEProFilePath           "FilePath"              /* asynOctet        rw 32 */
-#define QEProFileName           "FileName"              /* asynOctet        rw 33 */
-#define QEProFullFileName       "FullFileName"          /* asynOctet        rw 34 */
-#define QEProFullFilePath       "FullFilePath"          /* asynOctet        rw 35 */
-#define QEProFileIndex          "FileIndex"             /* asynInt32        rw 36 */
-#define QEProXAxisMode          "XAxisMode"             /* asynInt32        rw 37 */
-#define QEProXAxis              "XAxis"                 /* asynFloat64Array ro 38 */
-#define QEProCPUTemperature     "CPUTemperature"        /* asynFloat64      ro 39 */
-#define QEProPCBTemperature     "PCBTemperature"        /* asynFloat64      ro 40 */
-#define QEProDetTemperature     "DetTemperature"        /* asynFloat64      ro 41 */
-#define QEProROI0LowWavelength  "ROI0LowWavelength"     /* asynFloat64      ro 42 */
-#define QEProROI0HighWavelength "ROI0HighWavelength"    /* asynFloat64      ro 43 */
-#define QEProROI1LowWavelength  "ROI1LowWavelength"     /* asynFloat64      ro 44 */
-#define QEProROI1HighWavelength "ROI1HighWavelength"    /* asynFloat64      ro 45 */
-#define QEProROI0Sum            "ROI0Sum"               /* asynFloat64      ro 46 */
-#define QEProROI1Sum            "ROI1Sum"               /* asynFloat64      ro 47 */
-#define QEProROIRatio           "ROIRatio"              /* asynFloat64      ro 48 */
-#define QEProDarkAcq            "DarkAcq"               /* asynInt32        rw 49 */
-#define QEProDarkSubtract       "DarkSubtract"          /* asynInt32        rw 50 */
-#define QEProDarkSpectrum       "DarkSpectrum"          /* asynFloat64Array ro 51 */
-#define QEProDarkValid          "DarkValid"             /* asynInt32        ro 52 */
-#define QEProDarkValidOverride  "DarkValidOverride"     /* asynInt32        rw 53 */
-#define QEProBGAcq              "BGAcq"                 /* asynInt32        rw 54 */
-#define QEProBGSubtract         "BGSubtract"            /* asynInt32        rw 55 */
-#define QEProBGSpectrum         "BGSpectrum"            /* asynFloat64Array ro 56 */
-#define QEProBGValid            "BGValid"               /* asynInt32        ro 57 */
-#define QEProBGValidOverride    "BGValidOverride"       /* asynInt32        ro 58 */
+#define QEProNumSpecs           "NumSpecs"              /* asynInt32        ro */
+#define QEProId                 "NrBoard"               /* asynInt32        ro */
+#define QEProName               "Name"                  /* asynOctet        ro */ 
+#define QEProFirmwareVersion    "FirmwareVersion"       /* asynOctet        ro */
+#define QEProFirmwareModel      "FirmwareModel"         /* asynOctet        ro */    
+#define QEProSerialNumber       "SerialNumber"          /* asynOctet        ro */
+#define QEProNumberOfPixels     "NumberOfPixels"        /* asynInt32        rw */
+#define QEProNumberOfDarkPixels "NumberOfDarkPixels"    /* asynInt32        rw */
+#define QEProIntegrationTime    "IntegrationTime"       /* asynInt32        rw */
+#define QEProMaxIntegrationTime "MaxIntegrationTime"    /* asynInt32        rw */
+#define QEProMinIntegrationTime "MinIntegrationTime"    /* asynInt32        rw */
+#define QEProMaxIntensity       "MaxIntensity"          /* asynInt32        rw */
+#define QEProBoxcarWidth        "BoxcarWidth"           /* asynInt32        rw */
+#define QEProElectricDark       "ElectricDark"          /* asynInt32        rw */
+#define QEProDetectorTemperature "DetectorTemperature"  /* asynInt32        rw */
+#define QEProBoardTemperature   "BoardTemperature"      /* asynInt32        rw */
+#define QEProTempSetPoint       "TempSetPoint"          /* asynInt32        rw */
+#define QEProTriggerMode        "TriggerMode"           /* asynInt32        rw */
+#define QEProNonLinearity       "NonLinearity"          /* asynInt32        rw */
+#define QEProDecouple           "Decouple"              /* asynInt32        rw */
+#define QEProLEDIndicator       "LEDIndicator"          /* asynInt32        rw */
+#define QEProAverages           "Averages"              /* asynInt32        rw */
+#define QEProXAxisNm            "XAxisNm"               /* asynFloat64Array ro */
+#define QEProXAxisRs            "XAxisRs"               /* asynFloat64Array ro */
+#define QEProSpectrum           "Spectrum"              /* asynFloat64Array ro */
+#define QEProLaser              "Laser"                 /* asynFloat64      ro */
+#define QEProConnected          "Connected"             /* asynInt32        ro */
+#define QEProAcqMode            "AcqMode"               /* asynInt32        rw */
+#define QEProAcqStart           "AcqStart"              /* asynInt32        rw */
+#define QEProAcqStop            "AcqStop"               /* asynInt32        rw */
+#define QEProAcqSts             "AcqSts"                /* asynInt32        ro */
+#define QEProFileWrite          "FileWrite"             /* asynInt32        rw */
+#define QEProFilePath           "FilePath"              /* asynOctet        rw */
+#define QEProFileName           "FileName"              /* asynOctet        rw */
+#define QEProFullFileName       "FullFileName"          /* asynOctet        rw */
+#define QEProFullFilePath       "FullFilePath"          /* asynOctet        rw */
+#define QEProFileIndex          "FileIndex"             /* asynInt32        rw */
+#define QEProXAxisMode          "XAxisMode"             /* asynInt32        rw */
+#define QEProXAxis              "XAxis"                 /* asynFloat64Array ro */
+#define QEProCPUTemperature     "CPUTemperature"        /* asynFloat64      ro */
+#define QEProPCBTemperature     "PCBTemperature"        /* asynFloat64      ro */
+#define QEProDetTemperature     "DetTemperature"        /* asynFloat64      ro */
+#define QEProROI0LowWavelength  "ROI0LowWavelength"     /* asynFloat64      ro */
+#define QEProROI0HighWavelength "ROI0HighWavelength"    /* asynFloat64      ro */
+#define QEProROI1LowWavelength  "ROI1LowWavelength"     /* asynFloat64      ro */
+#define QEProROI1HighWavelength "ROI1HighWavelength"    /* asynFloat64      ro */
+#define QEProROI0Sum            "ROI0Sum"               /* asynFloat64      ro */
+#define QEProROI1Sum            "ROI1Sum"               /* asynFloat64      ro */
+#define QEProROI0Fraction       "ROI0Fraction"          /* asynFloat64      ro */
+#define QEProROI1Fraction       "ROI1Fraction"          /* asynFloat64      ro */
+#define QEProDarkAcq            "DarkAcq"               /* asynInt32        rw */
+#define QEProDarkSubtract       "DarkSubtract"          /* asynInt32        rw */
+#define QEProDarkSpectrum       "DarkSpectrum"          /* asynFloat64Array ro */
+#define QEProDarkValid          "DarkValid"             /* asynInt32        ro */
+#define QEProDarkValidOverride  "DarkValidOverride"     /* asynInt32        rw */
+#define QEProBGAcq              "BGAcq"                 /* asynInt32        rw */
+#define QEProBGSubtract         "BGSubtract"            /* asynInt32        rw */
+#define QEProBGSpectrum         "BGSpectrum"            /* asynFloat64Array ro */
+#define QEProBGValid            "BGValid"               /* asynInt32        ro */
+#define QEProBGValidOverride    "BGValidOverride"       /* asynInt32        ro */
 
 #define POLL_TIME 0.5
 
@@ -158,7 +159,8 @@ protected:
     int         P_roi1HighWavelength;
     int         P_roi0Sum;
     int         P_roi1Sum;
-    int         P_roiRatio;
+    int         P_roi0Fraction;
+    int         P_roi1Fraction;
     int         P_darkAcq;
     int         P_darkSubtract;
     int         P_darkSpectrum;
@@ -215,7 +217,7 @@ private:
     double roi_low[NUM_ROIS];
     double roi_high[NUM_ROIS];
     double roi_sum[NUM_ROIS];
-    double roi_ratio;
+    double roi_fraction[NUM_ROIS];
 
     // QEPro functions using OBP
     int abort();

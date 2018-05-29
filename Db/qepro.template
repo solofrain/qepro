@@ -397,13 +397,19 @@ record(ai, "$(PREFIX):ROI1Sum_rbv") {
     field(PREC, "0")
 }
 
-record(ai, "$(PREFIX):ROIRatio_rbv") {
+record(ai, "$(PREFIX):ROI0Fraction_rbv") {
     field(DTYP, "asynFloat64")
-    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROIRatio")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI0Fraction")
     field(SCAN, "I/O Intr")
-    field(PREC, "5")
+    field(PREC, "4")
 }
 
+record(ai, "$(PREFIX):ROI1Fraction_rbv") {
+    field(DTYP, "asynFloat64")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ROI1Fraction")
+    field(SCAN, "I/O Intr")
+    field(PREC, "4")
+}
 #########################################################################################
 # output records, analog
 #########################################################################################

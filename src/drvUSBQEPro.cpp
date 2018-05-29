@@ -46,65 +46,66 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     connected = false;
 
     //eventId = epicsEventCreate(epicsEventEmpty);
-    createParam( QEProNumSpecs,             asynParamInt32,         &P_numSpecs);		    //  0 
-    createParam( QEProId,                   asynParamInt32,         &P_nrBoard);		    //  1
-    createParam( QEProName,                 asynParamOctet,         &P_name);		        //  2
-    createParam( QEProFirmwareVersion,      asynParamOctet,         &P_firmwareVersion);    //  3
-    createParam( QEProFirmwareModel,        asynParamOctet,         &P_firmwareModel);      //  4  
-    createParam( QEProSerialNumber,         asynParamOctet,         &P_serialNumber);	    //  5
-    createParam( QEProNumberOfPixels,       asynParamInt32,         &P_numberOfPixels);	    //  6
-    createParam( QEProNumberOfDarkPixels,   asynParamInt32,         &P_numberOfDarkPixels); //  7
-    createParam( QEProIntegrationTime,      asynParamInt32,         &P_integrationTime);    //  8
-    createParam( QEProMaxIntegrationTime,   asynParamInt32,         &P_maxIntegrationTime); //  9
-    createParam( QEProMinIntegrationTime,   asynParamInt32,         &P_minIntegrationTime); // 10
-    createParam( QEProMaxIntensity,  	    asynParamFloat64,       &P_maxIntensity);       // 11
-    createParam( QEProBoxcarWidth,  	    asynParamInt32,         &P_boxcarWidth);        // 12
-    createParam( QEProElectricDark,  	    asynParamInt32,         &P_electricDark);       // 13
-    createParam( QEProDetectorTemperature,  asynParamInt32,         &P_detectorTemperature);// 14
-    createParam( QEProBoardTemperature,     asynParamInt32,         &P_boardTemperature);   // 15
-    createParam( QEProTempSetPoint,         asynParamInt32,         &P_tempSetPoint);       // 16
-    createParam( QEProTriggerMode,          asynParamInt32,         &P_triggerMode);        // 17
-    createParam( QEProNonLinearity,	        asynParamInt32,         &P_nonLinearity);       // 18
-    createParam( QEProDecouple,             asynParamInt32,         &P_decouple);           // 19
-    createParam( QEProLEDIndicator,         asynParamInt32,         &P_ledIndicator);       // 20
-    createParam( QEProAverages,             asynParamInt32,         &P_averages);           // 21  
-    createParam( QEProXAxisNm,              asynParamFloat64Array,  &P_xAxisNm);            // 22
-    createParam( QEProXAxisRs,              asynParamFloat64Array,  &P_xAxisRs);            // 23
-    createParam( QEProSpectrum,             asynParamFloat64Array,  &P_spectrum);           // 24 
-    createParam( QEProLaser,                asynParamFloat64,       &P_laser);              // 25 
-    createParam( QEProConnected,            asynParamInt32,         &P_connected);          // 26
-    createParam( QEProAcqMode,              asynParamInt32,         &P_acqMode);            // 27
-    createParam( QEProAcqStart,             asynParamInt32,         &P_acqStart);           // 28
-    createParam( QEProAcqStop,              asynParamInt32,         &P_acqStop);            // 29
-    createParam( QEProAcqSts,               asynParamInt32,         &P_acqSts);             // 30
-    createParam( QEProFileWrite,            asynParamInt32,         &P_fileWrite);          // 31
-    createParam( QEProFilePath,             asynParamOctet,         &P_filePath);           // 32
-    createParam( QEProFileName,             asynParamOctet,         &P_fileName);           // 33
-    createParam( QEProFullFileName,         asynParamOctet,         &P_fullFileName);       // 34
-    createParam( QEProFullFilePath,         asynParamOctet,         &P_fullFilePath);       // 35
-    createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          // 36
-    createParam( QEProXAxisMode,            asynParamInt32,         &P_xAxisMode);          // 37
-    createParam( QEProXAxis,                asynParamFloat64Array,  &P_xAxis);              // 38
-    createParam( QEProCPUTemperature,       asynParamFloat64,       &P_cpuTemperature);     // 39
-    createParam( QEProPCBTemperature,       asynParamFloat64,       &P_pcbTemperature);     // 40
-    createParam( QEProDetTemperature,       asynParamFloat64,       &P_detTemperature);     // 41
-    createParam( QEProROI0LowWavelength,    asynParamFloat64,       &P_roi0LowWavelength);  // 42
-    createParam( QEProROI0HighWavelength,   asynParamFloat64,       &P_roi0HighWavelength); // 43
-    createParam( QEProROI1LowWavelength,    asynParamFloat64,       &P_roi1LowWavelength);  // 44
-    createParam( QEProROI1HighWavelength,   asynParamFloat64,       &P_roi1HighWavelength); // 45
-    createParam( QEProROI0Sum,              asynParamFloat64,       &P_roi0Sum);            // 46
-    createParam( QEProROI1Sum,              asynParamFloat64,       &P_roi1Sum);            // 47
-    createParam( QEProROIRatio,             asynParamFloat64,       &P_roiRatio);           // 48
-    createParam( QEProDarkAcq,              asynParamInt32,         &P_darkAcq);            // 49
-    createParam( QEProDarkSubtract,         asynParamInt32,         &P_darkSubtract);       // 50
-    createParam( QEProDarkSpectrum,         asynParamFloat64Array,  &P_darkSpectrum);       // 51
-    createParam( QEProDarkValid,            asynParamInt32,         &P_darkValid);          // 52
-    createParam( QEProDarkValidOverride,    asynParamInt32,         &P_darkValidOverride);  // 53
-    createParam( QEProBGAcq,                asynParamInt32,         &P_bgAcq);              // 54
-    createParam( QEProBGSubtract,           asynParamInt32,         &P_bgSubtract);         // 55
-    createParam( QEProBGSpectrum,           asynParamFloat64Array,  &P_bgSpectrum);         // 56
-    createParam( QEProBGValid,              asynParamInt32,         &P_bgValid);            // 57
-    createParam( QEProBGValidOverride,      asynParamInt32,         &P_bgValidOverride);    // 58
+    createParam( QEProNumSpecs,             asynParamInt32,         &P_numSpecs);		    
+    createParam( QEProId,                   asynParamInt32,         &P_nrBoard);		    
+    createParam( QEProName,                 asynParamOctet,         &P_name);		        
+    createParam( QEProFirmwareVersion,      asynParamOctet,         &P_firmwareVersion);    
+    createParam( QEProFirmwareModel,        asynParamOctet,         &P_firmwareModel);      
+    createParam( QEProSerialNumber,         asynParamOctet,         &P_serialNumber);	    
+    createParam( QEProNumberOfPixels,       asynParamInt32,         &P_numberOfPixels);	    
+    createParam( QEProNumberOfDarkPixels,   asynParamInt32,         &P_numberOfDarkPixels); 
+    createParam( QEProIntegrationTime,      asynParamInt32,         &P_integrationTime);    
+    createParam( QEProMaxIntegrationTime,   asynParamInt32,         &P_maxIntegrationTime); 
+    createParam( QEProMinIntegrationTime,   asynParamInt32,         &P_minIntegrationTime); 
+    createParam( QEProMaxIntensity,  	    asynParamFloat64,       &P_maxIntensity);       
+    createParam( QEProBoxcarWidth,  	    asynParamInt32,         &P_boxcarWidth);        
+    createParam( QEProElectricDark,  	    asynParamInt32,         &P_electricDark);       
+    createParam( QEProDetectorTemperature,  asynParamInt32,         &P_detectorTemperature);
+    createParam( QEProBoardTemperature,     asynParamInt32,         &P_boardTemperature);   
+    createParam( QEProTempSetPoint,         asynParamInt32,         &P_tempSetPoint);       
+    createParam( QEProTriggerMode,          asynParamInt32,         &P_triggerMode);        
+    createParam( QEProNonLinearity,	        asynParamInt32,         &P_nonLinearity);       
+    createParam( QEProDecouple,             asynParamInt32,         &P_decouple);           
+    createParam( QEProLEDIndicator,         asynParamInt32,         &P_ledIndicator);       
+    createParam( QEProAverages,             asynParamInt32,         &P_averages);           
+    createParam( QEProXAxisNm,              asynParamFloat64Array,  &P_xAxisNm);            
+    createParam( QEProXAxisRs,              asynParamFloat64Array,  &P_xAxisRs);            
+    createParam( QEProSpectrum,             asynParamFloat64Array,  &P_spectrum);           
+    createParam( QEProLaser,                asynParamFloat64,       &P_laser);              
+    createParam( QEProConnected,            asynParamInt32,         &P_connected);          
+    createParam( QEProAcqMode,              asynParamInt32,         &P_acqMode);            
+    createParam( QEProAcqStart,             asynParamInt32,         &P_acqStart);           
+    createParam( QEProAcqStop,              asynParamInt32,         &P_acqStop);            
+    createParam( QEProAcqSts,               asynParamInt32,         &P_acqSts);             
+    createParam( QEProFileWrite,            asynParamInt32,         &P_fileWrite);          
+    createParam( QEProFilePath,             asynParamOctet,         &P_filePath);           
+    createParam( QEProFileName,             asynParamOctet,         &P_fileName);           
+    createParam( QEProFullFileName,         asynParamOctet,         &P_fullFileName);       
+    createParam( QEProFullFilePath,         asynParamOctet,         &P_fullFilePath);       
+    createParam( QEProFileIndex,            asynParamInt32,         &P_fileIndex);          
+    createParam( QEProXAxisMode,            asynParamInt32,         &P_xAxisMode);          
+    createParam( QEProXAxis,                asynParamFloat64Array,  &P_xAxis);              
+    createParam( QEProCPUTemperature,       asynParamFloat64,       &P_cpuTemperature);     
+    createParam( QEProPCBTemperature,       asynParamFloat64,       &P_pcbTemperature);     
+    createParam( QEProDetTemperature,       asynParamFloat64,       &P_detTemperature);     
+    createParam( QEProROI0LowWavelength,    asynParamFloat64,       &P_roi0LowWavelength);  
+    createParam( QEProROI0HighWavelength,   asynParamFloat64,       &P_roi0HighWavelength); 
+    createParam( QEProROI1LowWavelength,    asynParamFloat64,       &P_roi1LowWavelength);  
+    createParam( QEProROI1HighWavelength,   asynParamFloat64,       &P_roi1HighWavelength); 
+    createParam( QEProROI0Sum,              asynParamFloat64,       &P_roi0Sum);            
+    createParam( QEProROI1Sum,              asynParamFloat64,       &P_roi1Sum);            
+    createParam( QEProROI0Fraction,         asynParamFloat64,       &P_roi0Fraction);           
+    createParam( QEProROI1Fraction,         asynParamFloat64,       &P_roi1Fraction);           
+    createParam( QEProDarkAcq,              asynParamInt32,         &P_darkAcq);            
+    createParam( QEProDarkSubtract,         asynParamInt32,         &P_darkSubtract);       
+    createParam( QEProDarkSpectrum,         asynParamFloat64Array,  &P_darkSpectrum);       
+    createParam( QEProDarkValid,            asynParamInt32,         &P_darkValid);          
+    createParam( QEProDarkValidOverride,    asynParamInt32,         &P_darkValidOverride);  
+    createParam( QEProBGAcq,                asynParamInt32,         &P_bgAcq);              
+    createParam( QEProBGSubtract,           asynParamInt32,         &P_bgSubtract);         
+    createParam( QEProBGSpectrum,           asynParamFloat64Array,  &P_bgSpectrum);         
+    createParam( QEProBGValid,              asynParamInt32,         &P_bgValid);            
+    createParam( QEProBGValidOverride,      asynParamInt32,         &P_bgValidOverride);    
 
     // Set up initial USB context. Must be done before starting thread,
     // or attempting comms to device.
@@ -471,7 +472,6 @@ void drvUSBQEPro::subtract_spectra(
     }
 }
 
-// TODO: Make this work properly with the boxcar averaging
 void drvUSBQEPro::integrate_rois() {
     for (int i = 0; i < NUM_ROIS; i++) {
         roi_sum[i] = 0;
@@ -481,11 +481,11 @@ void drvUSBQEPro::integrate_rois() {
                 roi_sum[i] += spectrum_buffer[j];
             }
         }
+        roi_fraction[i] = roi_sum[i] / (roi_sum[0] + roi_sum[1]);
     }
 
-    roi_ratio = roi_sum[0] / roi_sum[1];
-
-    setDoubleParam(P_roiRatio, roi_ratio);
+    setDoubleParam(P_roi0Fraction, roi_fraction[0]);
+    setDoubleParam(P_roi1Fraction, roi_fraction[1]);
     setDoubleParam(P_roi0Sum, roi_sum[0]);
     setDoubleParam(P_roi1Sum, roi_sum[1]);
     callParamCallbacks();
