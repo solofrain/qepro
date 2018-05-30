@@ -1226,8 +1226,12 @@ void drvUSBQEPro::read_device_name() {
 }
 
 void drvUSBQEPro::set_integration_time() {
-    getIntegerParam(P_integrationTime, &integration_time);
-    // We are getting the integration time in microseconds
+    int error;
+    int tmp;
+
+    getIntegerParam(P_integrationTime, &tmp);
+    integration_time = (unsigned long)tmp;
+
     api->spectrometerSetIntegrationTimeMicros(
             device_id,
             spectrometer_feature_id,
