@@ -1160,6 +1160,7 @@ void drvUSBQEPro::test_connection() {
                     serial_number_feature_ids[0];
             }
 
+
             // Read non-linearity coefficients feature ID
             int num_nonlinearity_features = 
                 api->getNumberOfNonlinearityCoeffsFeatures(
@@ -1182,6 +1183,16 @@ void drvUSBQEPro::test_connection() {
                     nonlinearity_feature_ids[0];
             }
             connected = true;
+
+            // Perform the functions that only need to be done
+            // on establishing connection
+            read_number_of_pixels();
+            read_serial_number();
+            read_device_name();
+            // Update PVs
+            callParamCallbacks();
+
+            // Allocate memory for spectra
             allocate_spectrum_buffer();
         }
     }
@@ -1189,6 +1200,68 @@ void drvUSBQEPro::test_connection() {
     // Update the connected PV status
     setIntegerParam(P_connected, connected);
     callParamCallbacks();
+}
+
+void drvUSBQEPro::read_serial_number() {
+    int error;
+    char *serial_number_buffer;
+
+    size_t len_serial_num = 
+        api->getSerialNumberMaximumLength(
+                device_id, 
+                serial_number_feature_id, 
+                &error);
+
+    serial_number_buffer = 
+        (char *)calloc(len_serial_num, sizeof(char));
+
+    api->getSerialNumber(
+                device_id, 
+                serial_number_feature_id, 
+                &error,
+                serial_number_buffer,
+                len_serial_num);
+
+    setStringParam(P_serialNumber, serial_number_buffer);
+
+    if (serial_number_buffer)
+        free(serial_number_buffer);
+    serial_number_buffer = NULL;
+
+}
+
+void drvUSBQEPro::read_device_name() {
+    int error;
+    const size_t NAME_SIZE = 40;
+    char name_buffer[NAME_SIZE];
+
+    api->getDeviceType(
+                device_id, 
+                &error,
+                name_buffer,
+                NAME_SIZE);
+
+    setStringParam(P_name, name_buffer);
+}
+
+void drvUSBQEPro::read_number_of_pixels() {
+    int error;
+
+    int num_live_pixels = 
+        api->spectrometerGetFormattedSpectrumLength (
+                device_id, 
+                spectrometer_feature_id, 
+                &error);
+
+    setIntegerParam(P_numberOfPixels, num_live_pixels);
+
+    int num_dark_pixels = 
+        api->spectrometerGetElectricDarkPixelCount(
+                device_id, 
+                spectrometer_feature_id, 
+                &error);
+
+    setIntegerParam(P_numberOfDarkPixels, num_dark_pixels);
 }
 
 void drvUSBQEPro::boxcar(

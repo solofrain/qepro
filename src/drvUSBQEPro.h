@@ -213,6 +213,9 @@ private:
             const double *wavelength_buffer,
             int num_wavelengths);
     void integrate_rois();
+    void read_device_name();
+    void read_serial_number();
+    void read_number_of_pixels();
 
     double roi_low[NUM_ROIS];
     double roi_high[NUM_ROIS];
