@@ -14,6 +14,7 @@
 #include <iostream>
 #include <ctime>
 #include <iomanip>
+#include <vector>
 
 #include "drvUSBQEPro.h"
 #include "drvUSBQEProWorker.h"
@@ -118,6 +119,19 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     dark_valid_override = false;
     bg_valid = false;
     bg_valid_override = false;
+
+    // Initialise the file type strings
+    file_extensions.push_back("");
+    file_extensions.push_back("raw");
+    file_extensions.push_back("bg");
+    file_extensions.push_back("raw_bg");
+    file_extensions.push_back("dark");
+
+    file_descriptions.push_back("Processed data");
+    file_descriptions.push_back("Raw data");
+    file_descriptions.push_back("Processed background data");
+    file_descriptions.push_back("Raw background data");
+    file_descriptions.push_back("Dark spectrum");
 
     asynPrint(pasynUserSelf,
             ASYN_TRACE_FLOW,
@@ -419,14 +433,49 @@ void drvUSBQEPro::write_data_files() {
     int file_write;
     int x_axis_mode;
 
+    double *x_axis_buffer;
+
     getIntegerParam(P_fileWrite, &file_write);
     getIntegerParam(P_xAxisMode, &x_axis_mode);
 
+    if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
+        x_axis_buffer = raman_shift_buffer;
+    else
+        x_axis_buffer = wavelength_buffer;
+
+    int file_index;
+    getIntegerParam(P_fileIndex, &file_index);
+
     if (file_write) {
-        if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
-            write_file(raman_shift_buffer, spectrum_buffer);
-        else
-            write_file(wavelength_buffer, spectrum_buffer);
+            write_file(
+                    x_axis_buffer, 
+                    spectrum_buffer, 
+                    FILE_DATA, 
+                    file_index);
+            write_file(
+                    x_axis_buffer, 
+                    raw_spectrum_buffer, 
+                    FILE_RAW_DATA, 
+                    file_index);
+            write_file(
+                    x_axis_buffer, 
+                    bg_buffer, 
+                    FILE_BACKGROUND, 
+                    file_index);
+            write_file(
+                    x_axis_buffer, 
+                    raw_bg_buffer, 
+                    FILE_RAW_BACKGROUND, 
+                    file_index);
+            write_file(
+                    x_axis_buffer, 
+                    dark_buffer, 
+                    FILE_DARK, 
+                    file_index);
+            // Increment the file index
+            file_index++;
+            setIntegerParam(P_fileIndex, file_index);
+            callParamCallbacks();
     }
 }
 
@@ -1301,8 +1350,10 @@ void drvUSBQEPro::boxcar(
 }
 
 void drvUSBQEPro::write_file(
-        double *x_axis_buffer,
-        double *data_buffer) {
+        const double *x_axis_buffer,
+        const double *data_buffer,
+        const int file_type,
+        const int file_index) {
 
     const char *functionName = "write_file";
     //const int BUF_SIZE = 80;
@@ -1333,10 +1384,12 @@ void drvUSBQEPro::write_file(
             functionName,
             file_path);
 
+
     snprintf(full_file_name,
             BUF_SIZE,
-            "%s_%05d.txt",
+            "%s_%s_%05d.txt",
             file_name,
+            file_extensions[file_type].c_str(),
             file_index);
 
     asynPrint(
@@ -1359,7 +1412,7 @@ void drvUSBQEPro::write_file(
 
     outfile.open(full_file_path, std::ofstream::out);
 
-    write_header(outfile, full_file_name);
+    write_header(outfile, full_file_name, file_type);
 
     outfile.precision(4);
 
@@ -1373,27 +1426,29 @@ void drvUSBQEPro::write_file(
 
     outfile.close();
 
-    // Increment the index and save back to the record
-    file_index++;
+    // Set the filename data
     setStringParam(P_fullFileName, full_file_name);
     setStringParam(P_filePath, file_path);
     setStringParam(P_fullFilePath, full_file_path);
-    setIntegerParam(P_fileIndex, file_index);
     callParamCallbacks();
 }
 
-void drvUSBQEPro::write_header(std::ofstream &outfile, char *full_file_name) {
+void drvUSBQEPro::write_header(
+        std::ofstream &outfile, 
+        const char *full_file_name,
+        const int file_type) {
     int integration_time;
     char serial_number[BUF_SIZE + 1];
     char text_buffer[BUF_SIZE + 1];
     int trigger_mode;
-    int electric_dark_correction;
+    int dark_subtraction;
     int nonlinearity_correction;
     int boxcar_width;
     int x_axis_mode;
     int scans_to_average = 1;
 
     outfile << "QEPro datafile: " << full_file_name << std::endl;
+    outfile << "Data type: " << file_descriptions[file_type] << std::endl;
 
     time_t rawtime;
     struct tm * timeinfo;
@@ -1416,14 +1471,14 @@ void drvUSBQEPro::write_header(std::ofstream &outfile, char *full_file_name) {
     outfile.precision(5);
     getIntegerParam(P_integrationTime, &integration_time);
     outfile << "Integration time (s): " << std::scientific;
-    outfile <<  integration_time/1000000 << std::endl;
+    outfile <<  (double)integration_time/1000000 << std::endl;
 
     getIntegerParam(P_averages, &scans_to_average);
     outfile << "Scans to average: " << scans_to_average << std::endl;
 
-    getIntegerParam(P_electricDark, &electric_dark_correction);
-    outfile << "Electric dark correction enabled: ";
-    outfile << ((electric_dark_correction==0)?"false":"true");
+    getIntegerParam(P_darkSubtract, &dark_subtraction);
+    outfile << "Dark correction enabled: ";
+    outfile << ((dark_subtraction==0)?"false":"true");
     outfile << std::endl;
 
     getIntegerParam(P_nonLinearity, &nonlinearity_correction);
