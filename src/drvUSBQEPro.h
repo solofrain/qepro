@@ -81,7 +81,9 @@
 #define QEPRO_XAXIS_WAVELENGTH      0
 #define QEPRO_XAXIS_RAMAN_SHIFT     1
 
+#define FILE_NAME_SIZE              40
 #define BUF_SIZE                    80
+#define TS_SIZE                     16
 
 #define STS_REQUEST_ENDPOINT        0x01
 #define STS_RESPONSE_ENDPOINT       0x81
@@ -201,15 +203,6 @@ private:
             double *output_buffer,
             const double *input_buffer,
             int boxcar_width);
-    void write_file(
-            const double *x_axis_buffer,
-            const double *data_buffer,
-            const int file_type, 
-            const int file_index);
-    void write_header(
-            std::ofstream &outfile,
-            const char *full_file_path,
-            const int file_type);
     void convert_nm_to_raman_shift(
             double *raman_shift_buffer,
             const double *wavelength_buffer);
@@ -271,7 +264,25 @@ private:
     void update_axis_arrays();
     void acquire_dark();
     void acquire_bg();
+
+    // File handling functions
     void write_data_files();
+    bool file_exists(const char *file_path);
+    std::string create_file_name(
+            const int file_type, 
+            const int file_index);
+    std::string create_file_path(
+            const int file_type, 
+            const int file_index);
+    void write_file(
+            const double *x_axis_buffer,
+            const double *data_buffer,
+            const int file_type,
+            const int file_index);
+    void write_header(
+            std::ofstream &outfile,
+            std::string full_file_name,
+            const int file_type);
 
     double m_laser;
     double m_poll_time;

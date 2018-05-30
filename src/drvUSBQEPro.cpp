@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libusb-1.0/libusb.h>
+#include <sys/stat.h>
 
 #include <fstream>
 #include <iostream>
@@ -122,10 +123,10 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
 
     // Initialise the file type strings
     file_extensions.push_back("");
-    file_extensions.push_back("raw");
-    file_extensions.push_back("bg");
-    file_extensions.push_back("raw_bg");
-    file_extensions.push_back("dark");
+    file_extensions.push_back("_raw");
+    file_extensions.push_back("_bg");
+    file_extensions.push_back("_raw_bg");
+    file_extensions.push_back("_dark");
 
     file_descriptions.push_back("Processed data");
     file_descriptions.push_back("Raw data");
@@ -192,13 +193,11 @@ void drvUSBQEPro::getSpectrumThread(void *priv){
 
         // Collect a dark spectra if requested
         if (dark_acquire) {
-            printf("num_pixels = %d\n", num_pixels);
             acquire_dark();
         }
 
         // Collect a background spectra if requested
         if (bg_acquire) {
-            printf("num_pixels = %d\n", num_pixels);
             acquire_bg();
         }
 
@@ -432,55 +431,6 @@ void drvUSBQEPro::update_data_spectrum() {
             0);
 }
 
-void drvUSBQEPro::write_data_files() {
-    int file_write;
-    int x_axis_mode;
-
-    double *x_axis_buffer;
-
-    getIntegerParam(P_fileWrite, &file_write);
-    getIntegerParam(P_xAxisMode, &x_axis_mode);
-
-    if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
-        x_axis_buffer = raman_shift_buffer;
-    else
-        x_axis_buffer = wavelength_buffer;
-
-    int file_index;
-    getIntegerParam(P_fileIndex, &file_index);
-
-    if (file_write) {
-            write_file(
-                    x_axis_buffer, 
-                    spectrum_buffer, 
-                    FILE_DATA, 
-                    file_index);
-            write_file(
-                    x_axis_buffer, 
-                    raw_spectrum_buffer, 
-                    FILE_RAW_DATA, 
-                    file_index);
-            write_file(
-                    x_axis_buffer, 
-                    bg_buffer, 
-                    FILE_BACKGROUND, 
-                    file_index);
-            write_file(
-                    x_axis_buffer, 
-                    raw_bg_buffer, 
-                    FILE_RAW_BACKGROUND, 
-                    file_index);
-            write_file(
-                    x_axis_buffer, 
-                    dark_buffer, 
-                    FILE_DARK, 
-                    file_index);
-            // Increment the file index
-            file_index++;
-            setIntegerParam(P_fileIndex, file_index);
-            callParamCallbacks();
-    }
-}
 
 void drvUSBQEPro::update_bg() {
     if (dark_subtract && (dark_valid || dark_valid_override)) {
@@ -1174,7 +1124,6 @@ void drvUSBQEPro::test_connection() {
 
             // Initialize the integration time
             set_integration_time();
-
         }
     }
 
@@ -1240,6 +1189,7 @@ void drvUSBQEPro::set_integration_time() {
     // Invalidate the current dark spectra
     dark_valid = false;
     bg_valid = false;
+    setIntegerParam(P_integrationTime, integration_time);
     setIntegerParam(P_darkValid, dark_valid);
     setIntegerParam(P_bgValid, bg_valid);
     callParamCallbacks();
@@ -1304,65 +1254,93 @@ void drvUSBQEPro::boxcar(
     }
 }
 
+void drvUSBQEPro::write_data_files() {
+    std::string file_name;
+    std::string file_path;
+    int file_write;
+    int x_axis_mode;
+    int file_index;
+
+    double *x_axis_buffer;
+
+    getIntegerParam(P_fileIndex, &file_index);
+    getIntegerParam(P_fileWrite, &file_write);
+    getIntegerParam(P_xAxisMode, &x_axis_mode);
+
+    if (x_axis_mode == QEPRO_XAXIS_RAMAN_SHIFT)
+        x_axis_buffer = raman_shift_buffer;
+    else
+        x_axis_buffer = wavelength_buffer;
+
+
+    if (file_write) {
+        // Find the next available index
+        file_path = create_file_path(
+                FILE_DATA,
+                file_index);
+
+        while (file_exists(file_path.c_str())) {
+            file_index++;
+            file_path = create_file_path(
+                    FILE_DATA,
+                    file_index);
+        }
+
+        setIntegerParam(P_fileIndex, file_index);
+        callParamCallbacks();
+
+        write_file(
+                x_axis_buffer, 
+                raw_spectrum_buffer, 
+                FILE_RAW_DATA, 
+                file_index);
+        write_file(
+                x_axis_buffer, 
+                bg_buffer, 
+                FILE_BACKGROUND, 
+                file_index);
+        write_file(
+                x_axis_buffer, 
+                raw_bg_buffer, 
+                FILE_RAW_BACKGROUND, 
+                file_index);
+        write_file(
+                x_axis_buffer, 
+                dark_buffer, 
+                FILE_DARK, 
+                file_index);
+        write_file(
+                x_axis_buffer, 
+                spectrum_buffer, 
+                FILE_DATA, 
+                file_index);
+        // Increment the file index
+        file_index++;
+        setIntegerParam(P_fileIndex, file_index);
+        callParamCallbacks();
+    }
+}
+
 void drvUSBQEPro::write_file(
         const double *x_axis_buffer,
         const double *data_buffer,
         const int file_type,
         const int file_index) {
 
-    const char *functionName = "write_file";
-    //const int BUF_SIZE = 80;
-    char file_path[BUF_SIZE + 1];
-    char file_name[BUF_SIZE + 1];
-    char full_file_name[BUF_SIZE + 1];
-    char full_file_path[2 * BUF_SIZE + 1];
+    std::string full_file_name;
+    std::string full_file_path;
 
     std::ofstream outfile;
 
-    getStringParam(P_fileName, BUF_SIZE, file_name);
-    getStringParam(P_filePath, BUF_SIZE, file_path);
-
-    asynPrint(
-            pasynUserSelf,
-            ASYN_TRACE_FLOW,
-            "%s: file name = %s\n",
-            functionName,
-            file_name);
-
-    asynPrint(
-            pasynUserSelf,
-            ASYN_TRACE_FLOW,
-            "%s: file path = %s\n",
-            functionName,
-            file_path);
-
-
-    snprintf(full_file_name,
-            BUF_SIZE,
-            "%s_%s_%05d.txt",
-            file_name,
-            file_extensions[file_type].c_str(),
+    full_file_name = create_file_name(
+            file_type, 
             file_index);
 
-    asynPrint(
-            pasynUserSelf,
-            ASYN_TRACE_FLOW,
-            "%s: file path = %s\n",
-            functionName,
-            file_path);
+    full_file_path = create_file_path(
+            file_type,
+            file_index);
 
-    strcpy(full_file_path, file_path);
-    strcat(full_file_path, "/");
-    strcat(full_file_path, full_file_name);
-
-    asynPrint(
-            pasynUserSelf,
-            ASYN_TRACE_FLOW,
-            "%s: full file path = %s\n",
-            functionName,
-            full_file_path);
-
-    outfile.open(full_file_path, std::ofstream::out);
+    outfile.open(full_file_path.c_str(), std::ofstream::out);
 
     write_header(outfile, full_file_name, file_type);
 
@@ -1377,17 +1355,81 @@ void drvUSBQEPro::write_file(
     }
 
     outfile.close();
+}
+
+std::string drvUSBQEPro::create_file_name(
+        const int file_type,
+        const int file_index) {
+
+    const char* functionName = "create_file_name";
+
+    char file_name[FILE_NAME_SIZE];
+    char full_file_name[BUF_SIZE];
+
+    getStringParam(P_fileName, FILE_NAME_SIZE, file_name);
+
+    asynPrint(
+            pasynUserSelf,
+            ASYN_TRACE_FLOW,
+            "%s: file name = %s\n",
+            functionName,
+            file_name);
+
+    snprintf(full_file_name,
+            BUF_SIZE,
+            "%s%s_%05d.txt",
+            file_name,
+            file_extensions[file_type].c_str(),
+            file_index);
 
     // Set the filename data
     setStringParam(P_fullFileName, full_file_name);
+
+    return std::string(full_file_name);
+}
+
+std::string drvUSBQEPro::create_file_path(
+        const int file_type,
+        const int file_index) {
+
+    std::string full_file_name = 
+        create_file_name(file_type, file_index);
+    std::string full_file_path;
+
+    const char* functionName = "create_file_path";
+
+    char file_path[BUF_SIZE];
+
+    getStringParam(P_filePath, BUF_SIZE, file_path);
+
+    asynPrint(
+            pasynUserSelf,
+            ASYN_TRACE_FLOW,
+            "%s: file path = %s\n",
+            functionName,
+            file_path);
+
+    full_file_path = std::string(file_path);
+    full_file_path += "/";
+    full_file_path += full_file_name;
+
+    asynPrint(
+            pasynUserSelf,
+            ASYN_TRACE_FLOW,
+            "%s: full file path = %s\n",
+            functionName,
+            full_file_path.c_str());
+
+    // Set the filename data
     setStringParam(P_filePath, file_path);
-    setStringParam(P_fullFilePath, full_file_path);
-    callParamCallbacks();
+    setStringParam(P_fullFilePath, full_file_path.c_str());
+
+    return std::string(full_file_path);
 }
 
 void drvUSBQEPro::write_header(
         std::ofstream &outfile, 
-        const char *full_file_name,
+        std::string full_file_name,
         const int file_type) {
     int integration_time;
     char serial_number[BUF_SIZE + 1];
@@ -1449,6 +1491,11 @@ void drvUSBQEPro::write_header(
     outfile << "Number of pixels in spectrum: " << num_pixels << std::endl;
 
     outfile << ">>>>> Begin Spectral Data <<<<<" << std::endl;
+}
+
+bool drvUSBQEPro::file_exists(const char *file_name) {
+    struct stat buffer;   
+    return (stat (file_name, &buffer) == 0); 
 }
 
 extern "C" {
