@@ -19,9 +19,9 @@
   <widget type="rectangle" version="2.0.0">
     <name>Rectangle_1</name>
     <x>10</x>
-    <y>130</y>
+    <y>140</y>
     <width>330</width>
-    <height>240</height>
+    <height>210</height>
     <line_width>0</line_width>
     <background_color>
       <color red="232" green="232" blue="232">
@@ -834,8 +834,8 @@
           <widget type="label" version="2.0.0">
             <name>Label_5</name>
             <text>Nonlinearity Correction:</text>
-            <x>16</x>
-            <y>152</y>
+            <x>10</x>
+            <y>210</y>
             <width>173</width>
             <height>21</height>
             <font>
@@ -859,18 +859,19 @@
           <widget type="checkbox" version="2.0.0">
             <name>Check Box_2</name>
             <label></label>
-            <x>266</x>
-            <y>152</y>
+            <x>268</x>
+            <y>210</y>
             <width>17</width>
             <height>25</height>
             <actions>
             </actions>
+            <enabled>false</enabled>
           </widget>
           <widget type="label" version="2.0.0">
             <name>Label_8</name>
             <text>Strobe/Lamp Enable:</text>
-            <x>16</x>
-            <y>182</y>
+            <x>10</x>
+            <y>240</y>
             <width>150</width>
             <height>21</height>
             <font>
@@ -894,12 +895,13 @@
           <widget type="checkbox" version="2.0.0">
             <name>Check Box_3</name>
             <label></label>
-            <x>266</x>
-            <y>182</y>
+            <x>268</x>
+            <y>240</y>
             <width>17</width>
             <height>25</height>
             <actions>
             </actions>
+            <enabled>false</enabled>
           </widget>
           <widget type="action_button" version="3.0.0">
             <name>Action Button</name>
@@ -912,12 +914,12 @@
           <widget type="label" version="2.0.0">
             <name>Text Update_11</name>
             <text>Serial Number</text>
-            <x>16</x>
-            <y>12</y>
-            <width>168</width>
+            <x>10</x>
+            <y>10</y>
+            <width>132</width>
             <height>25</height>
             <font>
-              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
               </font>
             </font>
             <foreground_color>
@@ -939,14 +941,10 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_7</name>
             <pv_name>$(PREFIX):SerialNumber_rbv</pv_name>
-            <x>196</x>
-            <y>12</y>
-            <width>117</width>
+            <x>170</x>
+            <y>10</y>
+            <width>130</width>
             <height>25</height>
-            <font>
-              <font family="Source Sans Pro" style="BOLD" size="18.0">
-              </font>
-            </font>
             <foreground_color>
               <color red="0" green="0" blue="0">
               </color>
@@ -964,12 +962,12 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
           <widget type="label" version="2.0.0">
             <name>Text Update_12</name>
             <text>Pixels / Dark</text>
-            <x>16</x>
-            <y>52</y>
+            <x>10</x>
+            <y>50</y>
             <width>149</width>
             <height>25</height>
             <font>
-              <font family="Source Sans Pro" style="BOLD" size="18.0">
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
               </font>
             </font>
             <foreground_color>
@@ -991,14 +989,10 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_8</name>
             <pv_name>$(PREFIX):NumberOfPixels_rbv</pv_name>
-            <x>176</x>
-            <y>52</y>
+            <x>170</x>
+            <y>50</y>
             <width>53</width>
             <height>25</height>
-            <font>
-              <font family="Source Sans Pro" style="BOLD" size="18.0">
-              </font>
-            </font>
             <foreground_color>
               <color red="0" green="0" blue="0">
               </color>
@@ -1017,13 +1011,9 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <name>Text Update_15</name>
             <text>/</text>
             <x>236</x>
-            <y>52</y>
+            <y>50</y>
             <width>29</width>
             <height>25</height>
-            <font>
-              <font family="Source Sans Pro" style="BOLD" size="18.0">
-              </font>
-            </font>
             <foreground_color>
               <color red="0" green="0" blue="0">
               </color>
@@ -1045,13 +1035,9 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
             <name>Text Update_9</name>
             <pv_name>$(PREFIX):NumberOfDarkPixels_rbv</pv_name>
             <x>276</x>
-            <y>52</y>
+            <y>50</y>
             <width>35</width>
             <height>25</height>
-            <font>
-              <font family="Source Sans Pro" style="BOLD" size="18.0">
-              </font>
-            </font>
             <foreground_color>
               <color red="0" green="0" blue="0">
               </color>
@@ -1061,6 +1047,147 @@ VString[No PV, 1970/01/01 01:00:00.000]</tooltip>
               </color>
             </background_color>
             <horizontal_alignment>1</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_4</name>
+            <text>Detector Temp:</text>
+            <x>10</x>
+            <y>90</y>
+            <width>110</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_26</name>
+            <pv_name>$(PREFIX):DetectorTemperature_rbv</pv_name>
+            <x>170</x>
+            <y>90</y>
+            <width>130</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <format>1</format>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_10</name>
+            <text>CPU Temp:</text>
+            <x>10</x>
+            <y>130</y>
+            <width>78</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_27</name>
+            <pv_name>$(PREFIX):CPUTemperature_rbv</pv_name>
+            <x>170</x>
+            <y>130</y>
+            <width>130</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <format>1</format>
+            <horizontal_alignment>2</horizontal_alignment>
+            <vertical_alignment>1</vertical_alignment>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="label" version="2.0.0">
+            <name>Label_29</name>
+            <text>PCB Temp:</text>
+            <x>10</x>
+            <y>170</y>
+            <width>77</width>
+            <height>21</height>
+            <font>
+              <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+              </font>
+            </font>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color red="255" green="255" blue="255">
+              </color>
+            </background_color>
+            <vertical_alignment>1</vertical_alignment>
+            <auto_size>true</auto_size>
+            <wrap_words>false</wrap_words>
+            <actions>
+            </actions>
+          </widget>
+          <widget type="textupdate" version="2.0.0">
+            <name>Text Update_28</name>
+            <pv_name>$(PREFIX):BoardTemperature_rbv</pv_name>
+            <x>170</x>
+            <y>170</y>
+            <width>130</width>
+            <height>25</height>
+            <foreground_color>
+              <color red="0" green="0" blue="0">
+              </color>
+            </foreground_color>
+            <background_color>
+              <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+              </color>
+            </background_color>
+            <format>1</format>
+            <horizontal_alignment>2</horizontal_alignment>
             <vertical_alignment>1</vertical_alignment>
             <wrap_words>false</wrap_words>
             <actions>
@@ -1930,14 +2057,14 @@ $(pv_value)</tooltip>
       </tab>
     </tabs>
     <x>10</x>
-    <y>380</y>
+    <y>360</y>
     <width>332</width>
     <height>650</height>
     <background_color>
       <color red="232" green="232" blue="232">
       </color>
     </background_color>
-    <active_tab>3</active_tab>
+    <active_tab>1</active_tab>
   </widget>
   <widget type="textupdate" version="2.0.0">
     <name>Text Update</name>
@@ -1960,177 +2087,6 @@ $(pv_value)</tooltip>
     </background_color>
     <horizontal_alignment>1</horizontal_alignment>
     <vertical_alignment>1</vertical_alignment>
-    <actions>
-    </actions>
-  </widget>
-  <widget type="action_button" version="3.0.0">
-    <name>Action Button_2</name>
-    <actions>
-      <action type="write_pv">
-        <pv_name>$(pv_name)</pv_name>
-        <value>1</value>
-        <description>Stop</description>
-      </action>
-    </actions>
-    <pv_name>$(PREFIX):AcqStop</pv_name>
-    <text>Stop</text>
-    <x>260</x>
-    <y>210</y>
-    <width>60</width>
-    <height>25</height>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color red="240" green="240" blue="240">
-      </color>
-    </background_color>
-    <tooltip>$(pv_name)
-$(pv_value)</tooltip>
-  </widget>
-  <widget type="action_button" version="3.0.0">
-    <name>Action Button_1</name>
-    <actions execute_as_one="true">
-      <action type="write_pv">
-        <pv_name>$(pv_name)</pv_name>
-        <value>1</value>
-        <description>Start</description>
-      </action>
-    </actions>
-    <pv_name>$(PREFIX):AcqStart</pv_name>
-    <text>Start</text>
-    <x>260</x>
-    <y>180</y>
-    <width>60</width>
-    <height>25</height>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color red="240" green="240" blue="240">
-      </color>
-    </background_color>
-    <tooltip>$(pv_name)
-$(pv_value)</tooltip>
-  </widget>
-  <widget type="progressbar" version="2.0.0">
-    <name>Progress Bar</name>
-    <pv_name>$(PREFIX):ProgressBar</pv_name>
-    <x>20</x>
-    <y>330</y>
-    <width>310</width>
-    <fill_color>
-      <color name="OK" red="61" green="216" blue="61">
-      </color>
-    </fill_color>
-    <border_alarm_sensitive>false</border_alarm_sensitive>
-  </widget>
-  <widget type="label" version="2.0.0">
-    <name>Label_14</name>
-    <text>Status:</text>
-    <x>20</x>
-    <y>140</y>
-    <width>51</width>
-    <height>21</height>
-    <font>
-      <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
-      </font>
-    </font>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color red="255" green="255" blue="255">
-      </color>
-    </background_color>
-    <vertical_alignment>1</vertical_alignment>
-    <auto_size>true</auto_size>
-    <wrap_words>false</wrap_words>
-    <actions>
-    </actions>
-  </widget>
-  <widget type="label" version="2.0.0">
-    <name>Label_16</name>
-    <text>Acquisition:</text>
-    <x>20</x>
-    <y>180</y>
-    <width>85</width>
-    <height>21</height>
-    <font>
-      <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
-      </font>
-    </font>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color red="255" green="255" blue="255">
-      </color>
-    </background_color>
-    <vertical_alignment>1</vertical_alignment>
-    <auto_size>true</auto_size>
-    <wrap_words>false</wrap_words>
-    <actions>
-    </actions>
-  </widget>
-  <widget type="textupdate" version="2.0.0">
-    <name>Text Update_13</name>
-    <pv_name>$(PREFIX):Connection_rbv</pv_name>
-    <x>130</x>
-    <y>142</y>
-    <width>120</width>
-    <height>25</height>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
-      </color>
-    </background_color>
-    <format>6</format>
-    <show_units>false</show_units>
-    <vertical_alignment>1</vertical_alignment>
-    <wrap_words>false</wrap_words>
-    <actions>
-    </actions>
-  </widget>
-  <widget type="radio" version="2.0.0">
-    <name>Radio Button</name>
-    <pv_name>$(PREFIX):AcqMode</pv_name>
-    <x>130</x>
-    <y>180</y>
-    <width>120</width>
-    <height>83</height>
-    <items>
-      <item>Item 1</item>
-      <item>Item 2</item>
-      <item>Item 2</item>
-    </items>
-  </widget>
-  <widget type="textupdate" version="2.0.0">
-    <name>Text Update_18</name>
-    <pv_name>$(PREFIX):AcqSts_rbv</pv_name>
-    <x>130</x>
-    <y>270</y>
-    <width>120</width>
-    <height>25</height>
-    <foreground_color>
-      <color red="0" green="0" blue="0">
-      </color>
-    </foreground_color>
-    <background_color>
-      <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
-      </color>
-    </background_color>
-    <format>6</format>
-    <show_units>false</show_units>
-    <vertical_alignment>1</vertical_alignment>
-    <wrap_words>false</wrap_words>
     <actions>
     </actions>
   </widget>
@@ -2160,5 +2116,180 @@ $(pv_value)</tooltip>
     </background_color>
     <tooltip>$(pv_name)
 $(pv_value)</tooltip>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>Group</name>
+    <x>20</x>
+    <y>150</y>
+    <width>310</width>
+    <height>190</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>Label_14</name>
+      <text>Status:</text>
+      <width>51</width>
+      <height>21</height>
+      <font>
+        <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+        </font>
+      </font>
+      <foreground_color>
+        <color red="0" green="0" blue="0">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="255" green="255" blue="255">
+        </color>
+      </background_color>
+      <vertical_alignment>1</vertical_alignment>
+      <auto_size>true</auto_size>
+      <wrap_words>false</wrap_words>
+      <actions>
+      </actions>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>Label_16</name>
+      <text>Acquisition:</text>
+      <y>40</y>
+      <width>85</width>
+      <height>21</height>
+      <font>
+        <font name="Default Bold" family="Source Sans Pro" style="BOLD" size="16.0">
+        </font>
+      </font>
+      <foreground_color>
+        <color red="0" green="0" blue="0">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="255" green="255" blue="255">
+        </color>
+      </background_color>
+      <vertical_alignment>1</vertical_alignment>
+      <auto_size>true</auto_size>
+      <wrap_words>false</wrap_words>
+      <actions>
+      </actions>
+    </widget>
+    <widget type="radio" version="2.0.0">
+      <name>Radio Button</name>
+      <pv_name>$(PREFIX):AcqMode</pv_name>
+      <x>110</x>
+      <y>40</y>
+      <width>120</width>
+      <height>83</height>
+      <items>
+        <item>Item 1</item>
+        <item>Item 2</item>
+        <item>Item 2</item>
+      </items>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button_1</name>
+      <actions execute_as_one="true">
+        <action type="write_pv">
+          <pv_name>$(pv_name)</pv_name>
+          <value>1</value>
+          <description>Start</description>
+        </action>
+      </actions>
+      <pv_name>$(PREFIX):AcqStart</pv_name>
+      <text>Start</text>
+      <x>240</x>
+      <y>40</y>
+      <width>60</width>
+      <height>25</height>
+      <foreground_color>
+        <color red="0" green="0" blue="0">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="240" green="240" blue="240">
+        </color>
+      </background_color>
+      <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Text Update_18</name>
+      <pv_name>$(PREFIX):AcqSts_rbv</pv_name>
+      <x>110</x>
+      <y>130</y>
+      <width>130</width>
+      <height>25</height>
+      <foreground_color>
+        <color red="0" green="0" blue="0">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+        </color>
+      </background_color>
+      <format>6</format>
+      <show_units>false</show_units>
+      <vertical_alignment>1</vertical_alignment>
+      <wrap_words>false</wrap_words>
+      <actions>
+      </actions>
+    </widget>
+    <widget type="progressbar" version="2.0.0">
+      <name>Progress Bar</name>
+      <pv_name>$(PREFIX):ProgressBar</pv_name>
+      <y>170</y>
+      <width>310</width>
+      <fill_color>
+        <color name="OK" red="61" green="216" blue="61">
+        </color>
+      </fill_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>Action Button_2</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(pv_name)</pv_name>
+          <value>1</value>
+          <description>Stop</description>
+        </action>
+      </actions>
+      <pv_name>$(PREFIX):AcqStop</pv_name>
+      <text>Stop</text>
+      <x>240</x>
+      <y>80</y>
+      <width>60</width>
+      <height>25</height>
+      <foreground_color>
+        <color red="0" green="0" blue="0">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="240" green="240" blue="240">
+        </color>
+      </background_color>
+      <tooltip>$(pv_name)
+$(pv_value)</tooltip>
+    </widget>
+    <widget type="textupdate" version="2.0.0">
+      <name>Text Update_13</name>
+      <pv_name>$(PREFIX):Connection_rbv</pv_name>
+      <x>110</x>
+      <width>130</width>
+      <height>25</height>
+      <foreground_color>
+        <color red="0" green="0" blue="0">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color name="BLUE-BACKGROUND" red="195" green="226" blue="225">
+        </color>
+      </background_color>
+      <format>6</format>
+      <show_units>false</show_units>
+      <vertical_alignment>1</vertical_alignment>
+      <wrap_words>false</wrap_words>
+      <actions>
+      </actions>
+    </widget>
   </widget>
 </display>
