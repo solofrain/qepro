@@ -124,12 +124,6 @@ record(ai, "$(PREFIX):BoxcarWidth_rbv") {
 ##        field(DISV, "1")
 }
 
-record(ai, "$(PREFIX):ElectricDark_rbv") {
-        field(DTYP, "asynInt32")
-        field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ElectricDark")
-##	field(SCAN, "I/O Intr")
-}
-
 record(ai, "$(PREFIX):CPUTemperature_rbv") {
     field(DTYP, "asynFloat64")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))CPUTemperature")
