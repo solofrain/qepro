@@ -104,7 +104,6 @@ public:
     virtual asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
     virtual asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
     virtual asynStatus readOctet(asynUser *pasynUser, char *value, size_t maxChars, size_t *nActual, int *eomReason);
-    virtual asynStatus readFloat64Array (asynUser *pasynUser, epicsFloat64 *value, size_t nElements, size_t *nIn );     
 
     /* Thread function to read spectra from device */
     virtual void getSpectrumThread(void *);

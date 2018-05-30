@@ -659,9 +659,9 @@
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_16</name>
             <pv_name>$(PREFIX):FileName_rbv</pv_name>
-            <x>118</x>
+            <x>8</x>
             <y>460</y>
-            <width>205</width>
+            <width>315</width>
             <height>25</height>
             <foreground_color>
               <color red="0" green="0" blue="0">
@@ -752,9 +752,9 @@
           <widget type="textupdate" version="2.0.0">
             <name>Text Update_19</name>
             <pv_name>$(PREFIX):FullFilePath_rbv</pv_name>
-            <x>117</x>
-            <y>520</y>
-            <width>205</width>
+            <x>8</x>
+            <y>550</y>
+            <width>315</width>
             <height>25</height>
             <foreground_color>
               <color red="0" green="0" blue="0">
@@ -2059,12 +2059,11 @@ $(pv_value)</tooltip>
     <x>10</x>
     <y>360</y>
     <width>332</width>
-    <height>650</height>
+    <height>670</height>
     <background_color>
       <color red="232" green="232" blue="232">
       </color>
     </background_color>
-    <active_tab>1</active_tab>
   </widget>
   <widget type="textupdate" version="2.0.0">
     <name>Text Update</name>
