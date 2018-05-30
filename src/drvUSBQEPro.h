@@ -269,12 +269,6 @@ private:
 
     double m_laser;
     double m_poll_time;
-
-    // Spectrometer connection handling
-    asynStatus connectSpec();
-    asynStatus disconnectSpec();
-    asynStatus readStatus();
-
 };
 
 #endif

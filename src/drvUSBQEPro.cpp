@@ -38,8 +38,6 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     m_laser(laser),
     m_poll_time(POLL_TIME)
 {
-    asynStatus status;
-    const char *functionName = "drvUSBQEPro";
     spec_index = 0;
 
     // Initialize connection status
@@ -121,23 +119,10 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
     bg_valid = false;
     bg_valid_override = false;
     
-    // Set up connection
-    status = connectSpec();
-    if (status) {
-        asynPrint(
-                pasynUserSelf, 
-                ASYN_TRACE_ERROR, 
-                "%s:%s:  spectrometer connection failed (%d)\n", 
-                driverName, 
-                functionName, 
-                status);
-        report(stdout, 1);
-        return;
-    }
-
     asynPrint(pasynUserSelf, 
             ASYN_TRACE_FLOW, 
             "drvUSBQEPro: create spectrum readout thread\n");
+
     epicsThreadCreate("drvUSBQEProThread",
             epicsThreadPriorityMedium,
             epicsThreadGetStackSize(epicsThreadStackMedium),
@@ -328,6 +313,10 @@ void drvUSBQEPro::acquire_dark() {
                 dark_buffer, 
                 num_pixels);
 
+        // Stop the acquisition after readout
+        abort();
+        clear_buffers();
+
         dark_valid = true;
         setIntegerParam(P_darkValid, dark_valid);
         callParamCallbacks();
@@ -365,6 +354,10 @@ void drvUSBQEPro::acquire_bg() {
                 &error, 
                 raw_bg_buffer, 
                 num_pixels);
+
+        // Stop the acquisition after readout
+        abort();
+        clear_buffers();
 
         bg_valid = true;
         setIntegerParam(P_bgValid, bg_valid);
@@ -501,14 +494,6 @@ void drvUSBQEPro::convert_nm_to_raman_shift(
             (1./m_laser - 1./wavelength_buffer[i]) *10e7; 
 }
 
-asynStatus drvUSBQEPro::connectSpec(){
-    asynStatus status = asynSuccess;
-
-    test_connection();
-
-    return status;
-}
-
 void drvUSBQEPro::allocate_spectrum_buffer() {
     int error;
     if (connected) {
@@ -556,18 +541,6 @@ void drvUSBQEPro::deallocate_spectrum_buffer() {
             free(bg_buffer);
         bg_buffer = NULL;
     }
-}
-
-//-----------------------------------------------------------------------------------------------------------------
-asynStatus drvUSBQEPro::disconnectSpec(){
-    asynStatus status = asynSuccess;
-    return status;
-}
-
-//-----------------------------------------------------------------------------------------------------------------
-asynStatus drvUSBQEPro::readStatus(){
-    asynStatus status = asynSuccess;
-    return status;
 }
 
 //--------------------------------------------------------------------------------------------
@@ -656,7 +629,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             *value = rval;
             setIntegerParam(addr, P_numSpecs, *value);
         }
-
         else if (function == P_numberOfPixels) {
             rval = api->spectrometerGetFormattedSpectrumLength(
                     device_id,
@@ -666,7 +638,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             setIntegerParam(addr, P_numberOfPixels, *value);
             num_pixels = rval;
         }
-
         else if (function == P_numberOfDarkPixels) {
             rval = api->spectrometerGetElectricDarkPixelCount(
                     device_id,
@@ -675,7 +646,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             *value = rval;
             setIntegerParam(addr, P_numberOfDarkPixels, *value);
         }
-
         else if (function == P_integrationTime) {
             rval = integration_time;
             // function return in microseconds, we want to have in miliseconds
@@ -703,15 +673,6 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             *value = rval;
             setIntegerParam(addr, P_minIntegrationTime, *value); 
         }
-        // this is only 0/1 value, should be in readInt32Digital???
-        else if (function == P_electricDark) {
-            // TODO: Investigate dark correction
-            //rval = wrapper.getCorrectForElectricalDark(index);
-            //*value = rval;
-            //setIntegerParam(addr, P_electricDark, *value);
-        }
-
-
         else if (function == P_triggerMode) {
             rval = trigger_mode;
             *value = rval;
@@ -734,12 +695,12 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
             status = asynPortDriver::readInt32(pasynUser, value); 
         }
     }
-    else
+    else {
         status = asynDisconnected;
+    }
 
     // Handle parameters that are not read from the device
     if (function == P_boxcarWidth) {
-        // TODO: Investigate whether device supports boxcar averaging
         getIntegerParam(P_boxcarWidth, &rval);
         *value = rval;
         status = asynSuccess;
@@ -754,17 +715,10 @@ asynStatus drvUSBQEPro::readInt32 (asynUser *pasynUser, epicsInt32 *value){
         status = asynSuccess;
     }
 
-    // TODO: Add connection test and set of PV status
-    // to invalid if disconnected
-
     callParamCallbacks(addr);
 
-    if (status)
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%d, addr=%d, status=%d\n",
-                driverName, functionName, this->portName, *value, addr, (int)status);
-    else
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d\n",
-                driverName, functionName, this->portName, *value, addr);
+    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d, status=%d\n",
+            driverName, functionName, this->portName, *value, addr, (int)status);
 
     return status;
 }
@@ -820,12 +774,8 @@ asynStatus drvUSBQEPro::readFloat64(asynUser *pasynUser, epicsFloat64 *value){
     else
         status = asynDisconnected;
 
-    if (status)
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
-                driverName, functionName, this->portName, *value, addr, (int)status);
-    else
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d\n",
-                driverName, functionName, this->portName, *value, addr);
+    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
+            driverName, functionName, this->portName, *value, addr, (int)status);
 
     return status;
 }
@@ -889,13 +839,8 @@ asynStatus drvUSBQEPro::readFloat64Array (asynUser *pasynUser, epicsFloat64 *val
         status = asynDisconnected;
     }
 
-
-    if (status)
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
-                driverName, functionName, this->portName, *value, addr, (int)status);
-    else
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d\n",
-                driverName, functionName, this->portName, *value, addr);
+    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
+            driverName, functionName, this->portName, *value, addr, (int)status);
 
     return status;
 }
@@ -1021,19 +966,12 @@ asynStatus drvUSBQEPro::writeInt32(asynUser *pasynUser, epicsInt32 value)
             bg_valid_override = false;
     }
 
-
-
     /* Do callbacks so higher layers see any changes */
     status = (asynStatus) callParamCallbacks();
 
-    if (status)
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%d, addr=%d, status=%d\n",
-                driverName, functionName, this->portName, value, addr, (int)status);
-    else
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d\n",
-                driverName, functionName, this->portName, value, addr);
+    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%d, addr=%d, status=%d\n",
+            driverName, functionName, this->portName, value, addr, (int)status);
     return status;
-
 }
 
 asynStatus drvUSBQEPro::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
@@ -1065,14 +1003,10 @@ asynStatus drvUSBQEPro::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
         integrate_rois();
     }
 
-    if (status)
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
-                driverName, functionName, this->portName, value, addr, (int)status);
-    else
-        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d\n",
-                driverName, functionName, this->portName, value, addr);
-    return status;
+    asynPrint(pasynUser, ASYN_TRACEIO_DRIVER, "%s:%s: port=%s, value=%f, addr=%d, status=%d\n",
+            driverName, functionName, this->portName, value, addr, (int)status);
 
+    return status;
 }
 
 
