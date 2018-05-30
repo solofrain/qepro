@@ -203,19 +203,23 @@ private:
             const double *input_buffer,
             int boxcar_width);
     void write_file(
-            double *x_axis_buffer,
-            double *data_buffer);
+            const double *x_axis_buffer,
+            const double *data_buffer,
+            const int file_type, 
+            const int file_index);
     void write_header(
             std::ofstream &outfile,
-            char *full_file_path);
+            const char *full_file_path,
+            const int file_type);
     void convert_nm_to_raman_shift(
             double *raman_shift_buffer,
-            const double *wavelength_buffer,
-            int num_wavelengths);
+            const double *wavelength_buffer);
+    void set_integration_time();
     void integrate_rois();
     void read_device_name();
     void read_serial_number();
     void read_number_of_pixels();
+    void get_wavelengths();
 
     double roi_low[NUM_ROIS];
     double roi_high[NUM_ROIS];
@@ -272,6 +276,19 @@ private:
 
     double m_laser;
     double m_poll_time;
+
+    // Data file variables
+    enum files_t {
+        FILE_DATA,
+        FILE_RAW_DATA,
+        FILE_BACKGROUND,
+        FILE_RAW_BACKGROUND,
+        FILE_DARK,
+    };
+
+    std::vector<std::string> file_extensions;
+    std::vector<std::string> file_descriptions;
+
 };
 
 #endif
