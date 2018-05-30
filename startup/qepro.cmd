@@ -16,7 +16,8 @@ epicsEnvSet("LASER",  "478")
 
 drvUSBQEProConfigure("$(PORT)","$(SIZE)","$(LASER)")
 
-asynSetTraceMask("$(PORT)", -1, 0x1)
+asynSetTraceMask("$(PORT)", -1, 0x0)
+#asynSetTraceMask("$(PORT)", -1, 0x1)
 #asynSetTraceMask("$(PORT)", -1, 0x9)
 #asynSetTraceMask("$(PORT)", -1, 0xF)
 #asynSetTraceMask("$(PORT)", -1, 0x11)
