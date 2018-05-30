@@ -128,7 +128,9 @@ record(ai, "$(PREFIX):CPUTemperature_rbv") {
     field(DTYP, "asynFloat64")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))CPUTemperature")
 	field(SCAN, "10 second")
+    field(PINI, "YES")
     field(EGU, "C")
+    field(PREC, "2")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
 }
@@ -137,7 +139,9 @@ record(ai, "$(PREFIX):BoardTemperature_rbv") {
     field(DTYP, "asynFloat64")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PCBTemperature")
 	field(SCAN, "10 second")
+    field(PINI, "YES")
     field(EGU, "C")
+    field(PREC, "2")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
 }
@@ -146,7 +150,9 @@ record(ai, "$(PREFIX):DetectorTemperature_rbv") {
     field(DTYP, "asynFloat64")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DetTemperature")
 	field(SCAN, "10 second")
+    field(PINI, "YES")
     field(EGU, "C")
+    field(PREC, "2")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
 }
@@ -266,7 +272,7 @@ record(bi, "$(PREFIX):DarkValid_rbv") {
 }
 
 record(bo, "$(PREFIX):DarkValidOverride") {
-    field(DESC, "Override dark spectrum validity check")
+    field(DESC, "Override dark validity check")
     field(DTYP, "asynInt32")
     field(ZNAM, "")
     field(ONAM, "Override")
@@ -317,7 +323,7 @@ record(bi, "$(PREFIX):BGValid_rbv") {
 }
 
 record(bo, "$(PREFIX):BGValidOverride") {
-    field(DESC, "Override background spectrum validity check")
+    field(DESC, "Override bg validity check")
     field(DTYP, "asynInt32")
     field(ZNAM, "")
     field(ONAM, "Override")
