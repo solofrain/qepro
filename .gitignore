@@ -6,4 +6,5 @@ require.lock-*
 autosave/sav/
 autosave/req/info_settings*.req
 autosave/req/info_positions*.req
+tmp/
 
