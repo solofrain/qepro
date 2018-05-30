@@ -129,7 +129,7 @@ record(ai, "$(PREFIX):CPUTemperature_rbv") {
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))CPUTemperature")
 	field(SCAN, "10 second")
     field(PINI, "YES")
-    field(EGU, "C")
+    field(EGU,  "C")
     field(PREC, "2")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -140,7 +140,7 @@ record(ai, "$(PREFIX):BoardTemperature_rbv") {
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))PCBTemperature")
 	field(SCAN, "10 second")
     field(PINI, "YES")
-    field(EGU, "C")
+    field(EGU,  "C")
     field(PREC, "2")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -151,7 +151,7 @@ record(ai, "$(PREFIX):DetectorTemperature_rbv") {
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))DetTemperature")
 	field(SCAN, "10 second")
     field(PINI, "YES")
-    field(EGU, "C")
+    field(EGU,  "C")
     field(PREC, "2")
 ##        field(SDIS, "Connection_rbv")
 ##        field(DISV, "1")
@@ -427,17 +427,6 @@ record(ai, "$(PREFIX):ROI1Fraction_rbv") {
 ##        field(DISV, "1")
 #        field(EGU, "C")
 #}
-
-
-record(ao, "$(PREFIX):ElectricDark") {
-        field(DTYP, "asynInt32")
-	field(VAL, "0")
-        field(PINI, "1")
-#	field(ZNAM, "OFF")
-#	field(ONAM, "ON")
-        field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))ElectricDark")
-        field(FLNK, "$(PREFIX):ElectricDark_rbv")
-}
 
 record(ao, "$(PREFIX):Averages") {
     field(DTYP, "asynInt32")
