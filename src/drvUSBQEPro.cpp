@@ -4,6 +4,7 @@
 #include <epicsEvent.h>
 #include <iocsh.h>
 #include <epicsExport.h>
+#include <alarm.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1257,6 +1258,7 @@ void drvUSBQEPro::boxcar(
 void drvUSBQEPro::write_data_files() {
     std::string file_name;
     std::string file_path;
+    std::string dir_path;
     int file_write;
     int x_axis_mode;
     int file_index;
@@ -1274,6 +1276,21 @@ void drvUSBQEPro::write_data_files() {
 
 
     if (file_write) {
+        // Check that the directory path exists. If not, 
+        // put that PV into error.
+        char dir_path[2 * BUF_SIZE];
+        getStringParam(P_filePath, 2 * BUF_SIZE, dir_path);
+        if (!file_exists(dir_path)) {
+            setParamAlarmStatus(P_filePath, epicsAlarmState);
+            setParamAlarmSeverity(P_filePath, MAJOR_ALARM);
+            callParamCallbacks();
+        }
+        else {
+            setParamAlarmStatus(P_filePath, NO_ALARM);
+            setParamAlarmSeverity(P_filePath, NO_ALARM);
+            callParamCallbacks();
+        }
+
         // Find the next available index
         file_path = create_file_path(
                 FILE_DATA,
@@ -1317,6 +1334,7 @@ void drvUSBQEPro::write_data_files() {
         // Increment the file index
         file_index++;
         setIntegerParam(P_fileIndex, file_index);
+
         callParamCallbacks();
     }
 }
@@ -1398,9 +1416,9 @@ std::string drvUSBQEPro::create_file_path(
 
     const char* functionName = "create_file_path";
 
-    char file_path[BUF_SIZE];
+    char file_path[2 * BUF_SIZE];
 
-    getStringParam(P_filePath, BUF_SIZE, file_path);
+    getStringParam(P_filePath, 2 * BUF_SIZE, file_path);
 
     asynPrint(
             pasynUserSelf,
@@ -1432,8 +1450,8 @@ void drvUSBQEPro::write_header(
         std::string full_file_name,
         const int file_type) {
     int integration_time;
-    char serial_number[BUF_SIZE + 1];
-    char text_buffer[BUF_SIZE + 1];
+    char serial_number[BUF_SIZE];
+    char text_buffer[BUF_SIZE];
     int trigger_mode;
     int dark_subtraction;
     int nonlinearity_correction;
@@ -1495,7 +1513,7 @@ void drvUSBQEPro::write_header(
 
 bool drvUSBQEPro::file_exists(const char *file_name) {
     struct stat buffer;   
-    return (stat (file_name, &buffer) == 0); 
+    return (stat(file_name, &buffer) == 0); 
 }
 
 extern "C" {
