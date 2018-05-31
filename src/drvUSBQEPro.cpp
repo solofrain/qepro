@@ -1454,6 +1454,7 @@ void drvUSBQEPro::write_header(
     char text_buffer[BUF_SIZE];
     int trigger_mode;
     int dark_subtraction;
+    int bg_subtraction;
     int nonlinearity_correction;
     int boxcar_width;
     int x_axis_mode;
@@ -1491,6 +1492,11 @@ void drvUSBQEPro::write_header(
     getIntegerParam(P_darkSubtract, &dark_subtraction);
     outfile << "Dark correction enabled: ";
     outfile << ((dark_subtraction==0)?"false":"true");
+    outfile << std::endl;
+
+    getIntegerParam(P_bgSubtract, &bg_subtraction);
+    outfile << "Background subtraction enabled: ";
+    outfile << ((bg_subtraction==0)?"false":"true");
     outfile << std::endl;
 
     getIntegerParam(P_nonLinearity, &nonlinearity_correction);
