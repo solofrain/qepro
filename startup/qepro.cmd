@@ -1,4 +1,4 @@
-require qeproasyn,0.0.3+
+require qeproasyn,0.0.4+
 require busy,1.6.0+
 require autosave,5.7.0
 require seabreeze,3.0.11-ESS0
