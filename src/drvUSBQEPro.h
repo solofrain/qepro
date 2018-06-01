@@ -194,6 +194,7 @@ private:
     double temperatures[NUM_TEMP_SENSORS];
 
     bool connected;
+    bool ioc_starting;
     bool acquiring;
 
     void test_connection();

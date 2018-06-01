@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <libusb-1.0/libusb.h>
 #include <sys/stat.h>
 
@@ -25,8 +26,6 @@
 #define NUM_QEPRO_PARAMS ((int)(&LAST_QEPRO_PARAM - &FIRST_QEPRO_PARAM + 1))
 
 static const char *driverName="drvUSBQEPro";
-
-int drvUSBQEPro::zeroIndex = 0;
 
 drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
    : asynPortDriver(portName,
@@ -45,6 +44,7 @@ drvUSBQEPro::drvUSBQEPro(const char *portName, int maxPoints, double laser)
 
     // Initialize connection status
     connected = false;
+    ioc_starting = true;
 
     //eventId = epicsEventCreate(epicsEventEmpty);
     createParam( QEProNumSpecs,             asynParamInt32,         &P_numSpecs);
@@ -974,7 +974,16 @@ void drvUSBQEPro::test_connection() {
         if (api) {
             api->shutdown();
         }
+
         api = SeaBreezeAPI::getInstance();
+        // Add a short delay here to allow the USB connection to work.
+        // If this sleep is not present, the IOC will segfault on startup
+        // if the spectrometer is already connected to the USB port.
+        if (ioc_starting) {
+            unsigned int sleep_time = 500000;
+            usleep(sleep_time);
+            ioc_starting = false;
+        }
         api->probeDevices();
     }
 
