@@ -477,6 +477,9 @@ void drvUSBQEPro::integrate_rois() {
                 roi_sum[i] += spectrum_buffer[j];
             }
         }
+    }
+
+    for (int i = 0; i < NUM_ROIS; i++) {
         roi_fraction[i] = roi_sum[i] / (roi_sum[0] + roi_sum[1]);
     }
 
