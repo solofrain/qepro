@@ -178,7 +178,7 @@ private:
     SeaBreezeAPI *api;
     static int zeroIndex;
 
-    libusb_hotplug_callback_handle hp[2];
+    //libusb_hotplug_callback_handle hp[2];
     libusb_context *context;
 
     static const int OOI_VENDOR_ID = 0x2457;
